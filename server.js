@@ -7,13 +7,9 @@ app.use(bodyParser.urlencoded({
     extended: true
  }));
 const dbConnection = require('./models/mong-conct')
-
-
 app.set('views',path.join(__dirname,'views'));
 app.set('view engine','ejs');
-
 app.use(express.static(path.join(__dirname,'public')));
-
 dbConnection();
 const userRouter = require('./routes/users');
 app.use('/',userRouter);

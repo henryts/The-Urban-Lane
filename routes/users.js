@@ -1,17 +1,42 @@
 const express = require('express');
 const router = express.Router();
-const initializePassport = require('./passportConfig');
+const passport = require('passport');
+const flash = require('express-flash');
+//const flash = require('express-session'); 
+
 const users = require('../models/user-schema');
 const bcrypt = require('bcrypt');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+// var userObj = await users.findOne({email:req.body.email});
+// initializePassport(passport,userObj.email,userObj.password);
+
 router //LOGIN ROUTE
  .route('/user-login')    
       .get((req,res)=>{ 
-          res.render('user-login',{users});
+          res.render('user-login');
        })
-      .post((req,res)=>{ //user-signup
-         res.send("control in LOGIN POST");
-      })
+      .post(async(req,res) => {
+          const mail = req.body.email;
+          const userObj = await users.findOne({email:mail});    
+        console.log(userObj);  
+        if(userObj==null){
+            return res.status(400).send('cannot find user');
+            }
+        try{
+           if(await bcrypt.compare(req.body.password,userObj.password))
+           {
+              res.send("login done");
+            //res.send(`Hey there, welcome <a href=\'/logout'>click to logout</a>`);
+           
+        }}catch{
+            //res.status(500).send();
+            res.send("error");
+        }});
+    
+              
+      
+         
+      
 
 //SIGN-UP ROUTE
 router
@@ -19,44 +44,16 @@ router
       .get((req,res)=>{ 
     res.render('user-signup',{users});
        })
-      .post(async (req,res)=>{   
-                                           //USER-SIGNUP-FORM HANDLING-POST
-          var userInfo= req.body;
-  
+      .post(async (req,res)=>{ 
+          const hashPassword = await bcrypt.hash(req.body.password,10); 
+        
 
-        //hashing password
-            try{
-             var hashedPassword = await bcrypt.hash(userInfo.password,10);// 10-salt rounds
-            }catch{
-              console.log("error");
-            }
-         if(!userInfo.username||!userInfo.email||!userInfo.password)
-            {
-                console.log("enter all details")
-             }
-             else{
-                {
-                    var newUser = new users({
-                       username: userInfo.username,
-                       password: hashedPassword,
-                       email:userInfo.email,
-                       mobile:userInfo.mobile,
-                       
-                    });
-         newUser.save(function(err,newUser){
-                       if(err)
-                          res.send(err);
-                       else
-                        // res.redirect('/');
-                        res.send("Data base entry done");
-                    });
-                 }
-             }
-
-
-
-      })
-
-
-
+          const newUser = new users({
+          username:req.body.username,
+          email:req.body.email,
+          mobile:req.body.mobile,
+          password:hashPassword
+        });
+        newUser.save( ).then(()=>console.log('data added to db successfully'))
+       });
 module.exports=router;
