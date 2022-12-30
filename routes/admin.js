@@ -5,8 +5,17 @@ const adminController = require("../controllers/admin");
 const users = require("../models/user-schema");
 const bcrypt = require("bcrypt");
 
-router.get('/dashboard', adminController.adminDashboard); //sign-up POST
 
-router.get('/user-list', adminController.userlist); //sign-up POST
+router.get('/adminlogin', adminController.adminLoginPage); //admin login page display
+
+router.post('/adminlogin',adminController.adminLogin);
+
+//admin login POST METHOD
+
+router.get('/dashboard', adminController.adminDashboard); //admin dashboard -index
+
+router.get('/user-list', adminController.userlist); //user list
+
+router.post('/user-list', adminController.blockUser); //block user
 
 module.exports = router;
