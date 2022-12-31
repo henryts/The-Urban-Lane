@@ -1,5 +1,8 @@
 const users = require("../models/user-schema");
 const admin_cred = require("../models/admin-schema");
+const mongooseModels = require("../models/admin-schema");
+const Catagory = mongooseModels.catagory;
+const { redirect } = require('express');
 
 module.exports = {
   adminDashboard: async (req, res) => {
@@ -19,27 +22,25 @@ module.exports = {
     res.render("admin/admin-login");
   },
 
-  adminLogin: (req, res) => {       //admin login post method
-
-     try {
+  //admin login post method
+  adminLogin: (req, res) => {
+    try {
       if (
         req.body.password == admin_cred.password &&
         req.body.email == admin_cred.username
       ) {
-       res.redirect("/admin/dashboard");
-       } else {
-         res.send("wrong credentials");
-       }
-     } catch {
-       res.send("error");
-     }
+        res.redirect("/admin/dashboard");
+      } else {
+        res.send("wrong credentials");
+      }
+    } catch {
+      res.send("error");
+    }
   },
   //BLOCKING USER
   blockUser: async (req, res) => {
-   
-  
     var btn_val = req.body.submit;
-    if (btn_val=='Unblock') {
+    if (btn_val == "Unblock") {
       users.findByIdAndUpdate(id, { block: false }, function (err, user) {
         if (err) {
           console.log(err);
@@ -47,7 +48,7 @@ module.exports = {
           console.log(user);
         }
       });
-    } else if (butn_val=='block') {
+    } else if (butn_val == "block") {
       users.findByIdAndUpdate(id, { block: true }, function (err, user) {
         if (err) {
           console.log(err);
@@ -57,5 +58,29 @@ module.exports = {
       });
     }
     res.redirect("/user-list");
+  },
+
+  categoryView: (req, res) => {
+    //CategoryRender
+    res.render("admin/page-categories");
+  },
+
+  categoryPost: (req, res) => {
+    //CategoryPost
+
+    const newCat = new Catagory({
+      CategoryName: req.body.catName,
+      slug: req.body.catSlug,
+      Descriptiom: req.body.catDisc,
+    });
+    newCat.save(function (err, newCat) {
+      if (err) {
+        res.send("db error");
+      } else {
+        console.log("cat db done");
+        res.redirect("/categoryView");  //not working
+        
+      }
+    });
   },
 };

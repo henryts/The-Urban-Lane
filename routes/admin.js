@@ -18,4 +18,8 @@ router.get('/user-list', adminController.userlist); //user list
 
 router.post('/user-list', adminController.blockUser); //block user
 
+router.get('/categoryView',adminController.categoryView); //catogories
+
+router.post('/categoryPost',adminController.categoryPost); //catogories
+
 module.exports = router;
