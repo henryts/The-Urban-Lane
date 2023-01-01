@@ -2,7 +2,21 @@ const users = require("../models/user-schema");
 const admin_cred = require("../models/admin-schema");
 const mongooseModels = require("../models/admin-schema");
 const Catagory = mongooseModels.catagory;
+const newProduct = mongooseModels.products;
+var fs = require('fs');
+var path = require('path');
 const { redirect } = require('express');
+var multer = require('multer');
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now())
+  }
+})
+var upload = multer({ storage: storage })
+
  
 module.exports = {
   adminDashboard: async (req, res) => {
@@ -60,31 +74,71 @@ module.exports = {
     res.redirect("/user-list");
   },
 
-  categoryView: async(req, res) => {
-    //CategoryRender
-    var num=1;
+  
+  categoryView: async(req, res) => {            //catogory page -diplay
+    
     var catData = await Catagory.find({});
-    res.render("admin/page-categories",{catData, num});
+    res.render("admin/page-categories",{catData});
   },
 
-  categoryPost: async(req, res) => {
-    //CategoryPost
-    var catData = await Catagory.find({});
-    var num=0;
+  
+  categoryPost: async(req, res) => {           //CategoryPost
+   
     const newCat = new Catagory({
       CategoryName: req.body.catName,
       slug: req.body.catSlug,
       Description: req.body.catDisc,
     });
-    newCat.save(function (err, newCat) {
-      if (err) {
-        res.send("db error");
-      } else {
-       
-       // res.redirect("/admin/categoryView");
-       res.render("admin/page-categories",{catData, num})
-        
-      }
+    newCat.save().then(()=>{
+      res.redirect("/admin/categoryView")
     });
   },
+  addProduct:async (req,res)=>{  
+    
+    //Add Product page display
+    var catData = await Catagory.find({});
+    res.render("admin/product-add",{catData});
+      
+     },
+
+     addProductPost:async (req,res) =>
+   {  
+    var img = fs.readFileSync(req.file.path);
+    var encode_img = img.toString('base64');
+    var final_img = {
+        contentType:req.file.mimetype,
+        image:new Buffer(encode_img,'base64')
+    };
+    image.create(final_img,function(err,result){
+        if(err){
+            console.log(err);
+        }else{
+            console.log(result.img.Buffer);
+            console.log("Saved To database");
+            res.contentType(final_img.contentType);
+            res.send(final_img.image);
+        }});
+
+
+
+
+
+
+        
+        const newpdt = new newProduct({
+        productName:req.body.pTitle,
+        productDescription: req.body.pDescription,
+        brandName: req.body.productBrand,
+        productCost: req.body.productCost,
+        productCatogory: req.body.catName,
+        
+      var upload = multer({ storage: storage });
+
+    newpdt.save().then(()=>{
+      
+      res.redirect("/admin/addProduct");
+    });
+
+   }
+
 };

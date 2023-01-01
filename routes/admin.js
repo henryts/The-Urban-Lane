@@ -22,4 +22,8 @@ router.get('/categoryView',adminController.categoryView); //catogories
 
 router.post('/categoryPost',adminController.categoryPost); //catogories
 
+router.get('/addProduct',adminController.addProduct); //catogories
+
+router.post('/addProductPost',adminController.addProductPost); //catogories
+
 module.exports = router;

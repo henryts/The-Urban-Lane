@@ -8,6 +8,7 @@ app.use(
   bodyParser.urlencoded({
     extended: true,
   })
+
 );
 const dbConnection = require("./models/mong-conct");
 app.set("views", path.join(__dirname, "views"));

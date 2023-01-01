@@ -8,8 +8,22 @@ const catagorySchema= new mongoose.Schema({
     slug: String,
     Description: String
     })
+ const productSchema= new mongoose.Schema({
+        productName:String,
+        productDescription: String,
+        brandName: String,
+        productCost: Number,
+        productCatogory: String,
+        img:
+        {
+            data: Buffer,
+            contentType: String
+        }
+        })
+
+
     module.exports ={   admin_cred,
                         catagory: mongoose.model("catagory",catagorySchema),
-                        //products: mongoose.model("products",productSchema)
+                        products: mongoose.model("products",productSchema)
     }
 
