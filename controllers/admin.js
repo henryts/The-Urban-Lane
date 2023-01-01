@@ -3,7 +3,7 @@ const admin_cred = require("../models/admin-schema");
 const mongooseModels = require("../models/admin-schema");
 const Catagory = mongooseModels.catagory;
 const { redirect } = require('express');
-
+ 
 module.exports = {
   adminDashboard: async (req, res) => {
     //admin-dashboard
@@ -60,25 +60,29 @@ module.exports = {
     res.redirect("/user-list");
   },
 
-  categoryView: (req, res) => {
+  categoryView: async(req, res) => {
     //CategoryRender
-    res.render("admin/page-categories");
+    var num=1;
+    var catData = await Catagory.find({});
+    res.render("admin/page-categories",{catData, num});
   },
 
-  categoryPost: (req, res) => {
+  categoryPost: async(req, res) => {
     //CategoryPost
-
+    var catData = await Catagory.find({});
+    var num=0;
     const newCat = new Catagory({
       CategoryName: req.body.catName,
       slug: req.body.catSlug,
-      Descriptiom: req.body.catDisc,
+      Description: req.body.catDisc,
     });
     newCat.save(function (err, newCat) {
       if (err) {
         res.send("db error");
       } else {
-        console.log("cat db done");
-        res.redirect("/categoryView");  //not working
+       
+       // res.redirect("/admin/categoryView");
+       res.render("admin/page-categories",{catData, num})
         
       }
     });

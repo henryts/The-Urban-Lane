@@ -6,7 +6,7 @@ admin_cred={
 const catagorySchema= new mongoose.Schema({
     CategoryName:String,
     slug: String,
-    Descriptiom: String
+    Description: String
     })
     module.exports ={   admin_cred,
                         catagory: mongoose.model("catagory",catagorySchema),
