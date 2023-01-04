@@ -14,11 +14,7 @@ const catagorySchema= new mongoose.Schema({
         brandName: String,
         productCost: Number,
         productCatogory: String,
-        img:
-        {
-            data: Buffer,
-            contentType: String
-        }
+        productImages: Array
         })
 
 

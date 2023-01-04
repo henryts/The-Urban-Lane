@@ -17,6 +17,10 @@ router.get('/sign-up', UserController.signUpPage); //sign-up page render
 
 router.post('/sign-up', UserController.signupUser); //sign-up POST
 
+router.get('/reqOtp', UserController.reqOtp); //otp twilio get
+
+router.post('/verifyOtp', UserController.verifyOtp); // verify otp twilio post
+// router.use(verifyLogin)
 
 
   

@@ -11,7 +11,7 @@
         <div class="row">
             <div class="col-lg-6">
                 <div class="card mb-4">
-                    <form action="/admin/addProductPost" method="post">
+                    <form action="/admin/addProductPost" method="post" enctype="multipart/form-data">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-3">
@@ -34,6 +34,13 @@
                                         <option name="Adidas"> Adidas </option>
                                         <option name="Nike"> Nike </option>
                                         <option name="Puma"> Puma </option>
+                                        <option name="Louis Vuitton"> Louis Vuitton </option>
+                                        <option name="Urbano">Urbano Fashion </option>
+                                        <option name="Zalando"> Zalando </option>
+                                        <option name="Levi’s"> Levi’s </option>
+                                        <option name="Under Armour">Under Armour </option>
+                                        
+                                        
                                     </select>
                                 </div>
                             </div> <!-- col.// -->
@@ -79,7 +86,7 @@
                             <div class="col-md-9">
                                 <div class="mb-4">
                                     <label class="form-label">Images</label>
-                                    <input class="form-control" type="file">
+                                    <input class="form-control" type="file" name="file" multiple>
                                 </div>
                                 <div>
                                     <button class="btn btn-md rounded font-sm hover-up" type="submit">Add Product</button>

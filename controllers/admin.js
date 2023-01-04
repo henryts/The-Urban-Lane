@@ -3,19 +3,9 @@ const admin_cred = require("../models/admin-schema");
 const mongooseModels = require("../models/admin-schema");
 const Catagory = mongooseModels.catagory;
 const newProduct = mongooseModels.products;
-var fs = require('fs');
 var path = require('path');
-const { redirect } = require('express');
-var multer = require('multer');
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads')
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now())
-  }
-})
-var upload = multer({ storage: storage })
+const { render } = require("ejs");
+
 
  
 module.exports = {
@@ -53,32 +43,28 @@ module.exports = {
   },
   //BLOCKING USER
   blockUser: async (req, res) => {
-    var btn_val = req.body.submit;
-    if (btn_val == "Unblock") {
-      users.findByIdAndUpdate(id, { block: false }, function (err, user) {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(user);
-        }
-      });
-    } else if (butn_val == "block") {
-      users.findByIdAndUpdate(id, { block: true }, function (err, user) {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(user);
-        }
-      });
-    }
-    res.redirect("/user-list");
+         console.log("control in here");
+       id=req.params.id;  
+
+    // ( btn_val=="block")? users.findByIdAndUpdate(id, { block: true }): users.findByIdAndUpdate(id, { block: flase })
+       let blck = await users.findByIdAndUpdate(id, { block: true });
+      
+        res.redirect("/admin/user-list");
   },
+ unblockUser: async (req, res) => {
+   
+    id=req.params.id;  
+ // ( btn_val=="block")? users.findByIdAndUpdate(id, { block: true }): users.findByIdAndUpdate(id, { block: flase })
+   let unlbblk = await users.findByIdAndUpdate(id, { block: false });
+   // users.findByIdAndUpdate(id, { block: flase });
+     res.redirect("/admin/user-list");
+},
 
   
   categoryView: async(req, res) => {            //catogory page -diplay
-    
-    var catData = await Catagory.find({});
-    res.render("admin/page-categories",{catData});
+  var catData = await Catagory.find({});
+  res.render("admin/page-categories",{catData});
+
   },
 
   
@@ -93,7 +79,7 @@ module.exports = {
       res.redirect("/admin/categoryView")
     });
   },
-  addProduct:async (req,res)=>{  
+     addProduct:async (req,res)=>{          //add product render
     
     //Add Product page display
     var catData = await Catagory.find({});
@@ -101,44 +87,53 @@ module.exports = {
       
      },
 
-     addProductPost:async (req,res) =>
+     addProductPost:async (req,res) =>      //add product post
    {  
-    var img = fs.readFileSync(req.file.path);
-    var encode_img = img.toString('base64');
-    var final_img = {
-        contentType:req.file.mimetype,
-        image:new Buffer(encode_img,'base64')
-    };
-    image.create(final_img,function(err,result){
-        if(err){
-            console.log(err);
-        }else{
-            console.log(result.img.Buffer);
-            console.log("Saved To database");
-            res.contentType(final_img.contentType);
-            res.send(final_img.image);
-        }});
-
-
-
-
-
-
-        
         const newpdt = new newProduct({
         productName:req.body.pTitle,
         productDescription: req.body.pDescription,
         brandName: req.body.productBrand,
         productCost: req.body.productCost,
         productCatogory: req.body.catName,
-        
-      var upload = multer({ storage: storage });
-
-    newpdt.save().then(()=>{
+        productImages:req.files
+        });
+     
+        newpdt.save().then(()=>{
       
-      res.redirect("/admin/addProduct");
-    });
+        res.redirect("/admin/addProduct");
+        });
 
-   }
+    },
+      
+    deleteProduct: async(req,res)=>{                 //DELETE -products 
+    
+    let deleteUser = await newProduct.findOneAndRemove({_id:req.params.id})
+   
+    res.redirect("/admin/productList");   
+  },
 
-};
+     productListView: async (req,res)=>                 //Product List ender
+         {
+         let pData = await newProduct.find({});
+    
+         res.render("admin/list-products",{pData});
+         }
+
+         };
+
+
+  /*  otpLogin: async (req,res)=>{
+
+ // Download the helper library from https://www.twilio.com/docs/node/install
+    // Set environment variables for your credentials
+    // Read more at http://twil.io/secure
+    const accountSid = "ACb8ac9111ac07e1d91a356ed1793fb2c8";
+    const authToken = "ac8e81cb6816dbb8880138ff4f8815aa";
+    const client = require("twilio")(accountSid, authToken);
+    const otp = generateOTP();
+
+    client.messages
+    .create({ body: `Your OTP is ${otp}`, from: "+17652348786", to: "+916282383283" })
+      .then(message => console.log(message.sid));
+
+    }    */  

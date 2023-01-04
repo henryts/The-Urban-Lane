@@ -1,15 +1,15 @@
 const express = require("express");
 const app = express();
-
 var path = require("path");
 var bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
-    extended: true,
+    extended: false,
   })
 
 );
+app.use(bodyParser.json());
 const dbConnection = require("./models/mong-conct");
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");

@@ -1,6 +1,7 @@
 <%- include('../partials/adminHeader') %>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+
   </body>
+  
         
         <div class="container">
             <div class="table-responsive">
@@ -35,16 +36,35 @@
                                 <td><%= uData.username %></td>                        
                                 <td><%= uData.email %></td>
                                 <td><%= uData.mobile %></td>
-                                <td><span class="status text-success">&bull;</span> Active</td>
+                                <% if(uData.block ==true){%>
+                                <td><span class=" text-danger  text-sm font-weight-light">&bull;Blocked</td></span>
+                                <% } else { %>
+                                <td><span class=" text-success  text-sm font-weight-light">&bull;Active</td></span>
+                                   <% } %>
                                 <td>
-                                   <form  method="post" action="admin/block">
+                                     
+                                  <form action="user-list/block/<%= uData._id %>" method="post">
+                                    <div>  
+                                        <button type="submit" class="btn  btn-light btn-outline-danger btn-sm w-100 " data-toggle="modal">Block</button>
+                                    </div>
+                                    </form>
+                                    <form action="user-list/unblock/<%= uData._id %>" method="post">
+                                        <div>
+                                        <button type="submit" class="btn   btn-light btn-outline-success btn-sm " data-toggle="modal">Unblock</button>
+                                    </div>
+                                    </form>
+                          
+
+                                    
+                                
+                                   <!-- <form  method="" action="/admin/User-list ">
                                    <% if(uData.block){ %>  
-                                   <button type="submit" name="unblock_btn" value="ublock"  class="btn btn-danger btn-xs">Unblock</button>
+                                   <button type="submit" name="unblock_btn"   class="btn btn-danger btn-xs">Unblock</button>
                                    
                                   <%}else{  %>  
-                                    <button type="submit"  name="block_btn" value="block" class="btn btn-danger btn-xs">Block</button>
+                                    <button type="submit"  name="block_btn"  class="btn btn-danger btn-xs">Block</button>
                                    <% } %> 
-                                  </form>
+                                  </form> -->
                                 </td>
                             </tr>
                             <% }) %>
