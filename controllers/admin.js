@@ -1,13 +1,12 @@
 const users = require("../models/user-schema");
-const admin_cred = require("../models/admin-schema");
+//const admin_cred = require("../models/admin-schema");
+//const adminCred=require("../models/admin-schema")
 const mongooseModels = require("../models/admin-schema");
 const Catagory = mongooseModels.catagory;
 const newProduct = mongooseModels.products;
+const admins = mongooseModels.adminCred;
 var path = require('path');
 const { render } = require("ejs");
-
-
- 
 module.exports = {
   adminDashboard: async (req, res) => {
     //admin-dashboard
@@ -27,37 +26,40 @@ module.exports = {
   },
 
   //admin login post method
-  adminLogin: (req, res) => {
-    try {
+       adminLogin:async (req, res) => {
+       const mail = req.body.email;
+       adminObj = await admins.findOne({adminEmail:mail});
+
+       console.log(adminObj);
+       if (adminObj == null) {
+        return res.status(400).send("cannot find user");
+      }
+
       if (
-        req.body.password == admin_cred.password &&
-        req.body.email == admin_cred.username
+        req.body.password == adminObj.adminPassword &&
+        req.body.email == adminObj.adminEmail
       ) {
+        req.session.loggedIn=true;
+        req.session.admin= adminObj;
+        console.log("login done");
         res.redirect("/admin/dashboard");
       } else {
         res.send("wrong credentials");
       }
-    } catch {
-      res.send("error");
-    }
-  },
-  //BLOCKING USER
-  blockUser: async (req, res) => {
+    
+    },
+     //BLOCKING USER
+         blockUser: async (req, res) => {
          console.log("control in here");
-       id=req.params.id;  
-
-    // ( btn_val=="block")? users.findByIdAndUpdate(id, { block: true }): users.findByIdAndUpdate(id, { block: flase })
-       let blck = await users.findByIdAndUpdate(id, { block: true });
-      
-        res.redirect("/admin/user-list");
+         id=req.params.id;  
+         let blck = await users.findByIdAndUpdate(id, { block: true });
+         res.redirect("/admin/user-list");
   },
  unblockUser: async (req, res) => {
    
     id=req.params.id;  
- // ( btn_val=="block")? users.findByIdAndUpdate(id, { block: true }): users.findByIdAndUpdate(id, { block: flase })
-   let unlbblk = await users.findByIdAndUpdate(id, { block: false });
-   // users.findByIdAndUpdate(id, { block: flase });
-     res.redirect("/admin/user-list");
+    let unlbblk = await users.findByIdAndUpdate(id, { block: false });
+    res.redirect("/admin/user-list");
 },
 
   
@@ -97,7 +99,6 @@ module.exports = {
         productCatogory: req.body.catName,
         productImages:req.files
         });
-     
         newpdt.save().then(()=>{
       
         res.redirect("/admin/addProduct");
@@ -117,23 +118,24 @@ module.exports = {
          let pData = await newProduct.find({});
     
          res.render("admin/list-products",{pData});
+         },
+    editProductPost: async(req,res)=>{                 // Product edit page listing
+          const id = req.params.id;
+         let pdctObj = await  newProduct.find({_id:id });
+          var catData = await Catagory.find({});
+           
+
+         console.log(pdctObj);
+          res.redirect('/admin/editProductPage/:id')
+         },
+      editProductPage: async(req,res)=>{                 // Product edit page listing
+          const id = req.params.id;
+          console.log(req.params.id);
+          pdctObj = await  newProduct.find({_id:id });
+          var catData = await Catagory.find({});
+           //give condition for cat data <--correction
+
+         // console.log(pdctObj);
+          res.render("admin/edit-product/:id",{pdctObj,catData});
          }
-
-         };
-
-
-  /*  otpLogin: async (req,res)=>{
-
- // Download the helper library from https://www.twilio.com/docs/node/install
-    // Set environment variables for your credentials
-    // Read more at http://twil.io/secure
-    const accountSid = "ACb8ac9111ac07e1d91a356ed1793fb2c8";
-    const authToken = "ac8e81cb6816dbb8880138ff4f8815aa";
-    const client = require("twilio")(accountSid, authToken);
-    const otp = generateOTP();
-
-    client.messages
-    .create({ body: `Your OTP is ${otp}`, from: "+17652348786", to: "+916282383283" })
-      .then(message => console.log(message.sid));
-
-    }    */  
+        }

@@ -16,6 +16,15 @@ app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "public/admin")));
 dbConnection();
+const session = require('express-session');
+app.use(session(
+  {
+    secret:"key",
+    cookie:{maxAge:5000000},
+    resave: false,
+    saveUninitialized: true
+  }
+))
 const userRouter = require("./routes/users");
 const adminRouter = require("./routes/admin");
 app.use("/", userRouter);

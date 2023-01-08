@@ -45,8 +45,15 @@ router.get('/addProduct',adminController.addProduct); // add product display
 
 router.post('/addProductPost',upload, adminController.addProductPost); //add products post
 
-router.get('/productList',adminController.productListView); //product listing
+router.get('/productList',adminController.productListView); //product listing display
 
 router.get('/deleteProduct/:id',adminController.deleteProduct); //delete list
+
+router.post('/editProductPost/:id',adminController.editProductPost); // Product edit page post
+
+router.get('/editProductPage/:id',adminController.editProductPage); // Product edit page display
+
+
+
 
 module.exports = router;

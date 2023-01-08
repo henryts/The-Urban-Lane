@@ -62,7 +62,16 @@
                                         </li>
                                     </ul>
                                 </li>
-                                <li><i class="fi-rs-user"></i><a href="/login">Log In / Sign Up</a>
+                                
+                                <% if (locals.uid) { %>
+                                    <li><i class="fi-rs-user"></i><a href="/index"><%=uid.username %> </a>
+                                   <li><i class="fi-rs-user"></i><a href="/userSignout">Sign out </a>
+                                
+                                <% } else { %>
+                                 
+                                    <li><i class="fi-rs-user"></i><a href="/login">Log In / Sign Up</a>
+                                 <% } %>       
+                               
                                 </li>
                             </ul>
                         </div>
@@ -74,7 +83,7 @@
             <div class="container">
                 <div class="header-wrap header-space-between position-relative">
                     <div class="logo logo-width-1">
-                        <a href="index.html"><img src="/assets/imgs/theme/logo.svg" alt="logo"></a>
+                        <a href="/"><img src="/assets/imgs/theme/logo.svg" alt="logo"></a>
                     </div>
                     <div
                         class="main-menu main-menu-grow main-menu-padding-1 main-menu-lh-1 main-menu-mrg-1 hm3-menu-padding d-none d-lg-block hover-boder">

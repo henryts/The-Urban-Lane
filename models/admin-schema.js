@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
-admin_cred={
-    username: "admin987@gmail.com",
-    password: "admintheking"
-};
+
+const adminCredSchema= new mongoose.Schema({
+    adminName:String,
+    adminEmail: String,
+    adminPassword: String
+    })
 const catagorySchema= new mongoose.Schema({
     CategoryName:String,
     slug: String,
@@ -12,14 +14,16 @@ const catagorySchema= new mongoose.Schema({
         productName:String,
         productDescription: String,
         brandName: String,
+        size: String,
         productCost: Number,
         productCatogory: String,
         productImages: Array
         })
 
 
-    module.exports ={   admin_cred,
+    module.exports ={ 
                         catagory: mongoose.model("catagory",catagorySchema),
-                        products: mongoose.model("products",productSchema)
+                        products: mongoose.model("products",productSchema),
+                        adminCred: mongoose.model("admincred",adminCredSchema)
     }
 

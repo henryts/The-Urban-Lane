@@ -8,4 +8,16 @@ const userSchema= new mongoose.Schema({
    
 
 });
-module.exports = mongoose.model("User",userSchema);
+const cartSchema= new mongoose.Schema({
+    userId : String,
+    productId :String,
+    
+   
+
+});
+
+module.exports ={ 
+   User: mongoose.model("User",userSchema),
+   cartCollection : mongoose.model("cartCollection",cartSchema)
+
+}
