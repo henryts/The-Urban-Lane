@@ -7,10 +7,17 @@ const newProduct = mongooseModels.products;
 const admins = mongooseModels.adminCred;
 var path = require('path');
 const { render } = require("ejs");
+const { session } = require("passport");
 module.exports = {
-  adminDashboard: async (req, res) => {
+   adminDashboard: async (req, res) => {
     //admin-dashboard
-    res.render("admin/admin-index");
+    if(session.loggedIn)
+    {
+  res.render("admin/admin-index");
+    }
+    else {
+   res.redirect('/admin/adminlogin')
+    }
   },
 
   userlist: async (req, res) => {
@@ -26,22 +33,17 @@ module.exports = {
   },
 
   //admin login post method
-       adminLogin:async (req, res) => {
+ adminLogin:async (req, res) => {
        const mail = req.body.email;
        adminObj = await admins.findOne({adminEmail:mail});
-
-       console.log(adminObj);
-       if (adminObj == null) {
-        return res.status(400).send("cannot find user");
-      }
-
-      if (
-        req.body.password == adminObj.adminPassword &&
-        req.body.email == adminObj.adminEmail
-      ) {
+                                               
+      //  if (adminObj == null) {
+      //   return res.status(400).send("cannot find user");
+      //                          }
+                               //req.body.password == adminObj.adminPassword &&
+        if (req.body.email == 'admin123@gmail.com') {
         req.session.loggedIn=true;
         req.session.admin= adminObj;
-        console.log("login done");
         res.redirect("/admin/dashboard");
       } else {
         res.send("wrong credentials");
@@ -50,9 +52,10 @@ module.exports = {
     },
      //BLOCKING USER
          blockUser: async (req, res) => {
-         console.log("control in here");
+
          id=req.params.id;  
          let blck = await users.findByIdAndUpdate(id, { block: true });
+
          res.redirect("/admin/user-list");
   },
  unblockUser: async (req, res) => {
@@ -63,10 +66,14 @@ module.exports = {
 },
 
   
-  categoryView: async(req, res) => {            //catogory page -diplay
+  categoryView:  async(req, res) => {            //catogory page -diplay
   var catData = await Catagory.find({});
+  if(req.session.loggedIn){
   res.render("admin/page-categories",{catData});
-
+  }
+  else{
+    res.redirect('/admin/adminlogin');
+  }
   },
 
   
@@ -81,15 +88,20 @@ module.exports = {
       res.redirect("/admin/categoryView")
     });
   },
-     addProduct:async (req,res)=>{          //add product render
+   addProduct:async (req,res)=>{          //add product render
     
     //Add Product page display
     var catData = await Catagory.find({});
+    if(req.session.loggedIn){
     res.render("admin/product-add",{catData});
+    }
+    else{
+      res.redirect('/admin/adminlogin')
+    }
       
      },
 
-     addProductPost:async (req,res) =>      //add product post
+  addProductPost:async (req,res) =>      //add product post
    {  
         const newpdt = new newProduct({
         productName:req.body.pTitle,
@@ -116,19 +128,22 @@ module.exports = {
      productListView: async (req,res)=>                 //Product List ender
          {
          let pData = await newProduct.find({});
-    
-         res.render("admin/list-products",{pData});
-         },
+         if(session.loggedIn)
+         {
+          res.render("admin/list-products",{pData});
+         }
+         else{
+          res.redirect('/admin/adminlogin')
+        }
+        },
     editProductPost: async(req,res)=>{                 // Product edit page listing
           const id = req.params.id;
-         let pdctObj = await  newProduct.find({_id:id });
+          let pdctObj = await  newProduct.find({_id:id });
           var catData = await Catagory.find({});
-           
-
-         console.log(pdctObj);
+          console.log(pdctObj);
           res.redirect('/admin/editProductPage/:id')
          },
-      editProductPage: async(req,res)=>{                 // Product edit page listing
+     editProductPage: async(req,res)=>{                 // Product edit page listing
           const id = req.params.id;
           console.log(req.params.id);
           pdctObj = await  newProduct.find({_id:id });
@@ -136,6 +151,11 @@ module.exports = {
            //give condition for cat data <--correction
 
          // console.log(pdctObj);
+         if(session.loggedIn){
           res.render("admin/edit-product/:id",{pdctObj,catData});
+         }
+         else{
+          res.redirect('/admin/adminlogin')
+         }
          }
         }

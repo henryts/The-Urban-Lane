@@ -31,10 +31,15 @@ router.get('/productDetails/:id', UserController.productDetails); // user signou
 
 router.get('/productDetails/:id', UserController.productDetails); // user signout
 
-router.post('/postcart', UserController.postCart); // post cart 
+ 
 
-router.get('/getcart', UserController.getCart); // cart display 
+router.get('/getcart/:id', UserController.getCart); // cart post
 
+router.get('/showCart', UserController.showCart); // display cart
+
+
+
+router.get('/deleteFromCart/:id', UserController.deleteFromCart); // cart post
 
 
 // router.use(verifyLogin)
