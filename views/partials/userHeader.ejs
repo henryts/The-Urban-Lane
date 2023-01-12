@@ -22,6 +22,8 @@
 </head>
 
 <body>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <header class="header-area header-style-5">
         <div class="header-top header-top-ptb-1 d-none d-lg-block">
             <div class="container">
@@ -64,7 +66,7 @@
                                 </li>
                                 
                                 <% if (locals.uid) { %>
-                                    <li><i class="fi-rs-user"></i><a href="/index"><%=uid.username %> </a>
+                                    <li><i class="fi-rs-user"></i><a href="/userProfile"><%=uid.username  %> </a>
                                    <li><i class="fi-rs-user"></i><a href="/userSignout">Sign out </a>
                                 
                                 <% } else { %>
@@ -249,6 +251,7 @@
                                             </div>
                                             <div class="shopping-cart-title">
                                                 <h4><a href="shop-product-right.html">Plain Striola Shirts</a></h4>
+                      
                                                 <h3><span>1 × </span>$800.00</h3>
                                             </div>
                                             <div class="shopping-cart-delete">

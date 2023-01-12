@@ -11,7 +11,7 @@ const { session } = require("passport");
 module.exports = {
    adminDashboard: async (req, res) => {
     //admin-dashboard
-    if(session.loggedIn)
+    if(req.session.loggedIn)
     {
   res.render("admin/admin-index");
     }
@@ -76,7 +76,6 @@ module.exports = {
   }
   },
 
-  
   categoryPost: async(req, res) => {           //CategoryPost
    
     const newCat = new Catagory({
@@ -157,5 +156,15 @@ module.exports = {
          else{
           res.redirect('/admin/adminlogin')
          }
+         },
+         adminLogout: async(req,res)=>{
+       
+          req.session.loggedIn=null;
+          res.redirect('/admin/adminlogin');
+
+
          }
+         
+         
+
         }

@@ -27,19 +27,21 @@ router.post('/verifyOtp', UserController.verifyOtp); // verify otp twilio post
 
 router.get('/userSignout', UserController.userSignOut); // user signout
 
-router.get('/productDetails/:id', UserController.productDetails); // user signout
+router.get('/productDetails/:id', UserController.productDetails);
 
-router.get('/productDetails/:id', UserController.productDetails); // user signout
-
- 
-
-router.get('/getcart/:id', UserController.getCart); // cart post
+router.get('/getcart/:id', UserController.getCart); // diplay items  ajax reciveing
 
 router.get('/showCart', UserController.showCart); // display cart
 
+router.get('/deleteFromCart/:id', UserController.deleteFromCart); // cart delete
 
+router.get('/checkout', UserController.checkOut);  //chckout display -get
 
-router.get('/deleteFromCart/:id', UserController.deleteFromCart); // cart post
+router.get('/userProfile', UserController.UserPofile);  //user -Profile Display
+
+router.get('/addAdressForm',UserController.addNewAddressGet);  // adding new address -checkout
+router.post('/addNewAddress', UserController.addNewAddressPost); //  adding new address -checkout
+
 
 
 // router.use(verifyLogin)

@@ -17,10 +17,11 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "public/admin")));
 dbConnection();
 const session = require('express-session');
+var hour = 3600000
 app.use(session(
   {
     secret:"key",
-    cookie:{maxAge:50000000},
+    cookie:{maxAge:hour,},
     resave: false,
     saveUninitialized: true
   }

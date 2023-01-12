@@ -53,6 +53,9 @@ router.post('/editProductPost/:id',adminController.editProductPost); // Product 
 
 router.get('/editProductPage/:id',adminController.editProductPage); // Product edit page display
 
+router.get('/logout',adminController.adminLogout); // admin logout
+
+
 
 
 

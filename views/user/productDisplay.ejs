@@ -21,9 +21,11 @@
                 </div>
                 <div class="mobile-menu-wrap mobile-header-border">
                     <div class="main-categori-wrap mobile-header-border">
+                 
                         <a class="categori-button-active-2" href="#">
                             <span class="fi-rs-apps"></span> Browse Categories
                         </a>
+                      
                         <div class="categori-dropdown-wrap categori-dropdown-active-small">
                             <ul>
                                 <li><a href="shop-grid-right.html"><i class="evara-font-dress"></i>Women's Clothing</a></li>
@@ -268,15 +270,24 @@
                                                 <li><a href="#">XXL</a></li>
                                             </ul>
                                         </div>
+             
                                         <div class="bt-1 border-color-1 mt-30 mb-30"></div>
                                         <div class="detail-extralink">
-                                            <div class="detail-qty border radius">
-                                                <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
-                                                <span class="qty-val">1</span>
-                                                <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
+                                            <form action="/getcart/<%=pDetails._id %> " method="get">
+                                            <div>
+                                                <select name="quantity" >
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                    <option value="4">4</option>
+                                                    <option value="5">5</option>
+                                                  </select>
+                                                
+                                                <!-- <input type="number" class="qty-val" name="quantity" value="1" min="1"> -->
+                                                
                                             </div>
                                             <div class="product-extra-link2">
-                                                <form action="/getcart/<%=pDetails._id %> " method="get">
+                                                
                                                 <button type="submit" class="button button-add-to-cart">Add to cart</button>
                                                 </form>
                                                 <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>

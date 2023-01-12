@@ -28,9 +28,12 @@ module.exports = {
       if (await bcrypt.compare(req.body.password, userObj.password)) {
         req.session.loggedIn = true;
         req.session.userid = userObj; //session issue -to be given at otp page
-        //console.log(req.session.userid);
-        res.redirect("/otpPage");
-        //this.reqOtp();
+       
+         res.redirect('/');
+       // res.redirect("/otpPage");
+     
+      }else{
+
       }
     } catch {
       //res.status(500).send();
@@ -58,12 +61,14 @@ module.exports = {
   //********Index PAGE RENDER-----redirect-login**********
   IndexPage: async (req, res) => {
     pData = await newProduct.find({});
+    
 
     if (req.session.loggedIn) {
       uid = req.session.userid;
       res.render("user/index", { uid, pData });
     } else {
-      res.render("user/index", { pData });
+      uid=null;
+      res.render("user/index", {uid, pData });
     }
   },
   //********USER SIGNUP PAGE RENDER**********
@@ -89,10 +94,10 @@ module.exports = {
 
   reqOtp: async (req, res) => {           //otp request post method twilio /\/  /\/
     //otp generation twilio get
-    const accountSid = "ACb8ac9111ac07e1d91a356ed1793fb2c8";
-    const authToken = "ac8e81cb6816dbb8880138ff4f8815aa";
-    const client = require("twilio")(accountSid, authToken);
-    otpgen = Math.floor(1000 + Math.random() * 9000);
+     const accountSid = "ACb8ac9111ac07e1d91a356ed1793fb2c8";
+     const authToken = "ac8e81cb6816dbb8880138ff4f8815aa";
+     const client = require("twilio")(accountSid, authToken);
+     otpgen = Math.floor(1000 + Math.random() * 9000);
      client.messages
       .create({
         body: `Your OTP is ${otpgen}`,
@@ -115,20 +120,19 @@ module.exports = {
       res.send("wrong otp");
     }
   },
-
-  userSignOut: (req, res) => {         //signout button function
+   userSignOut: (req, res) => {         //signout button function
     // Logout- sesion null
-    req.session.userid = null;
+     req.session.userid = null;
+     req.session.loggedIn=false;
 
     // Redirect the user to the home page
-    res.redirect("/");
+     res.redirect("/");
   },
   productDetails: async (req, res) => {   //display product details -get function
-    let id = req.params.id;
-    pDetails = await newProduct.findById({ _id: id });
-    console.log(pDetails.brandName);
-    console.log("session: "+req.session.loggedIn);
-    if (req.session.loggedIn) {
+     let id = req.params.id;
+     pDetails = await newProduct.findById({ _id: id });
+     console.log("session: "+req.session.loggedIn);
+     if (req.session.loggedIn) {
       uid = req.session.userid; 
       res.render("user/productDisplay", { uid, pDetails });
       }else{
@@ -147,51 +151,109 @@ module.exports = {
 
   
   getCart:async(req,res)=>{     
-                                                //cart displayy 
+                                                //add to cart 
     if (req.session.loggedIn) {
     uid = req.session.userid ;
     pid= req.params.id;
+    product_qty= req.query.quantity;
     products= [{
     pid: pid,
     size: 'm',
-    qty: '1'
+    qty: product_qty
     }]
-    productsInCart =  await cartCollections.updateOne({ userId: uid }, {$push: { product:products } }, { upsert: true }).then(console.log("cart db done"));
-    
-    pDisp = await cartCollections.findOne({ userId: uid }).populate('product.pid');
-    //console.log(pDisp.product[1].pid.productName);
+    const query = {
+      userId: uid,
+      'product': {
+          '$elemMatch': {
+              'pid': pid
+          }
+      }
+  };
+  const productsInCart = await cartCollections.findOne(query);
+   if (productsInCart) {
+    // pid already exists in cart, redirect to /showCart
+    res.redirect('/showCart');
+ 
+} else {
 
-     res.render('user/shop-cart',{pDisp});
-   
-    //res.redirect('/showCart/pDisp');
-      
-    }else{
-      res.redirect('/login');
-    }},
+      await cartCollections.updateOne({ userId: uid }, {$push: { product:products } }, { upsert: true }).then(console.log("cart db done"));
+      pDisp = await cartCollections.findOne({ userId: uid }).populate('product.pid'); 
+      console.log(pDisp.product[1].pid.productName); 
+      res.render('user/shop-cart',{uid, pDisp});  
+      }}else{
+     res.redirect('/login');
+      }},
 
-    showCart: async(req,res)=>{
+      showCart: async(req,res)=>{    // cart display
       if (req.session.loggedIn) {
-      uid = req.session.userid ;
-      
+      uid = req.session.userid ;  
+      console.log(uid);
       pDisp = await cartCollections.findOne({ userId: uid }).populate('product.pid');
-      res.render('user/shop-cart',{pDisp});
+      res.render('user/shop-cart',{uid,pDisp});
 
     }else{
       res.redirect('/login');
     }
   },
   
-    deleteFromCart:async(req,res)=>{
+    deleteFromCart:async(req,res)=>{   //delete from cart
       id=req.params.id
-      userSession=req.session.userId
+      userSession=req.session.userid
       const cartDocument = await cartCollections.findOne({ userSession });
-      const updatedCart = await cartCollections.updateOne(
-      { _id:cartDocument._id
-      },
-      { $pull: { product: { pid: id } } })
+      const updatedCart = await cartCollections.updateOne({ _id:cartDocument._id},{ $pull: { product: { pid: id } } })
 
       res.redirect('/showCart');
+    },
+      checkOut:(req,res)=>{
+      res.render('user/shop-checkout');  //ejs not enough find new template
+    },
+        
+        UserPofile:async (req,res)=>{
+         if(req.session.loggedIn){
+         userDetails=req.session.userid;
+         pDisp = await cartCollections.findOne({ userId: uid }).populate('product.pid');
+         res.render("user/userProfile",{userDetails,pDisp});
+        }
+        else{
+          res.redirect('/login');
+        }
+
+    },
+    addNewAddressGet: async(req,res)=>{
+      if(req.session.loggedIn){
+        uid = req.session.uid;
+       res.render('user/addNewAddress',{uid})
+      }
+      else{
+        res.redirect('/login');
+      }
+
+    },
+
+    addNewAddressPost: async(req,res)=>{
+      if(req.session.loggedIn){
+           uid = req.session.userid;
+           newAddress={
+           firstName: req.body.firstName,
+           secondName: req.body.secondNamme,
+           addressLine1: req.body.addressLine1,
+            addressLine2:req.body. addressLine2,
+            city:req.body.city,
+            province:req.body.province,
+            postalCode:req.body.postalCode,
+            contactNumber:req.body.contactNumber,
+            shippingEmail:req.body.shippingEmail
+        }
+      
+        await users.updateOne({ username:uid.username},{ $push: { address:  newAddress} }).then(res.redirect('/checkout'))
+        
+          
+        
+          
+ 
+      }
     }
+  
     
   }
 

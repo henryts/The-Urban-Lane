@@ -189,6 +189,12 @@ a:hover {
 .f-right {
   float: right;
 }
+.move-up{
+  
+    margin-top:-110px;
+    position:relative;
+  
+}
 
 .capitalize {
   text-transform: capitalize;
