@@ -1,10 +1,11 @@
-const users = require("../models/user-schema");
+const usersDetails = require("../models/user-schema");
 //const admin_cred = require("../models/admin-schema");
 //const adminCred=require("../models/admin-schema")
 const mongooseModels = require("../models/admin-schema");
 const Catagory = mongooseModels.catagory;
 const newProduct = mongooseModels.products;
 const admins = mongooseModels.adminCred;
+const users = usersDetails.User;
 var path = require('path');
 const { render } = require("ejs");
 const { session } = require("passport");
@@ -124,10 +125,11 @@ module.exports = {
     res.redirect("/admin/productList");   
   },
 
-     productListView: async (req,res)=>                 //Product List ender
+   productListView: async (req,res)=>                 //Product List ender
          {
          let pData = await newProduct.find({});
-         if(session.loggedIn)
+         console.log("control in method");
+         if(req.session.loggedIn)
          {
           res.render("admin/list-products",{pData});
          }

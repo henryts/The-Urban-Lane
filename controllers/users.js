@@ -1,6 +1,8 @@
 const userModel = require("../models/user-schema");
 const users=userModel.User;
 const cartCollections = userModel.cartCollection;
+const orderModel =  require("../models/orders");
+const userOrders = orderModel.userOrders;
 const express = require("express");
 const mongooseModels = require("../models/admin-schema");
 const newProduct = mongooseModels.products;
@@ -29,8 +31,8 @@ module.exports = {
         req.session.loggedIn = true;
         req.session.userid = userObj; //session issue -to be given at otp page
        
-         res.redirect('/');
-       // res.redirect("/otpPage");
+        // res.redirect('/');
+       res.redirect("/otpPage");
      
       }else{
 
@@ -178,16 +180,25 @@ module.exports = {
 
       await cartCollections.updateOne({ userId: uid }, {$push: { product:products } }, { upsert: true }).then(console.log("cart db done"));
       pDisp = await cartCollections.findOne({ userId: uid }).populate('product.pid'); 
-      console.log(pDisp.product[1].pid.productName); 
+     // console.log(pDisp.product[1].pid.productName); 
+     //calculating item total
+    //  for (let i = 0; i < pDisp.product.length; i++)
+    //  { 
+
+    //   item_total = pDisp.product[i].pid.productCost * pDisp.product[i].qty;
+
+    //  }
+    
+    //  await cartCollections.updateOne({ userId: uid }, {$set: { productTotal:item_total } }, { upsert: true }).then(console.log("product total updated"));
       res.render('user/shop-cart',{uid, pDisp});  
       }}else{
      res.redirect('/login');
       }},
 
+
       showCart: async(req,res)=>{    // cart display
       if (req.session.loggedIn) {
       uid = req.session.userid ;  
-      console.log(uid);
       pDisp = await cartCollections.findOne({ userId: uid }).populate('product.pid');
       res.render('user/shop-cart',{uid,pDisp});
 
@@ -199,13 +210,19 @@ module.exports = {
     deleteFromCart:async(req,res)=>{   //delete from cart
       id=req.params.id
       userSession=req.session.userid
-      const cartDocument = await cartCollections.findOne({ userSession });
+      console.log("in delete method");
+      const cartDocument = await cartCollections.findOne({ userId:userSession._id});
+
       const updatedCart = await cartCollections.updateOne({ _id:cartDocument._id},{ $pull: { product: { pid: id } } })
 
       res.redirect('/showCart');
     },
       checkOut:(req,res)=>{
-      res.render('user/shop-checkout');  //ejs not enough find new template
+
+        if (req.session.loggedIn) {
+          uid = req.session.userid ;       
+      res.render('user/shop-checkout',{uid});  //ejs not enough find new template
+        }
     },
         
         UserPofile:async (req,res)=>{
@@ -221,7 +238,7 @@ module.exports = {
     },
     addNewAddressGet: async(req,res)=>{
       if(req.session.loggedIn){
-        uid = req.session.uid;
+        uid = req.session.userid;
        res.render('user/addNewAddress',{uid})
       }
       else{
@@ -233,10 +250,10 @@ module.exports = {
     addNewAddressPost: async(req,res)=>{
       if(req.session.loggedIn){
            uid = req.session.userid;
-           newAddress={
-           firstName: req.body.firstName,
-           secondName: req.body.secondNamme,
-           addressLine1: req.body.addressLine1,
+            newAddress={
+            firstName: req.body.firstName,
+            secondName: req.body.secondName,
+            addressLine1: req.body.addressLine1,
             addressLine2:req.body. addressLine2,
             city:req.body.city,
             province:req.body.province,
@@ -245,17 +262,73 @@ module.exports = {
             shippingEmail:req.body.shippingEmail
         }
       
-        await users.updateOne({ username:uid.username},{ $push: { address:  newAddress} }).then(res.redirect('/checkout'))
-        
-          
-        
-          
+        await users.updateOne({ username:uid.username},{ $push: { address:newAddress} }).then(res.redirect('/checkout'))  
  
       }
+      else{
+        res.redirect("/login");
+      }
+    },
+
+ orderCreation: async(req,res)=>
+    {  
+      if(req.session.loggedIn){
+        uid = req.session.userid
+        addrsname= uid.email;
+        console.log("adress is "+ req.body.addrsname);
+       // briing pid
+        date=new Date();
+        let order = await userOrders.findOne({ userId: uid });
+        if (!order) {
+          order = new userOrders({
+              userId: uid,
+              orderList: [{
+                  items: [],
+                  totalPrice: 0,
+                  status: 'proccessing',
+                  address: req.body.addrsname,
+                  creationTime: date
+              }]
+          });
+        }
+
+          // Retrieve the user's cart
+         const cart = await cartCollections.findOne({ userId: uid }).populate('product.pid');
+         // Add items to the orderList
+         let totalPrice = 0;
+         let items = [];
+        
+         for(let i = 0; i < cart.product.length; i++) {
+             var item = {
+                 productId: cart.product[i].pid._id,
+                 quantity: cart.product[i].qty,
+                 price: cart.product[i].pid.productCost,
+                 productTotal: parseFloat(cart.product[i].qty) * parseFloat(cart.product[i].pid.price)
+             };
+             items.push(item);
+             totalPrice += parseFloat(cart.product[i].productTotal);
+            //order.orderList[orderIndex] = orderItem;
+             
+         }
+         const orderItem = {
+          items: items,
+          totalPrice: totalPrice,
+          status: 'proccessing',
+          address: req.body.addrsname,
+          creationTime: date
+      };
+         order.orderList.push(orderItem);
+        await order.save().then(res.send("order placed success fully!!"));
+      }
+        
+        },
+
+     
+
     }
   
     
-  }
+  
 
     
   

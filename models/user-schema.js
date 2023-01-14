@@ -18,7 +18,7 @@ const userSchema= new mongoose.Schema({
     }]
 });
 
-const cartSchema= new mongoose.Schema({
+const cartSchema= new mongoose.Schema({ 
     userId : mongoose.Schema.Types.ObjectId,
     product :[{
                  pid: {  type: mongoose.Schema.Types.ObjectId,
@@ -26,7 +26,8 @@ const cartSchema= new mongoose.Schema({
                         unique:true
                         },
                  size: {type:String, default:'m'},
-                 qty: {type:Number, default:'1'} 
+                 qty: {type:Number, default:'1'},
+                 productTotal: {type:String}
      }] 
 });
 

@@ -5,7 +5,7 @@ const users = require("../models/user-schema");
 const bcrypt = require("bcrypt");
 const router = express.Router();
 
-const bodyParser = require("body-parser");
+
 
 
 
@@ -41,6 +41,8 @@ router.get('/userProfile', UserController.UserPofile);  //user -Profile Display
 
 router.get('/addAdressForm',UserController.addNewAddressGet);  // adding new address -checkout
 router.post('/addNewAddress', UserController.addNewAddressPost); //  adding new address -checkout
+
+router.post('/OrderCreation', UserController.orderCreation);
 
 
 

@@ -73,11 +73,11 @@
                             <div class="col-lg-2 col-sm-2 col-4 col-action text-end">
 
                                 <form action="/admin/editProductPost/<%=pData._id %>" method="post">
-                                <button class="btn btn-sm font-sm rounded btn-brand"><i class="material-icons md-edit"></i> Edit</button>" >
+                                <button class="btn btn-sm font-sm rounded btn-brand"><i class="material-icons md-edit"></i> Edit</button>
                                     
                                 
                             </form>
-                                <form method="delete" action="/admin/deleteProduct/<%= pData._id %>">
+                                <form method="get" action="/admin/deleteProduct/<%= pData._id %>">
                                 <!-- <a href="#" class="btn btn-sm font-sm btn-light rounded">
                                     <i class="material-icons md-delete_forever"></i> Delete
                                 </a> -->
