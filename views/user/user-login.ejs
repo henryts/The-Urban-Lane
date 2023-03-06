@@ -198,7 +198,7 @@
                                         <div class="heading_s1">
                                             <h3 class="mb-30">Login</h3>
                                         </div>
-                                        <form method="post" action="/login">
+                                        <form method="post" action="/login" id="login-form">
                                             <div class="form-group">
                                                 <input type="text" required="" name="email" placeholder="Your Email">
                                             </div>
@@ -216,13 +216,18 @@
                                                     </div>
                                                 </div>
                                                 <a class="text-muted" href="/sign-up">New User? Signup!</a>
-                                                <a class="text-muted" href="#">Forgot password?</a>
+                                                <a class="text-muted" href="/forgotPassword">Forgot password?</a>
                                             </div>
+                                            <p id="error-message" style="margin-bottom: 20px;color: red;"></p>
+                                           
                                             <div class="form-group">
                                                 <button type="submit" class="btn btn-fill-out btn-block hover-up"
                                                     name="login">Log in</button>
                                             </div>
                                         </form>
+                                     
+                                             
+                                            
                                     </div>
                                 </div>
                             </div>
@@ -237,5 +242,31 @@
             </div>
         </section>
     </main>
+    <script>
+       
+  $('#login-form').submit(function(e) {
+  e.preventDefault(); // prevent the form from submitting normally
+  $.ajax({
+    url: '/login',
+    type: 'POST',
+    data: $('#login-form').serialize(), // serialize the form data
+    success: function(data) {
+      // handle successful login
+      window.location.replace('/'); // redirect to home page
+    },
+    error: function(xhr, status, error) {
+      // handle error
+      if (xhr.status === 400) {
+        $('#error-message').text(xhr.responseText);
+      } else {
+        $('#error-message').text("An error occurred. Please try again later.");
+      }
+    }
+  });
+});
+
+    
+    
+       </script>
 
     <%- include('../partials/userFooter') %> 

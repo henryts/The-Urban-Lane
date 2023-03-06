@@ -3,7 +3,7 @@ const userSchema= new mongoose.Schema({
     username : String,
     password:String,
     email:String,
-    mobile: String,
+    mobile:{ type: Number, unique:true},
     block: Boolean,
     address: [{
         firstName:{ type: String, default:null},
@@ -26,8 +26,8 @@ const cartSchema= new mongoose.Schema({
                         unique:true
                         },
                  size: {type:String, default:'m'},
-                 qty: {type:Number, default:'1'},
-                 productTotal: {type:String}
+                 qty: {type:String, default:'1'},
+                 productTotal: {type:String,default:null}
      }] 
 });
 

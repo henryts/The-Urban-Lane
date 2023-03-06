@@ -85,6 +85,7 @@ blockquote, q {
   quotes: none;
 }
 
+
 blockquote:before, blockquote:after,
 q:before, q:after {
   content: '';
@@ -176,6 +177,12 @@ a:hover {
 .hidden {
   display: none;
 }
+.otpInput{
+
+  background-color: #333333; /* Change the background color */
+  color: #ffffff; /* Change the text color */
+}
+
 
 .clear {
   clear: both;
@@ -285,7 +292,7 @@ input[type=number]:focus,
 }
 
 .text-brand {
-  color: #088178 !important;
+  color: #000000 !important;
 }
 
 .text-primary {
@@ -301,7 +308,7 @@ input[type=number]:focus,
 }
 
 .text-success {
-  color: #3ed092 !important;
+  color: #000000 !important;
 }
 
 .text-info {
@@ -4528,7 +4535,7 @@ table .product-thumbnail img {
 }
 
 .product-color-green {
-  background: #38cf46;
+  background: #000000;
 }
 
 .product-color-purple {

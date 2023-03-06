@@ -17,6 +17,17 @@ router.post('/login', UserController.loginUser); // login post
 
 router.get('/otpPage', UserController.otpPage); // otp page render
 
+
+router.get('/forgotPassword', UserController.forgotPassword); // otp page render
+
+router.post('/forgetPasswordReqOtp', UserController. forgotPasswordOtp); // otp gen
+
+router.get('/resetPassword', UserController.resetPassword); // rest password render
+
+router.post('/resetPasswordPost', UserController.resetPasswordPost); // rest password post
+
+router.post('/forgotPasswordVerifyOtp', UserController.forgotPasswordVerifyOtp)
+
 router.get('/sign-up', UserController.signUpPage); //sign-up page render
 
 router.post('/sign-up', UserController.signupUser); //sign-up POST
@@ -43,6 +54,10 @@ router.get('/addAdressForm',UserController.addNewAddressGet);  // adding new add
 router.post('/addNewAddress', UserController.addNewAddressPost); //  adding new address -checkout
 
 router.post('/OrderCreation', UserController.orderCreation);
+
+router.post('/checkOut/deleteAddress/:id', UserController.deleteAddress);  //delete adddress from checkout form
+
+
 
 
 

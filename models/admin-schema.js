@@ -15,7 +15,7 @@ const catagorySchema= new mongoose.Schema({
         productDescription: String,
         brandName: String,
         size:{type:String, default:'m'},
-        qty: {type:Number, default:'1'},
+        qty: {type:String, default:1},
         productCost: String,
         productCatogory: String,
         productImages: Array
