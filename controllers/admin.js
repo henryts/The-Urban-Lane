@@ -8,7 +8,7 @@ const admins = mongooseModels.adminCred;
 const users = usersDetails.User;
 var path = require('path');
 const { render } = require("ejs");
-const { session } = require("passport");
+
 module.exports = {
    adminDashboard: async (req, res) => {
     //admin-dashboard

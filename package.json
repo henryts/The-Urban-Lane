@@ -27,6 +27,7 @@
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
+    "paypal-rest-sdk": "^1.8.1",
     "request": "^2.88.2",
     "start": "^5.1.0",
     "twilio": "^2.5.2"

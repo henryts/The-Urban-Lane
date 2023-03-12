@@ -40,11 +40,11 @@ router.get('/userSignout', UserController.userSignOut); // user signout
 
 router.get('/productDetails/:id', UserController.productDetails);
 
-router.get('/getcart/:id', UserController.getCart); // diplay items  ajax reciveing
+router.post('/getcart/:id', UserController.getCart); // diplay items  ajax reciveing
 
 router.get('/showCart', UserController.showCart); // display cart
 
-router.get('/deleteFromCart/:id', UserController.deleteFromCart); // cart delete
+//router.get('/deleteFromCart/:id', UserController.deleteFromCart); // cart delete
 
 router.get('/checkout', UserController.checkOut);  //chckout display -get
 
@@ -57,6 +57,9 @@ router.post('/OrderCreation', UserController.orderCreation);
 
 router.post('/checkOut/deleteAddress/:id', UserController.deleteAddress);  //delete adddress from checkout form
 
+router.get('/PayPal', UserController.onlinePay);   //paypal-post
+
+router.get('/success', UserController.paymentSuccess);   //paypal-post
 
 
 

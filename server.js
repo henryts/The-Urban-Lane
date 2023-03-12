@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 var path = require("path");
-app.use(express.json());
+app.use(express.json()); 
 app.use(
   express.urlencoded({
     extended: false,
@@ -27,4 +27,6 @@ const userRouter = require("./routes/users");
 const adminRouter = require("./routes/admin");
 app.use("/admin", adminRouter);
 app.use("/", userRouter);
+
+
 app.listen(3000);

@@ -5,52 +5,38 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="table-responsive">
-                            <table class="table shopping-summery text-center clean">
-                                <thead>
+                          
+                            <% if (pDisp && pDisp.product && pDisp.product.length > 0) { %>
+                                <table class="table shopping-summery text-center clean">
+                                  <thead>
                                     <tr class="main-heading">
-                                        <th scope="col">Image</th>
-                                        <th scope="col">Name</th>
-                                        <th scope="col">Price</th>
-                                        <th scope="col">Quantity</th>
-                                        <th scope="col">Subtotal</th>
-                                        <th scope="col">Remove</th>
+                                      <th scope="col">Image</th>
+                                      <th scope="col">Name</th>
+                                      <th scope="col">Price</th>
+                                      <th scope="col">Quantity</th>
+                                      <th scope="col">Subtotal</th>
+                                      <th scope="col">Remove</th>
                                     </tr>
-                                </thead>
-                                <% let cartTotal=0; %> 
-                                <% for (let i = 0; i < pDisp.product.length; i++) { %>
-                                    
-                                <tbody>
-                                   
-                                    <tr>
-                                        <td class="image product-thumbnail"><img src="/uploads/<%= pDisp.product[i].pid.productImages[2].filename%>" alt="#"></td>
+                                  </thead>
+                                  <% let cartTotal = 0; %>
+                                  <% for (let i = 0; i < pDisp.product.length; i++) { %>
+                                    <tbody>
+                                      <tr>
+                                        <td class="image product-thumbnail"><img src="/uploads/<%= pDisp.product[i].pid.productImages[1].filename %>" alt="#"></td>
                                         <td class="product-des product-name">
-                                            <h5 class="product-name"><a href="shop-product-right.html"> <%= pDisp.product[i].pid.productName %> </a></h5>
-                                            <p class="font-xs"> <%= pDisp.product[i].pid.productDescription %><br> distingy magndapibus.
-                                            </p>
+                                          <h5 class="product-name"><a href="shop-product-right.html"> <%= pDisp.product[i].pid.productName %> </a></h5>
+                                          <p class="font-xs"> <%= pDisp.product[i].pid.productDescription %><br> distingy magndapibus.</p>
                                         </td>
                                         <td class="price" data-title="Price"><span> <%= pDisp.product[i].pid.productCost %> </span></td>
                                         <td class="text-center" data-title="Stock">
-                                            <div class="detail-qty border radius  m-auto">
-                                                <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
-                                                <span class="qty-val"> <%= pDisp.product[i].qty %></span>
-                                                <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
-                                            </div>
-                                        </td>
-                                        <% let item_total = pDisp.product[i].pid.productCost * pDisp.product[i].qty;
-                                    
-                                          cartTotal = item_total+cartTotal;
-                                         %> 
-                                        <td class="text-right" data-title="Cart">
-                                            <span><%=item_total%> </span>
-                                        </td>
-                                        <form action="/deleteFromCart/<%= pDisp.product[i].pid._id %>" method="get">
-                                        <td class="action" data-title="Remove"><button type="submit" class="text-muted"><i class="fi-rs-trash"></i></button></td>
-                                    </form>
-                                    </tr>
-                                   
-                                </tbody>
-                                <% } %> 
-                            </table>
+                                          <div class="detail-qty border radius m-auto quantity-dropdown" data-product-id="<%= pDisp._id %>">
+                                            <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
+                                            <span class="qty-val" id="quantity-<%= i %>" data-quantity="<%= pDisp.product[i].qty %>">
+                               
+                                <% } %>
+                                <% } %>
+                                
+                                
                         </div>
                         <div class="cart-action text-end">
                             <a class="btn  mr-10 mb-sm-15"><i class="fi-rs-shuffle mr-10"></i>Update Cart</a>
@@ -361,17 +347,14 @@
                                     <div class="table-responsive">
                                         <table class="table">
                                             <tbody>
-                                                <tr>
-                                                    <td class="cart_total_label">Cart Subtotal</td>
-                                                    <td class="cart_total_amount"><span class="font-lg fw-900 text-brand"><%=cartTotal  %> </span></td>
-                                                </tr>
+                                            
                                                 <tr>
                                                     <td class="cart_total_label">Shipping</td>
                                                     <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free Shipping</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="cart_total_label">Total</td>
-                                                    <td class="cart_total_amount"><strong><span class="font-xl fw-900 text-brand"><%=cartTotal  %></span></strong></td>
+                                                    <!-- <td class="cart_total_amount"><strong><span class="font-xl fw-900 text-brand">=cartTotal  </span></strong></td> -->
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -533,6 +516,68 @@
     <!-- Template  JS -->
     <script src="assets/js/main.js"></script>
     <script src="assets/js/shop.js"></script>
+    <script>
+        // Send AJAX request to delete product from cart
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const productId = button.dataset.productId;
+                const xhr = new XMLHttpRequest();
+                xhr.open('DELETE', `/cart/${productId}`);
+                xhr.onload = () => {
+                    if (xhr.status === 200) {
+                        window.location.reload();
+                    } else {
+                        console.error(xhr.statusText);
+                    }
+                };
+                xhr.send();
+            });
+        });
+    
+        // Send AJAX request to update quantity
+        const quantityDropdowns = document.querySelectorAll('.quantity-dropdown');
+        quantityDropdowns.forEach(dropdown => {
+            const productId = dropdown.dataset.productId;
+            const quantitySpan = dropdown.querySelector('.qty-val');
+            const quantity = quantitySpan.dataset.quantity;
+            const quantityUpButton = dropdown.querySelector('.qty-up');
+            const quantityDownButton = dropdown.querySelector('.qty-down');
+    
+            quantityUpButton.addEventListener('click', () => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('PUT', `/cart/${productId}?qty=${Number(quantity)+1}`);
+                xhr.onload = () => {
+                    if (xhr.status === 200) {
+                        quantitySpan.dataset.quantity = Number(quantity)+1;
+                        quantitySpan.innerText = Number(quantity)+1;
+                        window.location.reload();
+                    } else {
+                        console.error(xhr.statusText);
+                    }
+                };
+                xhr.send();
+            });
+    
+            quantityDownButton.addEventListener('click', () => {
+                if (quantity > 1) {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('PUT', `/cart/${productId}?qty=${Number(quantity)-1}`);
+                    xhr.onload = () => {
+                        if (xhr.status === 200) {
+                            quantitySpan.dataset.quantity = Number(quantity)-1;
+                            quantitySpan.innerText = Number(quantity)-1;
+                            window.location.reload();
+                        } else {
+                            console.error(xhr.statusText);
+                        }
+                    };
+                    xhr.send();
+                }
+            });
+        });
+    </script>
+    
 </body>
 
 
