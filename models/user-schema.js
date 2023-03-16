@@ -19,20 +19,20 @@ const userSchema= new mongoose.Schema({
 });
 
 const cartSchema= new mongoose.Schema({ 
-    userId : mongoose.Schema.Types.ObjectId,
+    userEmail :{type:String , default:null},
     product :[{
                  pid: {  type: mongoose.Schema.Types.ObjectId,
-                        ref:  "products",
-                        unique:true
+                        ref:  "products"
+                       // unique:true
                         },
                  size: {type:String, default:'m'},
-                 qty: {type:String, default:'1'},
-                 productTotal: {type:String,default:null}
+                 qty: {type:Number},
+                 productTotal: {type:Number,default:1}
      }] 
 });
 
 module.exports ={ 
    User: mongoose.model("User",userSchema),
-   cartCollection : mongoose.model("cartCollection",cartSchema)
+   cartcollections : mongoose.model("cartcollections",cartSchema)
 
 }

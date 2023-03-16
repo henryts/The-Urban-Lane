@@ -1,6 +1,6 @@
 const userModel = require("../models/user-schema");
 const users=userModel.User;
-const cartCollections = userModel.cartCollection;
+const cartcollections = userModel.cartcollections;
 const orderModel =  require("../models/orders");
 const userOrders = orderModel.userOrders;
 const express = require("express");
@@ -21,28 +21,31 @@ let phone1=0;
 
 module.exports = {
   //****USER LOGIN POST*****
-  loginUser: async (req, res) => {
-    const mail = req.body.email;
-    let userObj = await users.findOne({ email: mail });
+ // server-side code
+loginUser: async (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  let userObj = await users.findOne({ email: email });
   
-    if (userObj == null) {
-      res.status(400).send("Sign up first!");
-    } else if (userObj.block == true) {
-      res.status(400).send("User is blocked");
-    } else {
-      try {
-        if ( bcrypt.compare(req.body.password, userObj.password)) {
-          req.session.loggedIn = true;
-          req.session.userid = userObj;
-          res.send("Login successful"); // return success message
-        } else {
-          res.status(400).send("Invalid password");
-        }
-      } catch {
-        res.status(500).send("Internal server error");
+  if (userObj == null) {
+    res.status(400).send("Sign up first!");
+  } else if (userObj.block == true) {
+    res.status(400).send("User is blocked");
+  } else {
+    try {
+      if (bcrypt.compareSync(password, userObj.password)) {
+        req.session.loggedIn = true;
+        req.session.userid = userObj;
+        res.send("Login successful"); // return success message
+      } else {
+        res.status(400).send("Invalid password");
       }
+    } catch {
+      res.status(500).send("Internal server error");
     }
   }
+}
+
   ,
 
   otpPage: (req, res) => {
@@ -242,170 +245,151 @@ module.exports = {
     }
   
   },
-
-
-
-
-  // // // *********************cgpt
-  // getCart: async (req, res) => {
-  //   if (req.session.loggedIn) {
-  //     const uid = req.session.userid;
-  //     const pid = req.params.id;
-  //     const product_qty = req.query.quantity;
-  //     const products = [{`
-  //       pid: pid,
-  //       size: 'm',
-  //       qty: product_qty
-  //     }];
-  
-  //     const query = {
-  //       userId: uid,
-  //       'product': {
-  //         '$elemMatch': {
-  //           'pid': pid
-  //         }
-  //       }
-  //     };
-  
-  //     const productsInCart = await cartCollections.aggregate([
-  //       { $match: { userId: uid } },
-  //       { $unwind: '$product' },
-  //       { $match: { 'product.pid': pid } }
-  //     ]).toArray();
-  
-  //     if (productsInCart.length > 0) {
-  //       // pid already exists in cart, redirect to /showCart
-  //       res.redirect('/showCart');
-  //     } else {
-  //       await cartCollections.updateOne({ userId: uid }, { $push: { product: products } }, { upsert: true });
-  //       const pDisp = await cartCollections.findOne({ userId: uid }).populate('product.pid');
-  //       res.render('user/shop-cart', { uid, pDisp });
-  //     }
-  //   } else {
-  //     res.redirect('/login');
-  //   }
-  // },
-  
-  // showCart: async (req, res) => {
-  //   if (req.session.loggedIn) {
-  //     const uid = req.session.userid;
-  //     const pDisp = await cartCollections.findOne({ userId: uid }).populate('product.pid');
-  //     res.render('user/shop-cart', { uid, pDisp });
-  //   } else {
-  //     res.redirect('/login');
-  //   }
-  // },
-  // getCart :async (req, res) => {   //editing
-  //   if (req.session.loggedIn) {
-  //     const uid = req.session.userid;
-  //     const pid = req.params.id;
-  //     const product_qty = req.query.quantity;
-  //     const products = [{
-  //       pid: pid,
-  //       size: 'm',
-  //       qty: product_qty
-  //     }];
-  
-  //     const query = {
-  //       userId: uid,
-  //       'products': {
-  //         '$elemMatch': {
-  //           'pid': pid
-  //         }
-  //       }
-  //     };
-  
-  //     const productsInCart = await cartCollections.findOne(query);
-  //     if (productsInCart) {
-  //       // pid already exists in cart, redirect to /showCart
-  //       // res.redirect('/showCart');
-  //       console.log("already exist");
-  //       res.send("Product already exists in cart.");
-  //     } else {
-  //       await cartCollections.updateOne({ userId: uid }, { $push: { products: products } }, { upsert: true });
-  //       console.log("cart db done");
-  //       res.send("Product added to cart.");
-  //     }
-  //   }
-  //    else {
-  //     res.send("Please login to add products to cart.");
-  //   }
-  
-  // },
-  
  
 getCart: async (req, res) => {
   // add to cart 
   if (req.session.loggedIn) {
-    const uid = req.session.userid._id;
+    const uEmail = req.session.userid.email;
     const pid = req.params.id;
-    const product_qty = req.query.quantity;
+    const product_qty = req.body.quantity;
+    console.log("qty",product_qty);
     const products = [{
       pid: pid,
       size: 'm',
       qty: product_qty
     }];
-    
-    const query = {
-      userId: uid,
-      'products': {
-        '$elemMatch': {
-          'pid': pid
-        }
-      }
-    };
+    const productsInCart =  await cartcollections.findOne({
+            userEmail: uEmail,
+            'product': {
+              '$elemMatch': {
+                pid: pid
+              }
+            }
+          });
 
-    const productsInCart = await cartCollections.findOne({userId:uid});
-    console.log(productsInCart);
-    if (productsInCart) {
-      // pid already exists in cart, redirect to /showCart
-      console.log("already exist in cart");
-      res.redirect('/showCart');
-    } else {
-      await cartCollections.updateOne({ userId: uid }, { $push: { product: products } }, { upsert: true }).then(console.log("cart db done"));
-      res.redirect('/showCart');
-      // const pDisp = await cartCollections.aggregate([
-      //   {
-      //     $match: { userId: req.session.userid._id } // match the user ID to find the right user
-      //   }
-       // { $unwind: "$products" },
-        // {
-        //   $lookup: {
-        //     from: 'products', // name of the 'products' collection
-        //     localField: 'products.pid',
-        //     foreignField: '_id',
-        //     as: 'productdetails'
-        //   }
-        // }
-      // ]).exec((err,  pDisp ) => {
-      //   if (err) {
-      //     // handle error
-      //     console.error(err);
-      //   } else {
-      //     console.log( pDisp ); // array of cart items made by the user
-      //    // res.render('user/shop-cart', { uid, cartItems });
-      //   }
-      // });
-    } 
-  
-  } else {
-    res.redirect('/login');
+  if(productsInCart)
+  {
+   res.redirect('/showCart');
+  // res.send("already exist");
   }
+  else{
+ let ab=  await cartcollections.updateOne({ userEmail: uEmail }, { $push: { product: products } }, { upsert: true }).then(console.log("cart db done"));
+ res.redirect('/showCart');
+  }
+}
+  else{
+    res.redirect('/login');
+  
+}
 },
-
 
   showCart: async(req,res)=>{    // cart display
       if (req.session.loggedIn) {
-      uid = req.session.userid._id ;  
-      pDisp = await cartCollections.findOne({ userId: uid }).populate('product.pid');
-     // console.log(pDisp.product[3].pid.productCost);
-      res.render('user/shop-cart',{uid,pDisp});
+        const uEmail = req.session.userid.email;
+            
+    try {
 
-    }else{
-      res.redirect('/login');
+      const cart = await cartcollections.aggregate([
+        // match the cart based on the user's email
+        { $match: { userEmail: uEmail } },
+      
+        // unwind the product array
+        { $unwind: "$product" },
+      
+        // join with the products collection to get the product details
+        {
+          $lookup: {
+            from: "products",
+            localField: "product.pid",
+            foreignField: "_id",
+            as: "productDetails"
+          }
+        },
+      
+       // group the data by cart ID and product ID
+        {
+          $group: {
+            _id: { cartId: "$_id", productId: "$product.pid" },
+            userEmail: { $first: "$userEmail" },
+            product: { $first: "$product" },
+            productDetails: { $first: { $arrayElemAt: [ "$productDetails", 0 ] } }
+          }
+        },
+      
+        // group the data by cart ID
+        {
+          $group: {
+            _id: "$_id.cartId",
+            userEmail: { $first: "$userEmail" },
+            products: {
+              $push: {
+                pid: "$product.pid",
+                size: "$product.size",
+                qty: "$product.qty",
+                productTotal: "$productDetails.subTotal",
+                productName: "$productDetails.productName",
+                productDescription: "$productDetails.productDescription",
+                brandName: "$productDetails.brandName",
+                productCost: "$productDetails.productCost",
+                productCatogory: "$productDetails.productCatogory",
+                productImages: "$productDetails.productImages",
+               
+              }
+            },
+           // totalPrice: { $sum: "$product.productTotal" }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            userEmail: 1,
+            products: {
+              $map: {
+                input: "$products",
+                as: "p",
+                in: {
+                  productsId:"$$p._id",
+                  productName: "$$p.productName",
+                  qty: "$$p.qty",
+                    productCost: "$$p.productCost",
+                  productImages: "$$p.productImages",
+                  subtotal: { $multiply: [{$toInt:"$$p.qty"}, {$toInt:"$$p.productCost"}] },
+                 
+              },
+              
+            },
+           //  totalPrice: { $sum: "$products.total" }
+                }
+          }
+        }
+      ]).exec();
+     
+    res.render("user/shop-cart", { products: cart[0].products });   
+   } catch (err) {
+     // handle error
+     console.error("Error while retrieving cart:", err);
+   }  
     }
   },
- 
+         
+  updateQuanity:async (req,res)=> {
+    const itemId = req.params.itemId;
+  const newQuantity = req.body.newQuantity;
+
+  try {
+    const cartItem = await cartcollections.findOneAndUpdate(
+      { 'product._id': itemId },
+      { $set: { 'product.$.qty': newQuantity } },
+      { new: true }
+    );
+
+    res.send({ success: true, cartItem });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ success: false, message: 'Failed to update cart item quantity' });
+  }
+  } ,
+  
 
 //   deleteFromCart:  async (req, res) => {
 //   const { id } = req.params;
@@ -451,14 +435,14 @@ getCart: async (req, res) => {
 
         if (req.session.loggedIn) {
          let uid = req.session.userid ;       
-      res.render('user/CHECKOUT',{uid});  //ejs not enough find new template
+      res.render('user/CHECKOUT',{uid});  
         }
     },
         
     UserPofile: async (req,res)=>{
          if(req.session.loggedIn){
          userDetails=req.session.userid;
-         pDisp = await cartCollections.findOne({ userId: uid }).populate('product.pid');
+         pDisp = await cartcollections.findOne({ userId: uid }).populate('product.pid');
          res.render("user/userProfile",{userDetails,pDisp});
         }
         else{
@@ -535,7 +519,7 @@ getCart: async (req, res) => {
         }
 
           // Retrieve the user's cart
-         const cart = await cartCollections.findOne({ userId: uid }).populate('product.pid');
+         const cart = await cartcollections.findOne({ userId: uid }).populate('product.pid');
          // Add items to the orderList
          let totalPrice = 0;
          let items = [];

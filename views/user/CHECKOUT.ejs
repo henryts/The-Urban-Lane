@@ -5,7 +5,7 @@
 <!-- Mirrored from wp.alithemes.com/html/evara/evara-frontend/shop-checkout.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:26:06 GMT -->
 <head>
     <meta charset="utf-8">
-    <title>Evara - eCommerce HTML Template</title>
+    <title>The Urban Lane</title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -277,24 +277,31 @@
                                     </thead>
                                     <tbody>
                                       <% let cartTotal=0; %>
-                                      <% for (let i = 0; i < pDisp.product.length; i++) { %>
-                                        <tr>
-                                           
-                                                
-                                            <td class="image product-thumbnail"><img src="/uploads/<%= pDisp.product[i].pid.productImages[0].filename%>"></td>
-                                            <td>
-                                                
-                                                <h5><a href="shop-product-full.html"><%= pDisp.product[i].pid.productName %></a></h5> 
+                                      <% for (let i = 0; i<products.length; i++) { %>
+                                        <tbody>
+                                          <tr>
+                                            <td class="image product-thumbnail"><img src="/uploads/<%=products[i].productImages[0].filename %>" alt=""></td>
+                                            <td class="product-des product-name">
+                                              <h5 class="product-name"><a href="shop-product-right.html"> <%= products[i].productName %> </a></h5>
+                                             
                                             </td>
-                                            <td>
-                                                
-                                              <h5><a href="shop-product-full.html"><%= pDisp.product[i].qty %></a></h5> 
-                                          </td>
-                                            <td> <h5><a href="shop-product-full.html">$<%= pDisp.product[i].pid.productCost %></a></h5> </td>
-                                            <td> <h5><a href="shop-product-full.html">$<%=pDisp.product[i].pid.productCost*pDisp.product[i].qty %></a></h5> </td>
-                                            <%cartTotal= cartTotal+(pDisp.product[i].pid.productCost*pDisp.product[i].qty); %>
-                                        </tr>
-                                        <%} %>
+                                            <td class="price" data-title="Price"><span> <%=products[i].productCost %> </span></td>
+                                            <td class="text-center" data-title="Stock">
+                                                <div class="detail-qty border radius m-auto quantity-dropdown" data-product-id="<%= products[i].productName  %>">
+                                                    <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
+                                                    <span class="qty-val" id="quantity-<%= i %>" data-quantity="<%=products[i].qty %>">
+                                                      <%=products[i].qty %>
+                                                    </span>
+                                                    <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
+                                                </div>
+                                                </td>
+                                                <td class="price" data-title="Price" id="subtotal"><span> <%=products[i].subtotal; %> </span></td>
+                                                  
+                                                <td class="price" data-title="Price"><a href="#" style="color:#088178;">delete</a></td>
+    
+                                                <% cartTotal += products[i].subtotal; %>
+                                    <% } %>
+                                   
                                        
                                          <tr>
                                             <th>SubTotal</th>

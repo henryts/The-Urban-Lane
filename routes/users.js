@@ -44,9 +44,10 @@ router.post('/getcart/:id', UserController.getCart); // diplay items  ajax reciv
 
 router.get('/showCart', UserController.showCart); // display cart
 
+router.post('/cart/updateQuantity/:itemId', UserController.updateQuanity);
 //router.get('/deleteFromCart/:id', UserController.deleteFromCart); // cart delete
 
-router.get('/checkout', UserController.checkOut);  //chckout display -get
+router.get('/checkout', UserController. checkOut);  //chckout display -get
 
 router.get('/userProfile', UserController.UserPofile);  //user -Profile Display
 
