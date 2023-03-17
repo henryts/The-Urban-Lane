@@ -54,9 +54,9 @@ router.get('/userProfile', UserController.UserPofile);  //user -Profile Display
 router.get('/addAdressForm',UserController.addNewAddressGet);  // adding new address -checkout
 router.post('/addNewAddress', UserController.addNewAddressPost); //  adding new address -checkout
 
-router.post('/OrderCreation', UserController.orderCreation);
+router.get('/OrderCreation', UserController.orderCreation);
 
-router.post('/checkOut/deleteAddress/:id', UserController.deleteAddress);  //delete adddress from checkout form
+//router.post('/checkOut/deleteAddress/:id', UserController.deleteAddress);  //delete adddress from checkout form
 
 router.get('/PayPal', UserController.onlinePay);   //paypal-post
 

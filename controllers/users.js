@@ -212,7 +212,7 @@ loginUser: async (req, res) => {
               user.password = hashedPassword;
               user.save(function(err, updatedUser) {
                 if (err) {
-                  console.log(err);
+                  console.log("errot at hashing password",err);
                   // Handle error
                 }
                 else {
@@ -385,7 +385,7 @@ getCart: async (req, res) => {
 
     res.send({ success: true, cartItem });
   } catch (error) {
-    console.error(error);
+    console.error("error",error);
     res.status(500).send({ success: false, message: 'Failed to update cart item quantity' });
   }
   } ,
@@ -435,6 +435,7 @@ getCart: async (req, res) => {
 
         if (req.session.loggedIn) {
          let uEmail = req.session.userid.email ;  
+        // let uid= req.session.userid
          const cart = await cartcollections.aggregate([
           // match the cart based on the user's email
           { $match: { userEmail: uEmail } },
@@ -508,8 +509,9 @@ getCart: async (req, res) => {
                   }
             }
           }
-        ]).exec();    
-  
+        ]).exec();
+       
+        let uid = await users.findOne({ email: uEmail });
       res.render('user/CHECKOUT',{uid, product: cart[0].products });  
         }
     },
@@ -538,7 +540,7 @@ getCart: async (req, res) => {
 
     addNewAddressPost: async(req,res)=>{
       if(req.session.loggedIn){
-           uid = req.session.userid;
+            uid = req.session.userid;
             newAddress={
             firstName: req.body.firstName,
             secondName: req.body.secondName,
@@ -551,7 +553,14 @@ getCart: async (req, res) => {
             shippingEmail:req.body.shippingEmail
         }
       
-        await users.updateOne({ username:uid.username},{ $push: { address:newAddress} }).then(res.redirect('/checkout'))  
+        await users.updateOne({ username:uid.username},{ $push: { address:newAddress} });
+        //require('user/CHECKOUT')
+       //delete require.cache[require.resolve('user/CHECKOUT.ejs')];
+       // delete require.cache[require.resolve('./views/user/CHECKOUT.ejs')];
+
+        
+        res.redirect('/checkout');
+       
  
       }
       else{
@@ -559,81 +568,87 @@ getCart: async (req, res) => {
       }
     },
 
- orderCreation: async(req,res)=>
-    {  
-      if(req.session.loggedIn){
-        uid = req.session.userid
+    orderCreation: async (req, res) => {
+      if (req.session.loggedIn) {
+        const uid = req.session.userid;
         const email = req.session.userid.email;
-         const address = JSON.parse(req.body[email]);
+        // const address = JSON.parse(req.body[email]);
+        // console.log(address);
+        console.log(uid);
+        console.log(email);
+      //   const userAddress = {
+      //     firstName: address.firstName,
+      //     secondName: address.secondName,
+      //     addressLine1: address.addressLine1,
+      //     addressLine2: address.addressLine2,
+      //     city: address.city,
+      //     province: address.province,
+      //     postalCode: address.postalCode,
+      //     contactNumber: address.contactNumber,
+      //     shippingEmail: address.shippingEmail,
+      //   };
     
-        userAddress={           firstName:address.firstName,
-                               secondName: address.secondName,
-                               addressLine1: address.addressLine1,
-                               addressLine2: address.addressLine2,
-                               city: address.city,
-                                province:address.province,
-                                postalCode: address.postalCode,
-                                contactNumber:address.contactNumber,
-                                shippingEmail:address.shippingEmail
-        }
+      //   const cart = await cartcollections.aggregate([
+      //     {
+      //       $match: { userEmail: email },
+      //     },
+      //     {
+      //       $unwind: "$product",
+      //     },
+      //     {
+      //       $lookup: {
+      //         from: "products",
+      //         localField: "product.pid",
+      //         foreignField: "_id",
+      //         as: "productDetails",
+      //       },
+      //     },
+      //     {
+      //       $unwind: "$productDetails",
+      //     },
+      //     {
+      //       $group: {
+      //         _id: "$userEmail",
+      //         items: {
+      //           $push: {
+      //             productId: "$productDetails._id",
+      //             quantity: "$product.qty",
+      //             price: "$productDetails.productCost",
+      //             productTotal: { $multiply: ["$product.qty", "$productDetails.productCost"] },
+      //           },
+      //         },
+      //         totalPrice: { $sum: { $multiply: ["$product.qty", "$productDetails.productCost"] } },
+      //       },
+      //     },
+      //   ]);
+    
+      //   if (cart.length == 0) {
+      //     res.send("Cart is Empty!!");
+      //    // res.redirect('/');
+      //   } else {
+      //     const orderItem = {
+      //       items: cart[0].items,
+      //       totalPrice: cart[0].totalPrice,
+      //       status: "proccessing",
+      //       address: userAddress,
+      //       creationTime: new Date(),
+      //     };
+    
+      //     const order = await userOrders.findOneAndUpdate(
+      //       { userId: uid },
+      //       { $push: { orderList: orderItem } },
+      //       { upsert: true }
+      //     );
+      //     if (order) {
+      //       res.send("Order placed successfully!!");
+      //     } else {
+      //       res.send("Error while placing order");
+      //     }
+      //   }
+      // }
+    }},
+    
       
-       // briing pid
-           date=new Date();
-           let order = await userOrders.findOne({ userId: uid });
-        if (!order) {
-          order = new userOrders({
-              userId: uid,
-              orderList: [{
-                  items: [],
-                  totalPrice: 0,
-                  status: 'proccessing',
-                  address: userAddress,
-                  creationTime: date
-              }]
-          });
-        }
-
-          // Retrieve the user's cart
-         const cart = await cartcollections.findOne({ userId: uid }).populate('product.pid');
-         // Add items to the orderList
-         let totalPrice = 0;
-         let items = [];
-        
-         for(let i = 0; i < cart.product.length; i++) {
-           tCost=cart.product[i].qty *  cart.product[i].pid.productCost
-              item = {
-                 productId: cart.product[i].pid._id,
-                 quantity: cart.product[i].qty,
-                 price: cart.product[i].pid.productCost,
-                 productTotal: tCost
-             };
-             items.push(item);
-             totalPrice += tCost;
-            //order.orderList[orderIndex] = orderItem;
-             
-         }
-         const orderItem = {
-          items: items,
-          totalPrice: totalPrice,
-          status: 'proccessing',
-          address:userAddress,
-          creationTime: date
-      };
-         order.orderList.push(orderItem);
-        await order.save().then(res.send("order placed success fully!!"));
-      }
-        
-        },
-
- deleteAddress:async(req,res)=>{
-      delId= req.param.id ;
-      uid= req.session.userid;
-      console.log("adress is "+uid.address.firstName)
-     await users.updateOne({ email:uid.email},{ $pull: { address: { shippingEmail:delId} } }).then( res.redirect('/checkout'));
-     
-
-
-},
 onlinePay: (req,res)=>{
  // res.render("user/paypal.ejs");
   paypal.configure({
@@ -677,7 +692,7 @@ paypal.payment.create(create_payment_json, function (error, payment) {
         if(payment.links[i].rel === 'approval_url'){
           res.redirect(payment.links[i].href);
         }
-        console.log(payment);
+        console.log("payament status:"+payment);
       }
   }
 });   
@@ -702,10 +717,10 @@ paymentSuccess: (req,res)=>
   paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
       //When error occurs when due to non-existent transaction, throw an error else log the transaction details in the console then send a Success string reposponse to the user.
     if (error) {
-        console.log(error.response);
+        console.log("paypal error response:",error.response);
         throw error;
     } else {
-        console.log(JSON.stringify(payment));
+        console.log("paypal",JSON.stringify(payment));
         res.send('Success');
     }
 });
