@@ -572,81 +572,82 @@ getCart: async (req, res) => {
       if (req.session.loggedIn) {
         const uid = req.session.userid;
         const email = req.session.userid.email;
-        // const address = JSON.parse(req.body[email]);
-        // console.log(address);
-        console.log(uid);
-        console.log(email);
-      //   const userAddress = {
-      //     firstName: address.firstName,
-      //     secondName: address.secondName,
-      //     addressLine1: address.addressLine1,
-      //     addressLine2: address.addressLine2,
-      //     city: address.city,
-      //     province: address.province,
-      //     postalCode: address.postalCode,
-      //     contactNumber: address.contactNumber,
-      //     shippingEmail: address.shippingEmail,
-      //   };
+        const aid = req.params.adid
+        const address = req.body;
+        console.log("address:", address);
+        res.send(address);
+        const userAddress = {
+          firstName: address.firstName,
+          secondName: address.secondName,
+          addressLine1: address.addressLine1,
+          addressLine2: address.addressLine2,
+          city: address.city,
+          province: address.province,
+          postalCode: address.postalCode,
+          contactNumber: address.contactNumber,
+          shippingEmail: address.shippingEmail,
+        };
     
-      //   const cart = await cartcollections.aggregate([
-      //     {
-      //       $match: { userEmail: email },
-      //     },
-      //     {
-      //       $unwind: "$product",
-      //     },
-      //     {
-      //       $lookup: {
-      //         from: "products",
-      //         localField: "product.pid",
-      //         foreignField: "_id",
-      //         as: "productDetails",
-      //       },
-      //     },
-      //     {
-      //       $unwind: "$productDetails",
-      //     },
-      //     {
-      //       $group: {
-      //         _id: "$userEmail",
-      //         items: {
-      //           $push: {
-      //             productId: "$productDetails._id",
-      //             quantity: "$product.qty",
-      //             price: "$productDetails.productCost",
-      //             productTotal: { $multiply: ["$product.qty", "$productDetails.productCost"] },
-      //           },
-      //         },
-      //         totalPrice: { $sum: { $multiply: ["$product.qty", "$productDetails.productCost"] } },
-      //       },
-      //     },
-      //   ]);
+        const cart = await cartcollections.aggregate([
+          {
+            $match: { userEmail: email },
+          },
+          {
+            $unwind: "$product",
+          },
+          {
+            $lookup: {
+              from: "products",
+              localField: "product.pid",
+              foreignField: "_id",
+              as: "productDetails",
+            },
+          },
+          {
+            $unwind: "$productDetails",
+          },
+          {
+            $group: {
+              _id: "$userEmail",
+              items: {
+                $push: {
+                  productId: "$productDetails._id",
+                  quantity: "$product.qty",
+                  price: "$productDetails.productCost",
+                  productTotal: { $multiply: ["$product.qty", "$productDetails.productCost"] },
+                },
+              },
+              totalPrice: { $sum: { $multiply: ["$product.qty", "$productDetails.productCost"] } },
+            },
+          },
+        ]);
     
-      //   if (cart.length == 0) {
-      //     res.send("Cart is Empty!!");
-      //    // res.redirect('/');
-      //   } else {
-      //     const orderItem = {
-      //       items: cart[0].items,
-      //       totalPrice: cart[0].totalPrice,
-      //       status: "proccessing",
-      //       address: userAddress,
-      //       creationTime: new Date(),
-      //     };
+        if (cart.length == 0) {
+          res.send("Cart is Empty!!");
+         // res.redirect('/');
+        } else {
+          const orderItem = {
+            items: cart[0].items,
+            totalPrice: cart[0].totalPrice,
+            status: "proccessing",
+            address: userAddress,
+            creationTime: new Date(),
+          };
     
-      //     const order = await userOrders.findOneAndUpdate(
-      //       { userId: uid },
-      //       { $push: { orderList: orderItem } },
-      //       { upsert: true }
-      //     );
-      //     if (order) {
-      //       res.send("Order placed successfully!!");
-      //     } else {
-      //       res.send("Error while placing order");
-      //     }
-      //   }
-      // }
-    }},
+          const order = await userOrders.findOneAndUpdate(
+            { userId: uid },
+            { $push: { orderList: orderItem } },
+            { upsert: true }
+          );
+          if (order) {
+            // res.send("Order placed successfully!!");
+            console.log("order placed successfully");
+          } else {
+            res.send("Error while placing order");
+          }
+        }
+      }
+    },
     
       
 onlinePay: (req,res)=>{
