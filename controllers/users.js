@@ -6,6 +6,7 @@ const userOrders = orderModel.userOrders;
 const express = require("express");
 const mongoose = require('mongoose');
 const paypal = require('paypal-rest-sdk');
+const cartService = require("./cartinfo");
 
 const mongooseModels = require("../models/admin-schema");
 const newProduct = mongooseModels.products;
@@ -353,7 +354,7 @@ getCart: async (req, res) => {
                   qty: "$$p.qty",
                     productCost: "$$p.productCost",
                   productImages: "$$p.productImages",
-                  subtotal: { $multiply: [{$toInt:"$$p.qty"}, {$toInt:"$$p.productCost"}] },
+                  subtotal: { $multiply: [{$toInt:"$$p.qty"}, {$toDouble:"$$p.productCost"}] },
                  
               },
               
@@ -500,7 +501,7 @@ getCart: async (req, res) => {
                     qty: "$$p.qty",
                       productCost: "$$p.productCost",
                     productImages: "$$p.productImages",
-                    subtotal: { $multiply: [{$toInt:"$$p.qty"}, {$toInt:"$$p.productCost"}] },
+                    subtotal: { $multiply: [{$toInt:"$$p.qty"}, {$toDouble:"$$p.productCost"}] },
                    
                 },
                 
@@ -573,10 +574,8 @@ getCart: async (req, res) => {
         const uid = req.session.userid;
         const email = req.session.userid.email;
         const aid = req.params.adid
-        const address = req.body;
-        console.log("address:", address);
-        res.send(address);
-        const userAddress = {
+        const address = req.body;      
+          const userAddress = {
           firstName: address.firstName,
           secondName: address.secondName,
           addressLine1: address.addressLine1,
@@ -614,10 +613,15 @@ getCart: async (req, res) => {
                   productId: "$productDetails._id",
                   quantity: "$product.qty",
                   price: "$productDetails.productCost",
-                  productTotal: { $multiply: ["$product.qty", "$productDetails.productCost"] },
+                  productTotal: { $multiply: [
+                    { $toDouble: "$product.qty" },
+                    { $toDouble: "$productDetails.productCost" }
+                  ] },
                 },
               },
-              totalPrice: { $sum: { $multiply: ["$product.qty", "$productDetails.productCost"] } },
+              totalPrice: { $sum: { $multiply: [
+                { $toDouble: "$product.qty" },
+                { $toDouble: "$productDetails.productCost" }] } },
             },
           },
         ]);
@@ -642,20 +646,115 @@ getCart: async (req, res) => {
           if (order) {
             // res.send("Order placed successfully!!");
             console.log("order placed successfully");
+            res.redirect('/OrderCreationpart2');
           } else {
             res.send("Error while placing order");
           }
         }
       }
     },
-    
+    payOption:async(req,res)=>{
+      if (req.session.loggedIn) {        
+       let uEmail = req.session.userid.email ;  
+        let uid= req.session.userid;
+       
+         const cart = await cartcollections.aggregate([
+          // match the cart based on the user's email
+          { $match: { userEmail: uEmail } },
+        
+          // unwind the product array
+          { $unwind: "$product" },
+        
+          // join with the products collection to get the product details
+          {
+            $lookup: {
+              from: "products",
+              localField: "product.pid",
+              foreignField: "_id",
+              as: "productDetails"
+            }
+          },
+        
+         // group the data by cart ID and product ID
+          {
+            $group: {
+              _id: { cartId: "$_id", productId: "$product.pid" },
+              userEmail: { $first: "$userEmail" },
+              product: { $first: "$product" },
+              productDetails: { $first: { $arrayElemAt: [ "$productDetails", 0 ] } }
+            }
+          },
+        
+          // group the data by cart ID
+          {
+            $group: {
+              _id: "$_id.cartId",
+              userEmail: { $first: "$userEmail" },
+              products: {
+                $push: {
+                  pid: "$product.pid",
+                  size: "$product.size",
+                  qty: "$product.qty",
+                  productTotal: "$productDetails.subTotal",
+                  productName: "$productDetails.productName",
+                  productDescription: "$productDetails.productDescription",
+                  brandName: "$productDetails.brandName",
+                  productCost: "$productDetails.productCost",
+                  productCatogory: "$productDetails.productCatogory",
+                  productImages: "$productDetails.productImages",
+                 
+                }
+              },
+             // totalPrice: { $sum: "$product.productTotal" }
+            }
+          },
+          {
+            $project: {
+              _id: 0,
+              userEmail: 1,
+              products: {
+                $map: {
+                  input: "$products",
+                  as: "p",
+                  in: {
+                    productsId:"$$p._id",
+                    productName: "$$p.productName",
+                    qty: "$$p.qty",
+                      productCost: "$$p.productCost",
+                    productImages: "$$p.productImages",
+                    subtotal: { $multiply: [{$toInt:"$$p.qty"}, {$toInt:"$$p.productCost"}] },
+                   
+                },
+                
+              },
+             //  totalPrice: { $sum: "$products.total" }
+                  }
+            }
+          }
+        ]).exec();
+       
       
-onlinePay: (req,res)=>{
- // res.render("user/paypal.ejs");
+      res.render('user/paymentSelection',{ product: cart[0].products });  
+        }
+      
+      
+      else{
+        res.redirect("/login");
+      }
+    },
+      
+onlinePay:async (req,res)=>{
+
+
+  const cart = await cartService.cart(req.session.userid.email);
+      const items =cart[0].products;
+     
+
+ 
   paypal.configure({
     'mode': 'sandbox', //sandbox or live
     'client_id': 'Adazb6aG6tpC2d1cvO690n9yQscdtZqBlOymckEOutJxXfE97IHR80N9IqlWK-ew8Adgfy7OQFIUZkPh',
-    'client_secret': 'EGecxFYgkbV1-foIkl1dJDUxO2f278TqUdHF5vsf8EtJ0I5x-T-mmnEqXiC8IUUfQMksQkiEjaec0-SP'
+    'client_secret': 'EIT9EtOgHYqyALyAF-ltIbshpTE3gWreN4x4OrhGjwJEfVhwLZou0nu3VRS82s9zx5HpPeD6BcnTHQtH'
   });
   
   const create_payment_json = {
@@ -664,19 +763,19 @@ onlinePay: (req,res)=>{
         "payment_method": "paypal"
     },
     "redirect_urls": {
-        "return_url": "http://localhost:3000/success",
-        "cancel_url": "http://localhost:3000/cancel"
+        "return_url": "http://localhost:4000/orderConfirmationpart4",
+        "cancel_url": "http://localhost:4000/cancel" //payment not confirmed
     },
     "transactions": [{
-        "item_list": {
-            "items": [{
-                "name": "Redhock Bar Soap",
-                "sku": "001",
-                "price": "25.00",
-                "currency": "USD",
-                "quantity": 1
-            }]
-        },
+      "item_list": {
+        "items": [{
+            "name": "Red Sox Hat",
+            "sku": "001",
+            "price": "25.00",
+            "currency": "USD",
+            "quantity": 1
+        }]
+    },
         "amount": {
             "currency": "USD",
             "total": "25.00"
@@ -687,6 +786,7 @@ onlinePay: (req,res)=>{
 
 paypal.payment.create(create_payment_json, function (error, payment) {
   if (error) {
+    console.log(error);
       throw error;
   } else {
       for(let i = 0;i < payment.links.length;i++){
@@ -707,6 +807,15 @@ paymentSuccess: (req,res)=>
   const execute_payment_json = {
     "payer_id": payerId,
     "transactions": [{
+      "item_list": {
+        "items": [{
+            "name": "Red Sox Hat",
+            "sku": "001",
+            "price": "25.00",
+            "currency": "USD",
+            "quantity": 1
+        }]
+    },
         "amount": {
             "currency": "USD",
             "total": "25.00"
@@ -725,10 +834,37 @@ paymentSuccess: (req,res)=>
         res.send('Success');
     }
 });
+},
+confirmOrder:(req,res)=>
+{ 
+  if (req.session.loggedIn) {
+   
+    console.log( req.body.payoption);
+    if(req.body.payoption=='cod')
+    res.render('user/orderConfirm');
+    else if(req.body.payoption=='razorpay')
+    {
+      console.log( req.body.payoption);
+    }
+    else if(req.body.payoption=='paypal')
+    { 
+      res.redirect('/PayPal');
+
+    }
+
 }
+},
+payPalconfirmOrder: (req,res)=>{
+    if(req.session.loggedIn)
+    {
+
+      res.render('user/orderConfirm');
+
+    }
 
 
 
+}
 }
 
      

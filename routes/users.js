@@ -6,9 +6,6 @@ const bcrypt = require("bcrypt");
 const router = express.Router();
 
 
-
-
-
 router.get('/login', UserController.loginPage); //login User render
 
 router.get('/', UserController.IndexPage); //user index render   -LANDING PAGE
@@ -55,6 +52,10 @@ router.get('/addAdressForm',UserController.addNewAddressGet);  // adding new add
 router.post('/addNewAddress', UserController.addNewAddressPost); //  adding new address -checkout
 
 router.post('/OrderCreationpart1/:adid', UserController.orderCreation);
+router.get('/OrderCreationpart2', UserController.payOption);
+router.post('/orderConfirmationpart3', UserController.confirmOrder);
+router.get('/orderConfirmationpart4', UserController.payPalconfirmOrder);
+
 
 //router.post('/checkOut/deleteAddress/:id', UserController.deleteAddress);  //delete adddress from checkout form
 
