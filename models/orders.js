@@ -7,7 +7,7 @@ const orderSchema= new mongoose.Schema({
                             quantity: String,
                             price: String,
                             productTotal:String
-                   }],
+                   }], 
                    totalPrice:String,
                    status: String,
                    address:{              firstName:{ type: String, default:null},

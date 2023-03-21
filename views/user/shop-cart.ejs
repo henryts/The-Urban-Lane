@@ -19,6 +19,7 @@
                                     </tr>
                                   </thead>
                                   <% let cartTotal = 0; %>
+                                  <% if(products) {%>
                                   <% for (let i = 0; i<products.length; i++) { %>
                                     <tbody>
                                       <tr>
@@ -39,11 +40,11 @@
                                             </td>
                                             <td class="price" data-title="Price" id="subtotal"><span> <%=products[i].subtotal; %> </span></td>
                                               
-                                            <td class="price" data-title="Price"><a href="#" style="color:#088178;">delete</a></td>
+                                            <td class="price" data-title="Price"><a href="/deleteFromCart/<%=products[i].productsId %>" style="color:#088178;">delete</a></td>
 
                                             <% cartTotal += products[i].subtotal; %>
                                 <% } %>
-                               
+                               <% } %>
                                         </table>
                                 
                         </div>

@@ -78,7 +78,7 @@ loginUser: async (req, res) => {
      let foundUser =await users.findOne({ mobile: req.body.phone });
       phone1=req.body.phone;
        if (foundUser) {
-     console.log('User found:', foundUser);
+     //console.log('User found:', foundUser);
       //otp generation twilio get
       const accountSid = "ACb8ac9111ac07e1d91a356ed1793fb2c8";
       const authToken = "ac8e81cb6816dbb8880138ff4f8815aa";
@@ -192,7 +192,7 @@ loginUser: async (req, res) => {
     let confirmPassword=req.body.confirm_password;
     if(password==confirmPassword)
     { 
-      console.log("password matched");
+      // console.log("password matched");
       bcrypt.hash(password, 10, function(err, hashedPassword) {
         if (err) {
           console.log(err);
@@ -349,7 +349,7 @@ getCart: async (req, res) => {
                 input: "$products",
                 as: "p",
                 in: {
-                  productsId:"$$p._id",
+                  productsId:"$$p.pid",
                   productName: "$$p.productName",
                   qty: "$$p.qty",
                     productCost: "$$p.productCost",
@@ -364,8 +364,19 @@ getCart: async (req, res) => {
           }
         }
       ]).exec();
-     
+      console.log(cart[0]);
+      if(typeof cart[0] === 'undefined'){
+        console.log("empty");
+        res.render("user/shop-cart",{products:null});
+       }
+     if(cart[0].products.length>0)
+     {
     res.render("user/shop-cart", { products: cart[0].products });   
+     }
+     else if(typeof cart[0] === 'undefined'){
+      console.log("empty");
+      res.render("user/shop-cart",{products:null});
+     }
    } catch (err) {
      // handle error
      console.error("Error while retrieving cart:", err);
@@ -421,16 +432,17 @@ getCart: async (req, res) => {
 //   }
 // },
 
-//     deleteFromCart:async(req,res)=>{   //delete from cart
-//       id=req.params.id
-//       userSession=req.session.userid
-//       console.log("in delete method");
-//       const cartDocument = await cartCollections.findOne({ userId:userSession._id});
+    deleteFromCart:async(req,res)=>{   //delete from cart
+     const id=req.params.id
+     const uEmail=req.session.userid.email
+      console.log("in delete method");
+      const cartDocument = await cartcollections.findOne({ userEmail:uEmail});
+      console.log(cartDocument);
 
-//       const updatedCart = await cartCollections.updateOne({ _id:cartDocument._id},{ $pull: { product: { pid: id } } })
+      const updatedCart = await cartcollections.updateOne({ _id:cartDocument._id},{ $pull: { product: { pid: id } } })
 
-//       res.redirect('/showCart');
-//     },
+      res.redirect('/showCart');
+    },
 
  checkOut:async (req,res)=>{
 
@@ -520,8 +532,20 @@ getCart: async (req, res) => {
     UserPofile: async (req,res)=>{
          if(req.session.loggedIn){
          userDetails=req.session.userid;
-         pDisp = await cartcollections.findOne({ userId: uid }).populate('product.pid');
-         res.render("user/userProfile",{userDetails,pDisp});
+         const uid = mongoose.Types.ObjectId(req.session.userid._id);  
+        // const uid =   req.session.userid._id
+         console.log( uid);
+         const order =await userOrders.aggregate([{ $match: { userId:uid } },
+        { $unwind: "$orderList" }
+
+        
+         ]).exec();;
+        res.render("user/userProfile",{orders:order})
+
+        console.log(order);
+
+
+
         }
         else{
           res.redirect('/login');
@@ -861,12 +885,57 @@ payPalconfirmOrder: (req,res)=>{
       res.render('user/orderConfirm');
 
     }
-
-
-
+},
+passwordReset: async (req, res) => {
+  if (req.session.loggedIn) {
+    const uEmail = req.session.userid.email;
+    console.log("email is ", uEmail);
+    const user = await users.findOne({ email: uEmail });
+    console.log(user);
+    const hashedPassword = user.password;
+    const isPasswordMatch = await bcrypt.compare(req.body.password, hashedPassword);
+    if (uEmail == req.body.email && isPasswordMatch) {
+      console.log("credentials ok");
+      let password = req.body.npassword;
+      let confirmPassword = req.body.cpassword;
+      if (password === confirmPassword) {
+        console.log("password matched");
+        bcrypt.hash(password, 10, function (err, hashedPassword) {
+          if (err) {
+            console.log(err);
+            res.status(500).json({ error: 'Error hashing password' });
+          } else {
+            console.log("password encrypted");
+            users.findOne({ email: uEmail }, function (err, user) {
+              if (err) {
+                console.log(err);
+                res.status(500).json({ error: 'Error finding user' });
+              } else if (!user) {
+                console.log('User not found');
+                res.status(404).json({ error: 'User not found' });
+              } else {
+                user.password = hashedPassword;
+                user.save(function (err, updatedUser) {
+                  if (err) {
+                    console.log("error at hashing password", err);
+                    res.status(500).json({ error: 'Error updating password' });
+                  } else {
+                    console.log('Password updated successfully');
+                    res.status(200).json({ message: 'Password updated successfully' });
+                  }
+                });
+              }
+            });
+          }
+        });
+      } else {
+        console.log("new password does not match confirm password");
+        res.status(400).json({ error:"passwords does not match"});
+       // res.json({ success: false, message: 'password does not match' }) ;
+      }
+    }
+  }}
 }
-}
-
      
 
     

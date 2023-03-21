@@ -67,53 +67,90 @@ hr.new1 {
 </head>
 <body>
     
+    <style>
+
+
+        .payment
+     {
+      border:1px solid #f2f2f2;
+      height:280px;
+            border-radius:20px;
+            background:#fff;
+     }
+       .payment_header
+       {
+        background:#20B6CA;
+        padding:20px;
+           border-radius:20px 20px 0px 0px;
+        
+       }
+       
+       .check
+       {
+        margin:0px auto;
+        width:50px;
+        height:50px;
+        border-radius:100%;
+        background:#fff;
+        text-align:center;
+       }
+       
+       .check i
+       {
+        vertical-align:middle;
+        line-height:50px;
+        font-size:30px;
+       }
     
-                    <div class="px-4 py-5">
+        .content 
+        {
+            text-align:center;
+        }
     
-                        <h5 class="text-uppercase">Jonathan Adler</h5>
+        .content  h1
+        {
+            font-size:25px;
+            padding-top:25px;
+        }
     
+        .content a
+        {
+            width:200px;
+            height:35px;
+            color:#fff;
+            border-radius:30px;
+            padding:5px 10px;
+            background:#20B6CA;
+            transition:all ease-in-out 0.3s;
+        }
     
-    
-                    <h4 class="mt-5 theme-color mb-5">Thanks for your order</h4>
-    
-                    <span class="theme-color">Payment Summary</span>
-                    <div class="mb-3">
-                        <hr class="new1">
-                    </div>
-    
-                    <div class="d-flex justify-content-between">
-                        <span class="font-weight-bold">Ether Chair(Qty:1)</span>
-                        <span class="text-muted">$1750.00</span>
-                    </div>
-    
-                    <div class="d-flex justify-content-between">
-                        <small>Shipping</small>
-                        <small>$175.00</small>
-                    </div>
-    
-    
-                    <div class="d-flex justify-content-between">
-                        <small>Tax</small>
-                        <small>$200.00</small>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between mt-3">
-                        <span class="font-weight-bold">Total</span>
-                        <span class="font-weight-bold theme-color">$2125.00</span>
-                    </div>  
+        .content a:hover
+        {
+            text-decoration:none;
+            background:#000;
+        }
+       
+    </style>
     
     
     
-                    <div class="text-center mt-5">
-    
-    
-                        <button class="btn btn-primary">Track your order</button>
-                        
-    
-    
-                    </div>                   
-    
-                    </div>
+    <div class="container mt-30">
+      <div class="row">
+         <div class="col-md-6 mx-auto mt-5">
+            <div class="payment">
+               <div class="payment_header">
+                  <div class="check"><i class="fa fa-check" aria-hidden="true"></i></div>
+               </div>
+               <div class="content">
+                  <h1>Payment Success !</h1>
+                  <p>We received your purchase request;<br/> we'll be in touch shortly!</p>
+                  <a href="/" >Go to Home</a>
+               </div>
+               
+            </div>
+         </div>
+      </div>
+    </div>
     
     
                 </div>
