@@ -5,6 +5,8 @@ const userSchema= new mongoose.Schema({
     email:String,
     mobile:{ type: Number, unique:true},
     block: Boolean,
+    wishlistCount:{ type: Number,default:0},
+    cartCount:{ type:Number,default:0},
     address: [{
         firstName:{ type: String, default:null},
         secondName:{ type: String, default:null},

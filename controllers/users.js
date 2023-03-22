@@ -2,6 +2,8 @@ const userModel = require("../models/user-schema");
 const users=userModel.User;
 const cartcollections = userModel.cartcollections;
 const orderModel =  require("../models/orders");
+const wishlistModel =  require("../models/wishlist-schema");
+const wishlistdb = wishlistModel.wishlistdb;
 const userOrders = orderModel.userOrders;
 const express = require("express");
 const mongoose = require('mongoose');
@@ -287,6 +289,7 @@ getCart: async (req, res) => {
   showCart: async(req,res)=>{    // cart display
       if (req.session.loggedIn) {
         const uEmail = req.session.userid.email;
+        const uid =req.session.userid
             
     try {
 
@@ -364,19 +367,36 @@ getCart: async (req, res) => {
           }
         }
       ]).exec();
-      console.log(cart[0]);
+      let uid = req.session.userid;
+       
+      
+      console.log("cart",cart[0]);
       if(typeof cart[0] === 'undefined'){
         console.log("empty");
-        res.render("user/shop-cart",{products:null});
+        res.render("user/shop-cart",{products:null,uid});
        }
-     if(cart[0].products.length>0)
+     else if(cart[0].products.length>0)
      {
-    res.render("user/shop-cart", { products: cart[0].products });   
+      const lengthh=cart[0].products.length;  
+      if(lengthh)
+      {     
+      const options = { new: true }; // Return the updated document 
+      users.findOneAndUpdate({ _id: uid._id },{ $set: { cartCount: lengthh} }, options, (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("result is",result);
+        }
+      });
+      req.session.userid.cartCount=lengthh
+      uid.cartCount=lengthh;
+    }
+    res.render("user/shop-cart", { products: cart[0].products,uid});   
      }
-     else if(typeof cart[0] === 'undefined'){
-      console.log("empty");
-      res.render("user/shop-cart",{products:null});
-     }
+    //  else if(typeof cart[0] === 'undefined'){
+    //   console.log("empty");
+    //   res.render("user/shop-cart",{products:null,uid});
+    //  }
    } catch (err) {
      // handle error
      console.error("Error while retrieving cart:", err);
@@ -528,6 +548,149 @@ getCart: async (req, res) => {
       res.render('user/CHECKOUT',{uid, product: cart[0].products });  
         }
     },
+    addtoWishlist:async(req,res)=>{
+      if(req.session.loggedIn)
+      {
+    const uEmail = req.session.userid.email;
+    const pid = req.params.id; 
+     console.log(pid);
+    const products = [{
+      pid: pid
+    }];
+    const productsInWishlist =  await wishlistdb.findOne({
+            userEmail: uEmail,
+            'product': {
+              '$elemMatch': {
+                pid: pid
+              }
+            }
+          });
+
+  if(productsInWishlist)
+  {
+   res.redirect('/wishlist');
+  // res.send("already exist");
+  console.log("already exist");
+  }
+  else{
+ let ab=  await wishlistdb.updateOne({ userEmail: uEmail }, { $push: { product: products } }, { upsert: true }).then(console.log("wishlist db done"));
+ res.redirect('/wishlist');
+  }
+}
+else{
+  res.redirect('/login');
+}             
+  },
+
+    wishlist:async(req,res)=>{ 
+       if(req.session.loggedIn)
+       {
+        const uEmail= req.session.userid.email
+
+        const wishlistObj = await wishlistdb.aggregate([
+          // match the cart based on the user's email
+          { $match: { userEmail: uEmail } },
+        
+          // unwind the product array
+          { $unwind: "$product" },
+        
+          // join with the products collection to get the product details
+          {
+            $lookup: {
+              from: "products",
+              localField: "product.pid",
+              foreignField: "_id",
+              as: "productDetails"
+            }
+          },
+        
+         // group the data by cart ID and product ID
+          {
+            $group: {
+              _id: { cartId: "$_id", productId: "$product.pid" },
+              userEmail: { $first: "$userEmail" },
+              product: { $first: "$product" },
+              productDetails: { $first: { $arrayElemAt: [ "$productDetails", 0 ] } }
+            }
+          },
+        
+          // group the data by cart ID
+          {
+            $group: {
+              _id: "$_id.cartId",
+              userEmail: { $first: "$userEmail" },
+              products: {
+                $push: {
+                  pid: "$product.pid",                 
+                  productName: "$productDetails.productName",
+                  productDescription: "$productDetails.productDescription",
+                  brandName: "$productDetails.brandName",
+                  productCost: "$productDetails.productCost",              
+                  productImages: "$productDetails.productImages",
+                 
+                }
+              }
+             
+            }
+          },
+          {
+            $project: {
+              _id: 0,
+              userEmail: 1,
+              products: {
+                $map: {
+                  input: "$products",
+                  as: "p",
+                  in: {
+                    productsId:"$$p.pid",
+                    productName: "$$p.productName",                  
+                      productCost: "$$p.productCost",
+                    productImages: "$$p.productImages",                   
+                   
+                },
+               // this.userSignOut
+              },            
+                  }
+            }
+          }
+        ]).exec();
+        
+        let uid = req.session.userid;
+       let lengthh=0;
+        if(typeof wishlistObj[0]=== 'undefined' )
+        {
+          lengthh=0;
+        }
+        else{
+         lengthh= wishlistObj[0].products.length;
+        }
+        const update = { $set: { wishListCount: lengthh} }; 
+        const options = {new: true }; // Return the updated document
+ 
+        users.findOneAndUpdate({ _id: uid._id },{ $set: { wishlistCount: lengthh} }, options, (err, result) => {
+          if (err) {
+            console.log(err);
+          } else {
+           // console.log("result is",result);
+          }
+        });
+         if(typeof wishlistObj[0]=='undefined')
+         {
+          uid.wishlistCount=0;
+          res.render("user/wishlist",{wList:0,uid});
+         }
+         else{
+        uid.wishlistCount= wishlistObj[0].products.length;
+        res.render("user/wishlist",{wList:wishlistObj[0].products,uid}); 
+         }
+       // console.log(wishlistObj[0]);
+       
+       }
+       else{
+        res.redirect('/login');
+       }
+
+    },
         
     UserPofile: async (req,res)=>{
          if(req.session.loggedIn){
@@ -592,7 +755,27 @@ getCart: async (req, res) => {
         res.redirect("/login");
       }
     },
+    removefromWishlist:async(req,res)=>{
+      if (req.session.loggedIn) {
+      
+        const id=req.params.id
+        const uEmail=req.session.userid.email
+         console.log("in remove method");
+         const wlDocument = await wishlistdb.findOne({userEmail:uEmail});
+         console.log(wlDocument);
+   
+         const updatedwl = await wishlistdb.updateOne({ _id: wlDocument._id},{ $pull: { product: { pid: id } } })
+   
+         res.redirect('/wishlist');
 
+
+      }
+      else{
+          res.redirect("/login");
+        }
+
+
+    },
     orderCreation: async (req, res) => {
       if (req.session.loggedIn) {
         const uid = req.session.userid;
@@ -769,13 +952,9 @@ getCart: async (req, res) => {
       
 onlinePay:async (req,res)=>{
 
-
-  const cart = await cartService.cart(req.session.userid.email);
-      const items =cart[0].products;
-     
-
- 
-  paypal.configure({
+    const cart = await cartService.cart(req.session.userid.email);
+      const items =cart[0].products;    
+    paypal.configure({
     'mode': 'sandbox', //sandbox or live
     'client_id': 'Adazb6aG6tpC2d1cvO690n9yQscdtZqBlOymckEOutJxXfE97IHR80N9IqlWK-ew8Adgfy7OQFIUZkPh',
     'client_secret': 'EIT9EtOgHYqyALyAF-ltIbshpTE3gWreN4x4OrhGjwJEfVhwLZou0nu3VRS82s9zx5HpPeD6BcnTHQtH'

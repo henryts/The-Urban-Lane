@@ -44,6 +44,10 @@ router.get('/showCart', UserController.showCart); // display cart
 router.post('/cart/updateQuantity/:itemId', UserController.updateQuanity);
 router.get('/deleteFromCart/:id', UserController.deleteFromCart); // cart delete
 
+router.get('/wishlist', UserController.wishlist); // wishlist
+router.get('/addtoWishlist/:id', UserController.addtoWishlist); // add 
+router.get('/removefromWishlist/:id', UserController.removefromWishlist); // remove
+
 router.get('/checkout', UserController. checkOut);  //chckout display -get
 
 router.get('/userProfile', UserController.UserPofile);  //user -Profile Display

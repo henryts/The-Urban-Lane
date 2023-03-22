@@ -110,7 +110,7 @@
                                             </ul>
                                         </li>
                                         <li><a href="shop-filter.html">Shop – Filter</a></li>
-                                        <li><a href="shop-wishlist.html">Shop – Wishlist</a></li>
+                                        <li><a href="/wishlist">Shop – Wishlist</a></li>
                                         <li><a href="shop-cart.html">Shop – Cart</a></li>
                                         <li><a href="shop-checkout.html">Shop – Checkout</a></li>
                                         <li><a href="shop-compare.html">Shop – Compare</a></li>
@@ -227,16 +227,18 @@
                             </form>
                         </div>
                         <div class="header-action-2">
+                            <% if (locals.uid) { %>
                             <div class="header-action-icon-2">
-                                <a href="shop-wishlist.html">
+                                <a href="/wishlist">
                                     <img class="svgInject" alt="Evara" src="/assets/imgs/theme/icons/icon-heart.svg">
-                                    <span class="pro-count blue">4</span>
+                                    <span class="pro-count blue"><%=uid.wishlistCount %></span>
                                 </a>
                             </div>
+
                             <div class="header-action-icon-2">
                                 <a class="mini-cart-icon" href="/showCart">
                                     <img alt="Evara" src="/assets/imgs/theme/icons/icon-cart.svg">
-                                    <span class="pro-count blue">2</span>
+                                    <span class="pro-count blue"><%=uid.cartCount %></span>
                                 </a>
                                 <div class="cart-dropdown-wrap cart-dropdown-hm2">
                                     <ul>
@@ -268,9 +270,28 @@
                                             </div>
                                         </li>
                                     </ul>
+                                    
+                                    <% }else{ %>
+                                        <div class="header-action-icon-2">
+                                            <a href="/wishlist">
+                                                <img class="svgInject" alt="Evara" src="/assets/imgs/theme/icons/icon-heart.svg">
+                                                <span class="pro-count blue">0</span>
+                                            </a>
+                                        </div>
+            
+                                        <div class="header-action-icon-2">
+                                            <a class="mini-cart-icon" href="/showCart">
+                                                <img alt="Evara" src="/assets/imgs/theme/icons/icon-cart.svg">
+                                                <span class="pro-count blue">0</span>
+                                            </a>
+                                            <div class="cart-dropdown-wrap cart-dropdown-hm2">
+                                                <ul>
+                                                   <p>Cart empty please login :)</p>
+                                                </ul>
+                                                <% } %>
                                     <div class="shopping-cart-footer">
                                         <div class="shopping-cart-total">
-                                            <h4>Total <span>$4000.00</span></h4>
+                                            <h4>Total <span>$0.00</span></h4>
                                         </div>
                                         <div class="shopping-cart-button">
                                             <a href="shop-cart.html">View cart</a>
