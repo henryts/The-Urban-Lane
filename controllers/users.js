@@ -61,6 +61,10 @@ loginUser: async (req, res) => {
   },
 
   //********LOGIN PAGE RENDER**********
+   renderLogin: (req,res)=>
+   {res.render("user/user-login");
+   },
+
   loginPage: (req, res) => {
     if (req.session.loggedIn) {
       res.redirect("/");
@@ -123,8 +127,7 @@ loginUser: async (req, res) => {
 
   //********Index PAGE RENDER-----redirect-login**********
   IndexPage: async (req, res) => {
-    pData = await newProduct.find({});
-    
+    pData = await newProduct.find({});    
 
     if (req.session.loggedIn) {
       uid = req.session.userid;
@@ -289,7 +292,7 @@ getCart: async (req, res) => {
   showCart: async(req,res)=>{    // cart display
       if (req.session.loggedIn) {
         const uEmail = req.session.userid.email;
-        const uid =req.session.userid
+        const uid =req.session.userid;
             
     try {
 
@@ -370,7 +373,7 @@ getCart: async (req, res) => {
       let uid = req.session.userid;
        
       
-      console.log("cart",cart[0]);
+      //console.log("cart",cart[0]);
       if(typeof cart[0] === 'undefined'){
         console.log("empty");
         res.render("user/shop-cart",{products:null,uid});
@@ -385,7 +388,7 @@ getCart: async (req, res) => {
         if (err) {
           console.log(err);
         } else {
-          console.log("result is",result);
+         // console.log("result is",result);
         }
       });
       req.session.userid.cartCount=lengthh
@@ -404,23 +407,45 @@ getCart: async (req, res) => {
     }
   },
          
-  updateQuanity:async (req,res)=> {
-    const itemId = req.params.itemId;
-  const newQuantity = req.body.newQuantity;
-
-  try {
-    const cartItem = await cartcollections.findOneAndUpdate(
-      { 'product._id': itemId },
-      { $set: { 'product.$.qty': newQuantity } },
-      { new: true }
-    );
-
-    res.send({ success: true, cartItem });
-  } catch (error) {
-    console.error("error",error);
-    res.status(500).send({ success: false, message: 'Failed to update cart item quantity' });
+  updateQuanity:async (req,res)=> {  //control in from ajax call
+  
+   console.log("count in update",req.body.count);
+   console.log("quantity in update",req.body.quantity);
+   console.log("productcost in update",req.body.pCost);
+   const pid = req.body.product;
+   const qty = req.body.quantity;
+   const count= req.body.count;
+   const uEmail = req.session.userid.email;
+   if (count == -1 && qty == 1) {
+    
+      await cartcollections.updateOne(
+        { userEmail: uEmail },
+        {
+          $pull: { product: { pid: pid } },
+        }
+      )
+      .then((response) => {
+       console.log("product removed on qty decrease");
+      });
+  } else {
+    await cartcollections.updateOne(
+        {
+          userEmail: uEmail,
+          "product.pid": pid,
+        },
+        {
+          $inc: { "product.$.qty": count },
+        }
+      )
+      .then((response) => {
+        console.log("qty updated in db ");
+      });
   }
-  } ,
+}
+
+
+
+  ,
   
 
 //   deleteFromCart:  async (req, res) => {

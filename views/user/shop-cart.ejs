@@ -23,13 +23,24 @@
                                   <% for (let i = 0; i<products.length; i++) { %>
                                     <tbody>
                                       <tr>
-                                        <td class="image product-thumbnail"><img src="/uploads/<%=products[i].productImages[0].filename %>" alt=""></td>
+                                        <!--  -->
                                         <td class="product-des product-name">
                                           <h5 class="product-name"><a href="shop-product-right.html"> <%= products[i].productName %> </a></h5>
                                          
                                         </td>
                                         <td class="price" data-title="Price"><span> <%=products[i].productCost %> </span></td>
                                         <td class="text-center" data-title="Stock">
+                                            <div class="detail-qty border radius  m-auto">
+                                               
+                                                <a class="qty-down" onclick="changeQuantity( `<%=products[i].productsId%>`,`<%=products[i].productCost%>`, -1)"><i class="fi-rs-angle-small-down"></i></a>
+
+                                                <span class="qty-val" id="<%=products[i].productsId%>"><%=products[i].qty%></span>
+                                                
+                                                <a  class="qty-up" onclick="changeQuantity(`<%=products[i].productsId%>`,`<%=products[i].productCost%>`,1)"><i class="fi-rs-angle-small-up"></i></a>
+                                                
+                                            </div>
+                                        </td>
+                                        <!-- <td class="text-center" data-title="Stock">
                                             <div class="detail-qty border radius m-auto quantity-dropdown" data-product-id="<%= products[i].productName  %>">
                                                 <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
                                                 <span class="qty-val" id="quantity-<%= i %>" data-quantity="<%=products[i].qty %>">
@@ -37,7 +48,7 @@
                                                 </span>
                                                 <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
                                             </div>
-                                            </td>
+                                            </td> -->
                                             <td class="price" data-title="Price" id="subtotal"><span> <%=products[i].subtotal; %> </span></td>
                                               
                                             <td class="price" data-title="Price"><a href="/deleteFromCart/<%=products[i].productsId %>" style="color:#088178;">delete</a></td>
@@ -50,72 +61,37 @@
                         </div>
                     <script>
                      
-// Update cart item quantity using AJAX
-$('.quantity-dropdown .qty-up, .quantity-dropdown .qty-down').on('click', function(e) {
-  e.preventDefault();
-  const $this = $(this);
-  const $qty = $this.siblings('.qty-val');
-  const productId = $qty.closest('.quantity-dropdown').data('product-id');
-  let newQuantity = parseInt($qty.data('quantity'));
-  if ($this.hasClass('qty-up')) {
-    newQuantity += 1;
-  } else {
-    newQuantity = Math.max(1, newQuantity - 1);
+                  
+  function changeQuantity(prodId,pcost,count) {
+    console.log( prodId, count ,pcost);
+    let quantity = document.getElementById(prodId).innerHTML;
+    console.log("quanity in ajax ",quantity);
+    count = count;
+    $.ajax({
+      url: '/cart/updateQuantity',
+      data: {   
+        product: prodId,
+        count: count,
+        quantity: quantity,
+        pCost:pcost
+      },
+      method: 'post',
+      success: (response) => {
+        if (response.removeProduct) {
+          alert("Product Removed From the Cart")
+          location.reload()
+        }
+  
+        else {
+        //   document.getElementById(prod ).innerHTML = quantity + count
+          document.getElementById('total').innerHTML = response.total
+          document.getElementById(prodId).innerHTML = response.subtotal
+        }
+      }
+    })
   }
-  // Make AJAX request to update cart item quantity
-  $.ajax({
-    type: 'POST',
-    url: `/cart/updateQuantity/${productsId}`,
-    data: { newQuantity: newQuantity },
-    success: function(response) {
-      if (response.success) {
-        $qty.data('quantity', newQuantity);
-        $qty.text(newQuantity);
-        // Update the subtotal
-        const price = $qty.closest('tr').find('.price span').text();
-        const subtotal = price * newQuantity;
-        $qty.closest('tr').find('#subtotal span').text(subtotal.toFixed(2));
-        // Update the cart total
-        updateCartTotal();
-      }
-    },
-    error: function(xhr, textStatus, errorThrown) {
-      console.error(errorThrown);
-    }
-  });
-});
 
-// Delete cart item using AJAX
-$('.shopping-summery tbody').on('click', '.price span', function(e) {
-  e.preventDefault();
-  const $this = $(this);
-  const productId = $this.closest('tr').data('productId');
-  // Make AJAX request to delete cart item
-  $.ajax({
-    type: 'DELETE',
-    url: `/cart/delete/${productId}`,
-    success: function(response) {
-      if (response.success) {
-        $this.closest('tr').remove();
-        // Update the cart total
-        updateCartTotal();
-      }
-    },
-    error: function(xhr, textStatus, errorThrown) {
-      console.error(errorThrown);
-    }
-  });
-});
 
-// Function to update the cart total
-function updateCartTotal() {
-  let cartTotal = 0;
-  $('.shopping-summery tbody tr').each(function() {
-    const subtotal = parseFloat($(this).find('#subtotal span').text());
-    cartTotal += subtotal;
-  });
-  $('.cart-total span').text(cartTotal.toFixed(2));
-}
 
 
                         </script>

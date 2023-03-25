@@ -1,12 +1,15 @@
 const express = require("express");
 const UserController = require("../controllers/users");
+const UserController2 = require("../controllers/filter-products");
 //const flash = require('express-session');
 const users = require("../models/user-schema");
 const bcrypt = require("bcrypt");
 const router = express.Router();
 
 
-router.get('/login', UserController.loginPage); //login User render
+router.get('/login', UserController.loginPage);
+
+router.get('/login1', UserController.renderLogin); //login User render
 
 router.get('/', UserController.IndexPage); //user index render   -LANDING PAGE
 
@@ -41,7 +44,8 @@ router.post('/getcart/:id', UserController.getCart); // diplay items  ajax reciv
 
 router.get('/showCart', UserController.showCart); // display cart
 
-router.post('/cart/updateQuantity/:itemId', UserController.updateQuanity);
+
+router.post('/cart/updateQuantity', UserController.updateQuanity);
 router.get('/deleteFromCart/:id', UserController.deleteFromCart); // cart delete
 
 router.get('/wishlist', UserController.wishlist); // wishlist
@@ -61,6 +65,7 @@ router.post('/orderConfirmationpart3', UserController.confirmOrder);
 router.get('/orderConfirmationpart4', UserController.payPalconfirmOrder);
 
 
+
 //router.post('/checkOut/deleteAddress/:id', UserController.deleteAddress);  //delete adddress from checkout form
 
 router.get('/PayPal', UserController.onlinePay);   //paypal-post
@@ -68,6 +73,9 @@ router.get('/PayPal', UserController.onlinePay);   //paypal-post
 router.get('/success', UserController.paymentSuccess);   //paypal-post
 
 router.post('/passwordReset', UserController.passwordReset); 
+
+router.get('/byfilter', UserController2.shopbycatagory);
+router.get('/cat1', UserController2.catagory1); 
 
 
 

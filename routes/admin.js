@@ -16,8 +16,6 @@ var storage = multer.diskStorage({
     cb(null,Date.now()+path.extname(file.originalname))
   }
 })
-
-
 const upload = multer({
   storage:storage
 }).array("file");
@@ -54,6 +52,13 @@ router.post('/editProductPost/:id',adminController.editProductPost); // Product 
 router.get('/editProductPage/:id',adminController.editProductPage); // Product edit page display
 
 router.get('/logout',adminController.adminLogout); // admin logout
+
+
+router.get('/deleteCat',adminController.deleteCatagory);
+router.get('/editCat',adminController.editCatagory);
+router.post('/categoryPostUpdate/:id',adminController.editCatagoryPost);
+
+
 
 
 

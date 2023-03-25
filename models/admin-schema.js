@@ -15,7 +15,7 @@ const catagorySchema= new mongoose.Schema({
         productDescription: String,
         brandName: String,
         size:{type:String, default:'m'},
-        qty: {type:Number, default:1},
+        qty: {type:Number, default:0},
         productCost: Number,
         productCatogory: String,
         productImages: Array
@@ -24,7 +24,7 @@ const catagorySchema= new mongoose.Schema({
 
     module.exports ={ 
                         catagory: mongoose.model("catagory",catagorySchema),
-                        products: mongoose.model("products",productSchema),
+                        products: mongoose.model("products",productSchema),                    
                         adminCred: mongoose.model("adminCred",adminCredSchema)
     }
 

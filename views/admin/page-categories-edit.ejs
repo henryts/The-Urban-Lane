@@ -3,7 +3,7 @@
             <div class="content-header">
                 <div>
                     <h2 class="content-title card-title">Categories </h2>
-                    <p>Add, edit or delete a category</p>
+                    <p style="margin-left: 10px;">Edit Category</p>
                 </div>
                 <div>
                     <input type="text" placeholder="Search Categories" class="form-control bg-white">
@@ -13,14 +13,15 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
-                            <form action="/admin/categoryPost" method="post">
+                            <form action="/admin/categoryPostUpdate/<%=editData[0]._id%>" method="post">
                                 <div class="mb-4">
-                                    <label for="product_name" class="form-label">Name</label>
-                                    <input type="text"  name="catName" placeholder="Type here" class="form-control" id="product_name" />
+                                    <label for="product_name" class="form-label" placeholder="">Name</label>
+                                    <input type="text" name="catName" class="form-control" id="product_name"  value="<%=editData[0].CategoryName%>"/>
+
                                 </div>
                                 <div class="mb-4">
                                     <label for="product_slug" class="form-label">Slug</label>
-                                    <input type="text" name="catSlug" name="catSlug"  placeholder="Type here" class="form-control" id="product_slug" />
+                                    <input type="text" name="catSlug" name="catSlug" class="form-control" id="product_slug" value="<%=editData[0].slug%>"/>
                                 </div>
                                 <!-- <div class="mb-4">
                                     <label class="form-label">Parent</label>
@@ -31,10 +32,10 @@
                                 </div> -->
                                 <div class="mb-4">
                                     <label class="form-label">Description</label>
-                                    <textarea placeholder="Type here" name="catDisc" class="form-control"></textarea>
+                                    <textarea  name="catDisc" placeholder="update description" class="form-control" ><%=editData[0].Description%></textarea>
                                 </div>
                                 <div class="d-grid">
-                                    <button type="submit" class="btn btn-primary">Create category</button>
+                                    <button type="submit" class="btn btn-primary">Update Category</button>
                                 </div>
                             </form>
                         </div>
@@ -53,7 +54,7 @@
                                             <th>Description</th>
                                             <th>Slug</th>
                                             <!-- <th>Order</th> -->
-                                            <th class="text-end">Action</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -68,13 +69,13 @@
                                             <td><b><%= catData.CategoryName %></b></td>
                                             <td><%= catData.Description %></td>
                                             <td><%= catData.slug %></td>
-
+                                            
                                            
-                                            <td class="text-end">
+                                            <td >
                                                 <div class="dropdown">
                                                     <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
                                                     <div class="dropdown-menu">
-                                                      
+                                                       
                                                         <a class="dropdown-item" href="/admin/editCat?id=<%=catData._id %>">Edit info</a>
                                                         <a class="dropdown-item text-danger" href="/admin/deleteCat?id=<%=catData._id %>">Delete</a>
                                                     </div>
