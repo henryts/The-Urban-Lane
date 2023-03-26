@@ -415,7 +415,19 @@ getCart: async (req, res) => {
    const pid = req.body.product;
    const qty = req.body.quantity;
    const count= req.body.count;
+   const pCost = req.body.pCost
    const uEmail = req.session.userid.email;
+ 
+   let response={} ;
+  let total=0;
+  let factr = parseInt(count) + parseInt(qty);
+  console.log("qty=",qty);
+  console.log("count=",count);
+  console.log("factr=",factr);
+  response.subtotal=parseInt(pCost) *factr ;
+  console.log(" response.subtotal=",response.subtotal);
+  let liveQty=parseInt(count) +parseInt(qty);
+  console.log("liveQty=",liveQty);
    if (count == -1 && qty == 1) {
     
       await cartcollections.updateOne(
@@ -425,6 +437,7 @@ getCart: async (req, res) => {
         }
       )
       .then((response) => {
+        response.remove=true;
        console.log("product removed on qty decrease");
       });
   } else {
@@ -435,17 +448,32 @@ getCart: async (req, res) => {
         },
         {
           $inc: { "product.$.qty": count },
+          $set: { "product.$.productTotal": response.subtotal }
         }
       )
       .then((response) => {
         console.log("qty updated in db ");
       });
   }
-}
+  let l=0;
+  const cart = await cartService.cart(req.session.userid.email);
+  if(cart[0].products=='undefined')
+  {
+   l=0;
+  }
+  else{
+   l=cart[0].products.length;
+  }
+  console.log("subtotal in db=",cart[0].products[0].subtotal);
+  for(let i=0;i<l;i++)
+  {
+       total=total+cart[0].products[i].subtotal;
+  }
 
-
-
-  ,
+  response.total=total;
+  console.log(" response.total=",response.total);
+  res.json(response);
+} ,
   
 
 //   deleteFromCart:  async (req, res) => {

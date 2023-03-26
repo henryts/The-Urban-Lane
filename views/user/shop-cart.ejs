@@ -32,11 +32,11 @@
                                         <td class="text-center" data-title="Stock">
                                             <div class="detail-qty border radius  m-auto">
                                                
-                                                <a class="qty-down" onclick="changeQuantity( `<%=products[i].productsId%>`,`<%=products[i].productCost%>`, -1)"><i class="fi-rs-angle-small-down"></i></a>
+                                                <a class="qty-down" onclick="changeQuantity( `<%=products[i].productName%>` ,`<%=products[i].productsId%>`,`<%=products[i].productCost%>`, -1)"><i class="fi-rs-angle-small-down"></i></a>
 
-                                                <span class="qty-val" id="<%=products[i].productsId%>"><%=products[i].qty%></span>
+                                                <span class="qty-val" id="<%=products[i].productName%>"><%=products[i].qty%></span>
                                                 
-                                                <a  class="qty-up" onclick="changeQuantity(`<%=products[i].productsId%>`,`<%=products[i].productCost%>`,1)"><i class="fi-rs-angle-small-up"></i></a>
+                                                <a  class="qty-up" onclick="changeQuantity(`<%=products[i].productName%>` ,`<%=products[i].productsId%>`,`<%=products[i].productCost%>`,1)"><i class="fi-rs-angle-small-up"></i></a>
                                                 
                                             </div>
                                         </td>
@@ -49,7 +49,7 @@
                                                 <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
                                             </div>
                                             </td> -->
-                                            <td class="price" data-title="Price" id="subtotal"><span> <%=products[i].subtotal; %> </span></td>
+                                            <td class="price" data-title="Price" id="<%=products[i].productsId%>"><span> <%=products[i].subtotal; %> </span></td>
                                               
                                             <td class="price" data-title="Price"><a href="/deleteFromCart/<%=products[i].productsId %>" style="color:#088178;">delete</a></td>
 
@@ -59,33 +59,29 @@
                                         </table>
                                 
                         </div>
-                    <script>
-                     
-                  
-  function changeQuantity(prodId,pcost,count) {
-    console.log( prodId, count ,pcost);
-    let quantity = document.getElementById(prodId).innerHTML;
-    console.log("quanity in ajax ",quantity);
-    count = count;
+                    <script>            
+  function changeQuantity(pName,prodId,pcost,count) {
+    let quantity = document.getElementById(pName).innerHTML;
+    //count = count;
     $.ajax({
       url: '/cart/updateQuantity',
       data: {   
         product: prodId,
-        count: count,
-        quantity: quantity,
-        pCost:pcost
+        count: parseInt(count),
+        quantity: parseInt(quantity),
+        pCost:parseInt(pcost)
       },
       method: 'post',
       success: (response) => {
         if (response.removeProduct) {
-          alert("Product Removed From the Cart")
-          location.reload()
+          alert("Product Removed From the Cart");
+          location.reload();
         }
   
         else {
         //   document.getElementById(prod ).innerHTML = quantity + count
-          document.getElementById('total').innerHTML = response.total
-          document.getElementById(prodId).innerHTML = response.subtotal
+          document.getElementById('cart-total').innerHTML = response.total;
+          document.getElementById(prodId).innerHTML = response.subtotal;
         }
       }
     })
