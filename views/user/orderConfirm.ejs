@@ -1,4 +1,191 @@
-<!DOCTYPE html>
+<%- include('../partials/checkOutPartial') %> 
+<body>
+    <section class="h-100 gradient-custom" >
+        <div class="container py-5 h-100" >
+          <div class="row d-flex justify-content-center align-items-center h-100" >
+            <div class="col-lg-10 col-xl-8"style="width: 90%;" >
+              <div class="card" style="border-radius: 10px;">
+                <div class="card-header px-4 py-5" style="background-color: #046963;">
+                
+                  
+      
+                    <h2 class="text-muted mb-0"> <span style="color: rgb(255, 254, 254);">Thanks for your Order,<%=order.address.firstName%></span>!</h2>
+                    
+                </div>
+                <div class="card-body p-4">
+                  <div class="d-flex justify-content-between align-items-center mb-4">
+                    <p class="lead fw-normal mb-0" style="color: black;">Order Details </p>
+                    <p class="small text-muted mb-0">Order Id :#<%=order._id%></p>
+                    
+                    <h4 class="small text-muted mb-0">Ordered Date: <%=order.creationTime%> </h4>
+                    
+                  </div>
+                  <p class="small text-success mb-0 ">payment-method:<%=order.paymentMethod%></p>
+                  <div class="card shadow-0 border mb-4">
+                  <% for(let i=0;i<order.items.length;i++) { %>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-2">
+                              <a href="/fullImage/<%=order.items[i]._id%>">
+                                <img src="/uploads/<%=order.items[i].productImages[1].filename%>" class="img-fluid" alt="Phone">
+                              </a>
+                            </div>
+                            <div class="col-md-10">
+                              <div class="row align-items-center">
+                                <div class="col-md-4">
+                                  <a href="#"  onmouseover="this.style.textDecoration='underline';" onmouseout="this.style.textDecoration='none';"><%=order.items[i].productName%></a>
+                                </div>
+                                <div class="col-md-3 text-muted">
+                                    <p class="text-muted mb-0 small">Category <%=order.items[i].productCatogory%></p> 
+                                </div>
+                                <div class="col-md-2 text-muted">
+                                    <p class="text-muted mb-0 small">Quantity  <%=order.items[i].quantity%></p>
+                                </div>
+                                <div class="col-md-3">
+                                    <p class="text-muted mb-0 small">Price $<%=order.items[i].price%></p>
+                                </div>
+                              </div>
+                            </div>
+                          <!-- </div> -->
+                          
+                        <!-- <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                          <p class="text-muted mb-0">Product <%=order.items[i].productName%></p>
+                        </div>
+                        
+                        <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                          <p class="text-muted mb-0 small">Category <%=order.items[i].productCatogory%></p> 
+                        </div>
+                        <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                          <p class="text-muted mb-0 small">Quantity  <%=order.items[i].quantity%></p>
+                        </div>
+                        <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+                          <p class="text-muted mb-0 small">Price $<%=order.items[i].price%></p>
+                        </div> -->
+                      </div>
+                      <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
+                    
+                    </div>
+                    <% } %>
+                    </div>
+                    <div class="d-flex justify-content-between pt-2">
+                        <p class="fw-bold mb-0">Address Details</p>
+                        <p class="text-muted mb-0"><span class="fw-bold me-4"></span></p>
+                      </div>
+                      
+                    
+                        <div class="d-flex justify-content-between pt-2">
+                          <p class="fw-bold mb-0"><%=order.address.firstName%></p>
+                        <%if(order.status=='processing'){ %>   
+                          <p class="text-muted mb-0"><span class="fw-bold me-4" ><span>Order Status</span>:   <span style="color:green;"><%=order.status%> </span> </p>
+                        <%} else if(order.status=='Delivered') {%>
+                          <p class="text-muted mb-0"><span class="fw-bold me-4" ><span>Order Status</span>:   <span style="color: orange;"><%=order.status%> </span> </p>
+                                            
+                        <%} else  {%>
+                                                                                      
+                          <p class="text-muted mb-0"><span class="fw-bold me-4" ><span>Order Status</span>:   <span style="color: red;"><%=order.status%> </span> </p>
+                                                                                      
+                        <%} %>
+                        <%if(order.status=='confirmed'){ %>   
+                         <button  class="btn btn-primary text-center"  onclick="cancelOrder('<%=orderDetails._id%>');Swal.fire({
+                          position: 'center',
+                          icon: 'success',
+                          title: 'Item Canceled',
+                          showConfirmButton: false,
+                          timer: 2000
+                        })">Cancel Order</button>
+                        <%} %>
+                        <%if(order.status=='delivered'){ %>   
+                       <button class="btn btn-primary text-center" style="background: slateblue; height:2rem" onclick="returnOrder('<%=orderDetails._id%>')">Return</button>
+                        <%} %>
+                            </div>
+                        <div class="d-flex justify-content-between pt-2">
+                          <p class="fw-bold mb-0">Address Line 1: <%=order.address.addressLine1%></p>
+                          <p class="text-muted mb-0"><span class="fw-bold me-4"></span></p>
+                        </div>
+                        <div class="d-flex justify-content-between pt-2">
+                          <p class="fw-bold mb-0">Street: <%=order.address.addressLine2%></p>
+                          <p class="text-muted mb-0"><span class="fw-bold me-4">Total</span> $<%=order.totalPrice%></p>
+                        </div>
+                        <div class="d-flex justify-content-between pt-2">
+                          <p class="fw-bold mb-0">City: <%= order.address.city%></p>
+                          <p class="text-muted mb-0"><span class="fw-bold me-4"></span></p>
+                        </div>
+                        <div class="d-flex justify-content-between pt-2">
+                          <p class="fw-bold mb-0">PinCode: <%= order.address.postalCode%></p>
+                          <p class="fw-bold mb-0">Mobile No: <%= order.address.contactNumber%></p>
+                          <p class="text-muted mb-0"><span class="fw-bold me-4">Delivery Charges</span>Free</p>
+                        </div>
+                       </div>
+                    <div class="card-footer border-0 px-4 py-5"
+                      style="background-color: whitesmoke; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+                      <h5 class="d-flex align-items-center justify-content-end text-black text-uppercase mb-0">Total
+                        paid: $<%=order.totalPrice%><span class="h2 mb-0 ms-2"></span></h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row d-flex align-items-center">
+             
+              <div class="col-md-10">
+                
+               
+              </div>
+            </div>
+                
+      </section>
+      
+      <script>
+        function cancelOrder(orderId){
+          // console.log(orderId);
+          $.ajax({
+            url:'/cancel-order/'+orderId,
+            method:'put',
+            success:((response)=>{
+              if(response.status){
+                location.reload()
+              }
+            })
+          })
+        }
+        function returnOrder(orderId){
+          $.ajax({
+            url:'/return-order/'+orderId,
+            method:'put',
+            success:((response)=>{
+              if(response.status){
+                location.reload()
+              }
+            })
+          })
+        }
+        
+      </script> 
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -158,4 +345,4 @@ hr.new1 {
         </div>
     </div>
 </body>
-</html>
+</html> -->

@@ -8,6 +8,7 @@ const userOrders = orderModel.userOrders;
 const express = require("express");
 const mongoose = require('mongoose');
 const paypal = require('paypal-rest-sdk');
+const Razorpay = require('razorpay');
 const cartService = require("./cartinfo");
 
 const mongooseModels = require("../models/admin-schema");
@@ -413,33 +414,22 @@ getCart: async (req, res) => {
    console.log("quantity in update",req.body.quantity);
    console.log("productcost in update",req.body.pCost);
    const pid = req.body.product;
-   const qty = req.body.quantity;
+   let qty = req.body.quantity;
    const count= req.body.count;
    const pCost = req.body.pCost
    const uEmail = req.session.userid.email;
  
-   let response={} ;
+  let response={} ;
   let total=0;
-  let factr = parseInt(count) + parseInt(qty);
   console.log("qty=",qty);
-  console.log("count=",count);
-  console.log("factr=",factr);
-  response.subtotal=parseInt(pCost) *factr ;
+  response.subtotal=parseInt(pCost) *qty ;
   console.log(" response.subtotal=",response.subtotal);
-  let liveQty=parseInt(count) +parseInt(qty);
-  console.log("liveQty=",liveQty);
+ // let liveQty=parseInt(count) +parseInt(qty);
+  console.log("liveQty=",qty);
    if (count == -1 && qty == 1) {
     
-      await cartcollections.updateOne(
-        { userEmail: uEmail },
-        {
-          $pull: { product: { pid: pid } },
-        }
-      )
-      .then((response) => {
-        response.remove=true;
-       console.log("product removed on qty decrease");
-      });
+     qty=1;
+
   } else {
     await cartcollections.updateOne(
         {
@@ -447,32 +437,31 @@ getCart: async (req, res) => {
           "product.pid": pid,
         },
         {
-          $inc: { "product.$.qty": count },
+          $inc: { "product.$.qty": qty },
           $set: { "product.$.productTotal": response.subtotal }
         }
       )
       .then((response) => {
         console.log("qty updated in db ");
       });
-  }
+  
   let l=0;
   const cart = await cartService.cart(req.session.userid.email);
-  if(cart[0].products=='undefined')
-  {
-   l=0;
-  }
-  else{
+ 
    l=cart[0].products.length;
-  }
-  console.log("subtotal in db=",cart[0].products[0].subtotal);
+    total=0;
+   console.log("subtotal in db=",cart[0].products[0].subtotal);
   for(let i=0;i<l;i++)
   {
        total=total+cart[0].products[i].subtotal;
+       
   }
-
-  response.total=total;
-  console.log(" response.total=",response.total);
-  res.json(response);
+       response.total=total;
+       console.log(" response.total=",response.total);
+       res.json(response);
+  
+  // }  
+  }
 } ,
   
 
@@ -871,6 +860,9 @@ else{
               items: {
                 $push: {
                   productId: "$productDetails._id",
+                  productName: "$productDetails.productName",
+                  productCatogory:"$productDetails.productCatogory",
+                  productImages:"$productDetails.productImages",
                   quantity: "$product.qty",
                   price: "$productDetails.productCost",
                   productTotal: { $multiply: [
@@ -885,7 +877,7 @@ else{
             },
           },
         ]);
-    
+        
         if (cart.length == 0) {
           res.send("Cart is Empty!!");
          // res.redirect('/');
@@ -901,12 +893,15 @@ else{
           const order = await userOrders.findOneAndUpdate(
             { userId: uid },
             { $push: { orderList: orderItem } },
-            { upsert: true }
+            { upsert: true,new: true }
           );
           if (order) {
-            // res.send("Order placed successfully!!");
-            console.log("order placed successfully");
+            const orderId = order.orderList[order.orderList.length - 1]._id;
+            console.log("Order created with id:", orderId);
+            req.session.latestOrderId=orderId;
+          
             res.redirect('/OrderCreationpart2');
+            
           } else {
             res.send("Error while placing order");
           }
@@ -983,22 +978,16 @@ else{
                       productCost: "$$p.productCost",
                     productImages: "$$p.productImages",
                     subtotal: { $multiply: [{$toInt:"$$p.qty"}, {$toInt:"$$p.productCost"}] },
-                   
-                },
-                
-              },
+                     },
+                 },
              //  totalPrice: { $sum: "$products.total" }
                   }
             }
           }
         ]).exec();
-       
-      
-      res.render('user/paymentSelection',{ product: cart[0].products });  
-        }
-      
-      
-      else{
+         res.render('user/paymentSelection',{ product: cart[0].products });  
+        }     
+        else{
         res.redirect("/login");
       }
     },
@@ -1091,25 +1080,71 @@ paymentSuccess: (req,res)=>
     }
 });
 },
-confirmOrder:(req,res)=>
+confirmOrder:async(req,res)=>
 { 
   if (req.session.loggedIn) {
-   
-    console.log( req.body.payoption);
+   const uid =req.session.userid._id;
+   const orderId= req.session.latestOrderId;
+   const newOrder = await userOrders.findOne(
+    { userId: uid, "orderList._id": orderId },
+    { "orderList.$": 1 }
+  );
+    console.log(newOrder.orderList[0]);
     if(req.body.payoption=='cod')
-    res.render('user/orderConfirm');
+    {
+      const result = await userOrders.updateOne(
+        { "orderList._id": orderId },
+        { $set: { "orderList.$.paymentMethod": "COD" } },
+        { $set: { "orderList.$.paymentMethod": "COD" } }
+      );
+   res.render('user/orderConfirm',{order:newOrder.orderList[0]}); 
+ } 
     else if(req.body.payoption=='razorpay')
     {
-      console.log( req.body.payoption);
+       const userId= req.session.userid._id;
+       const result = await userOrders.updateOne(
+        { "orderList._id": orderId },
+        { $set: { "orderList.$.paymentMethod": "Razor Pay" } }
+      );
+     // const orderDetails = await userOrders.findOne({ userId:userId });
+     console.log(newOrder.orderList[0].totalPrice);
+     let totalINR = (newOrder.orderList[0].totalPrice);
+    
+     //console.log("inr",totalINR);
+      const instance = new Razorpay({
+        key_id: "rzp_test_8FhsDQXauNn2kx",
+        key_secret: "I2ZpSlDE9D8et4W9wS3fXFIQ",
+      });
+
+      const options = {
+        amount: parseInt(newOrder.orderList[0].totalPrice)*100, // amount in the smallest currency unit
+        currency: "USD",
+        receipt: "order_rcptid_11",
+      };
+   
+      instance.orders.create(options, function (err, order) {
+        console.log("order from razor pay:",order);
+        let id = order.id
+        res.render("user/razorpayButton",{totalINR,id,orderDetail:newOrder.orderList[0]});
+      });
+
+      //const orderId = orders.id;
+      //res.render("user/razorpayButton");
+    }
+
     }
     else if(req.body.payoption=='paypal')
     { 
+      const result = await userOrders.updateOne(
+        { "orderList._id": orderId },
+        { $set: { "orderList.$.paymentMethod": "Pay Pal" } }
+      );
       res.redirect('/PayPal');
 
     }
 
 }
-},
+,
 payPalconfirmOrder: (req,res)=>{
     if(req.session.loggedIn)
     {
@@ -1117,6 +1152,37 @@ payPalconfirmOrder: (req,res)=>{
       res.render('user/orderConfirm');
 
     }
+    else{
+      res.redirect('/login');
+    }
+},
+razorPayConfirmOrder:(req,res)=>
+{  
+  const orderId= req.session.latestOrderId;
+  if(req.session.loggedIn)
+  { 
+    const uid = req.session.userid._id;
+    userOrders.findOneAndUpdate(
+      { userId:  uid, "orderList._id": orderId},
+      { $set: { "orderList.$.status": "Order Confirmed" } },
+      { new: true }
+    )
+    .then(updatedOrder => {
+      console.log("status updated",updatedOrder);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+
+
+    res.render('user/orderConfirm');
+
+  }
+  else{
+    res.redirect('/login');
+  }
+
+
 },
 passwordReset: async (req, res) => {
   if (req.session.loggedIn) {

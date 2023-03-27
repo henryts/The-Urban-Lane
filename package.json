@@ -28,8 +28,10 @@
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
     "paypal-rest-sdk": "^1.8.1",
+    "razorpay": "^2.8.6",
     "request": "^2.88.2",
     "start": "^5.1.0",
+    "sweetalert": "^2.1.2",
     "twilio": "^2.5.2"
   }
 }

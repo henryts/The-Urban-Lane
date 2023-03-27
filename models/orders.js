@@ -4,6 +4,9 @@ const orderSchema= new mongoose.Schema({
      
      orderList:[{
                    items: [ { productId:  mongoose.Schema.Types.ObjectId,
+                            productName:String,
+                            productCatagory:String,
+                            productImages:Array,
                             quantity: String,
                             price: String,
                             productTotal:String
@@ -22,6 +25,8 @@ const orderSchema= new mongoose.Schema({
 
                    creationTime: String,
                    modifiedAt: String,
+                   paymentStatus:{ type:Boolean, default:false},
+                   paymentMethod:{ type:String},
                    cancellationRequest:{ type:Boolean, default:false} ,
                    returnRequest:{ type:Boolean, default:false}                                     
 

@@ -1,6 +1,7 @@
 const express = require("express");
 const UserController = require("../controllers/users");
 const UserController2 = require("../controllers/filter-products");
+const paymentController = require("../controllers/onlinePayments");
 //const flash = require('express-session');
 const users = require("../models/user-schema");
 const bcrypt = require("bcrypt");
@@ -63,6 +64,7 @@ router.post('/OrderCreationpart1/:adid', UserController.orderCreation);
 router.get('/OrderCreationpart2', UserController.payOption);
 router.post('/orderConfirmationpart3', UserController.confirmOrder);
 router.get('/orderConfirmationpart4', UserController.payPalconfirmOrder);
+router.get('/razorPayConfirmOrder', UserController.razorPayConfirmOrder);
 
 
 
@@ -71,6 +73,10 @@ router.get('/orderConfirmationpart4', UserController.payPalconfirmOrder);
 router.get('/PayPal', UserController.onlinePay);   //paypal-post
 
 router.get('/success', UserController.paymentSuccess);   //paypal-post
+
+router.get('/Razoray', paymentController.RazorPayget);   //paypal-post
+
+
 
 router.post('/passwordReset', UserController.passwordReset); 
 
