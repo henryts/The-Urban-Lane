@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const orderSchema= new mongoose.Schema({
      userId: mongoose.Schema.Types.ObjectId,
+     userName: String,
+     userEmail:String,
      
      orderList:[{
                    items: [ { productId:  mongoose.Schema.Types.ObjectId,

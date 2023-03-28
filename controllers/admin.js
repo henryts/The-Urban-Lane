@@ -2,6 +2,8 @@ const usersDetails = require("../models/user-schema");
 //const admin_cred = require("../models/admin-schema");
 //const adminCred=require("../models/admin-schema")
 const mongooseModels = require("../models/admin-schema");
+const orderModel =  require("../models/orders");
+const userOrders = orderModel.userOrders;
 const Catagory = mongooseModels.catagory;
 const newProduct = mongooseModels.products;
 const admins = mongooseModels.adminCred;
@@ -202,4 +204,22 @@ module.exports = {
     req.session.loggedIn = null;
     res.redirect("/admin/adminlogin");
   },
+  orderListDisplay:async(req,res)=>{
+  if(req.session.loggedIn)
+  {
+    try {
+      const orders = await userOrders.find({});
+    
+     res.render('admin/pageOrders',{order:orders});
+  } catch (err) {
+    console.log(err);
+  }
+
+  }
+  else{
+    res.redirect('/adminlogin');
+  }
+
+
+  }
 };

@@ -9,6 +9,7 @@ const express = require("express");
 const mongoose = require('mongoose');
 const paypal = require('paypal-rest-sdk');
 const Razorpay = require('razorpay');
+const shortid = require('shortid');
 const cartService = require("./cartinfo");
 
 const mongooseModels = require("../models/admin-schema");
@@ -737,15 +738,16 @@ else{
     UserPofile: async (req,res)=>{
          if(req.session.loggedIn){
          userDetails=req.session.userid;
+         const shortid = require('shortid');
+         const userID = shortid.generate(req.session.userid._id);
          const uid = mongoose.Types.ObjectId(req.session.userid._id);  
-        // const uid =   req.session.userid._id
          console.log( uid);
          const order =await userOrders.aggregate([{ $match: { userId:uid } },
         { $unwind: "$orderList" }
 
         
-         ]).exec();;
-        res.render("user/userProfile",{orders:order})
+         ]).exec();
+        res.render("user/userProfile",{orders:order,userID})
 
         console.log(order);
 
@@ -889,10 +891,16 @@ else{
             address: userAddress,
             creationTime: new Date(),
           };
-    
+        //taking username
+        const userr = await users.findOne({ _id:uid  });
+        let name = userr.username;
+
           const order = await userOrders.findOneAndUpdate(
             { userId: uid },
-            { $push: { orderList: orderItem } },
+            { $push: { orderList: orderItem },
+            $set: { userName: name, userEmail: email },
+            },
+           
             { upsert: true,new: true }
           );
           if (order) {
@@ -1082,11 +1090,15 @@ paymentSuccess: (req,res)=>
 },
 confirmOrder:async(req,res)=>
 { 
+  
+  
+ 
   if (req.session.loggedIn) {
-   const uid =req.session.userid._id;
+   const mongoId =req.session.userid._id;
+   const uid = shortid.generate(mongoId);
    const orderId= req.session.latestOrderId;
    const newOrder = await userOrders.findOne(
-    { userId: uid, "orderList._id": orderId },
+    { userId: mongoId, "orderList._id": orderId },
     { "orderList.$": 1 }
   );
     console.log(newOrder.orderList[0]);
@@ -1095,9 +1107,9 @@ confirmOrder:async(req,res)=>
       const result = await userOrders.updateOne(
         { "orderList._id": orderId },
         { $set: { "orderList.$.paymentMethod": "COD" } },
-        { $set: { "orderList.$.paymentMethod": "COD" } }
+        { $set: { "orderList.$.status": "confirmed" } }
       );
-   res.render('user/orderConfirm',{order:newOrder.orderList[0]}); 
+   res.render('user/orderConfirm',{order:newOrder.orderList[0],uid}); 
  } 
     else if(req.body.payoption=='razorpay')
     {
@@ -1112,19 +1124,20 @@ confirmOrder:async(req,res)=>
     
      //console.log("inr",totalINR);
       const instance = new Razorpay({
-        key_id: "rzp_test_8FhsDQXauNn2kx",
-        key_secret: "I2ZpSlDE9D8et4W9wS3fXFIQ",
+        key_id: "rzp_test_Zc5byswcyV2mBa",
+        key_secret: "4b4miOAumGlwoSigTndsbVY0",
       });
 
       const options = {
         amount: parseInt(newOrder.orderList[0].totalPrice)*100, // amount in the smallest currency unit
         currency: "USD",
-        receipt: "order_rcptid_11",
+        receipt: "order_rcptid_12",
       };
    
-      instance.orders.create(options, function (err, order) {
-        console.log("order from razor pay:",order);
-        let id = order.id
+      instance.orders.create(options, function (err, orderz) {
+        console.log("error from razr pay api:",err);
+        console.log("order from razor pay:",orderz);
+        let id = orderz.id
         res.render("user/razorpayButton",{totalINR,id,orderDetail:newOrder.orderList[0]});
       });
 
@@ -1156,28 +1169,25 @@ payPalconfirmOrder: (req,res)=>{
       res.redirect('/login');
     }
 },
-razorPayConfirmOrder:(req,res)=>
+razorPayConfirmOrder:async(req,res)=>
 {  
-  const orderId= req.session.latestOrderId;
+  
   if(req.session.loggedIn)
   { 
-    const uid = req.session.userid._id;
-    userOrders.findOneAndUpdate(
-      { userId:  uid, "orderList._id": orderId},
-      { $set: { "orderList.$.status": "Order Confirmed" } },
-      { new: true }
-    )
-    .then(updatedOrder => {
-      console.log("status updated",updatedOrder);
-    })
-    .catch(err => {
-      console.log(err);
-    });
 
-
-    res.render('user/orderConfirm');
-
-  }
+    const mongoId =req.session.userid._id;
+    const uid = shortid.generate(mongoId);
+    const orderId= req.session.latestOrderId;
+    const newOrder = await userOrders.findOne(
+     { userId: mongoId, "orderList._id": orderId },
+     { "orderList.$": 1 }
+   );
+   await userOrders.findOneAndUpdate(
+    { userId: mongoId, "orderList._id": orderId },
+    { $set: { "orderList.$.paymentMethod": "Razor PAY", "orderList.$.status": "confirmed" } }
+  );
+    res.render('user/orderConfirm',{order:newOrder.orderList[0],uid}); 
+}
   else{
     res.redirect('/login');
   }

@@ -23,10 +23,16 @@ app.use(
     saveUninitialized: true,
   })
 );
+
 const userRouter = require("./routes/users");
 const adminRouter = require("./routes/admin");
-app.use("/admin", adminRouter);
-app.use("/", userRouter);
 
+app.use("/admin", adminRouter);
+
+app.use("/", userRouter);
+// app.use(function(req, res, next) {
+//   res.status(404);
+//   res.render('user/page-404.ejs');
+// }); 
 
 app.listen(4000);
