@@ -1,4 +1,5 @@
 const express = require("express");
+const shortid = require('shortid');
 const app = express();
 var path = require("path");
 app.use(express.json()); 
@@ -30,9 +31,9 @@ const adminRouter = require("./routes/admin");
 app.use("/admin", adminRouter);
 
 app.use("/", userRouter);
-// app.use(function(req, res, next) {
-//   res.status(404);
-//   res.render('user/page-404.ejs');
-// }); 
+app.use(function(req, res, next) {
+  res.status(404);
+  res.render('user/page-404.ejs');
+}); 
 
 app.listen(4000);

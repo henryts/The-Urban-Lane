@@ -49,7 +49,7 @@ module.exports = {
                     brandName: "$productDetails.brandName",
                     productCost: "$productDetails.productCost",
                     productCatogory: "$productDetails.productCatogory",
-                    //productImages: "$productDetails.productImages",
+                    productImages: "$productDetails.productImages",
                    
                   }
                 },
@@ -65,7 +65,7 @@ module.exports = {
                     input: "$products",
                     as: "p",
                     in: {
-                      productsId:"$$p._id",
+                      productsId:"$$p.pid",
                       productName: "$$p.productName",
                       qty: "$$p.qty",
                         productCost: "$$p.productCost",

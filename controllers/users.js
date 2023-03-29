@@ -261,10 +261,12 @@ getCart: async (req, res) => {
     const pid = req.params.id;
     const product_qty = req.body.quantity;
     console.log("qty",product_qty);
+    //const product = await products.findOne({ _id: uid });
     const products = [{
       pid: pid,
       size: 'm',
-      qty: product_qty
+      qty: product_qty,
+
     }];
     const productsInCart =  await cartcollections.findOne({
             userEmail: uEmail,
@@ -295,109 +297,48 @@ getCart: async (req, res) => {
       if (req.session.loggedIn) {
         const uEmail = req.session.userid.email;
         const uid =req.session.userid;
-            
-    try {
+        
+        let cartempty =await cartcollections.find({userEmail:uid.email});
+        console.log(cartempty);
+        if(!cartempty[0].product.length)
+        { 
+          uid.cartCount=0;
+          console.log("empty");
+          res.render("user/shop-cart", { products: null, uid });
 
-      const cart = await cartcollections.aggregate([
-        // match the cart based on the user's email
-        { $match: { userEmail: uEmail } },
-      
-        // unwind the product array
-        { $unwind: "$product" },
-      
-        // join with the products collection to get the product details
-        {
-          $lookup: {
-            from: "products",
-            localField: "product.pid",
-            foreignField: "_id",
-            as: "productDetails"
-          }
-        },
-      
-       // group the data by cart ID and product ID
-        {
-          $group: {
-            _id: { cartId: "$_id", productId: "$product.pid" },
-            userEmail: { $first: "$userEmail" },
-            product: { $first: "$product" },
-            productDetails: { $first: { $arrayElemAt: [ "$productDetails", 0 ] } }
-          }
-        },
-      
-        // group the data by cart ID
-        {
-          $group: {
-            _id: "$_id.cartId",
-            userEmail: { $first: "$userEmail" },
-            products: {
-              $push: {
-                pid: "$product.pid",
-                size: "$product.size",
-                qty: "$product.qty",
-                productTotal: "$productDetails.subTotal",
-                productName: "$productDetails.productName",
-                productDescription: "$productDetails.productDescription",
-                brandName: "$productDetails.brandName",
-                productCost: "$productDetails.productCost",
-                productCatogory: "$productDetails.productCatogory",
-                productImages: "$productDetails.productImages",
-               
-              }
-            },
-           // totalPrice: { $sum: "$product.productTotal" }
-          }
-        },
-        {
-          $project: {
-            _id: 0,
-            userEmail: 1,
-            products: {
-              $map: {
-                input: "$products",
-                as: "p",
-                in: {
-                  productsId:"$$p.pid",
-                  productName: "$$p.productName",
-                  qty: "$$p.qty",
-                    productCost: "$$p.productCost",
-                  productImages: "$$p.productImages",
-                  subtotal: { $multiply: [{$toInt:"$$p.qty"}, {$toDouble:"$$p.productCost"}] },
-                 
-              },
-              
-            },
-           //  totalPrice: { $sum: "$products.total" }
+        }          
+    try {
+     const cart = await cartService.cart(req.session.userid.email);
+        ///console.log(cart);
+         console.log("cart", cart[0].products);
+        // console.log(cart.products[1]);
+        if (cart.length === 0) {
+          console.log("empty");
+          res.render("user/shop-cart", { products: null, uid });
+        } else  {
+          const lengthh = cart[0].products.length;
+          if (lengthh) {
+            const options = { new: true }; // Return the updated document
+            users.findOneAndUpdate(
+              { _id: uid._id },
+              { $set: { cartCount: lengthh } },
+              options,
+              (err, result) => {
+                if (err) {
+                  console.log(err);
+                } else {
+                  // console.log("result is",result);
                 }
+              }
+            );
+            req.session.userid.cartCount = lengthh;
+            uid.cartCount = lengthh;
           }
+          console.log("cart count: ", uid.cartCount);
+        
+
+          res.render("user/shop-cart", { products: cart[0].products, uid });
         }
-      ]).exec();
-      let uid = req.session.userid;
-       
-      
-      //console.log("cart",cart[0]);
-      if(typeof cart[0] === 'undefined'){
-        console.log("empty");
-        res.render("user/shop-cart",{products:null,uid});
-       }
-     else if(cart[0].products.length>0)
-     {
-      const lengthh=cart[0].products.length;  
-      if(lengthh)
-      {     
-      const options = { new: true }; // Return the updated document 
-      users.findOneAndUpdate({ _id: uid._id },{ $set: { cartCount: lengthh} }, options, (err, result) => {
-        if (err) {
-          console.log(err);
-        } else {
-         // console.log("result is",result);
-        }
-      });
-      req.session.userid.cartCount=lengthh
-      uid.cartCount=lengthh;
-    }
-    res.render("user/shop-cart", { products: cart[0].products,uid});   
-     }
     //  else if(typeof cart[0] === 'undefined'){
     //   console.log("empty");
     //   res.render("user/shop-cart",{products:null,uid});
@@ -466,49 +407,27 @@ getCart: async (req, res) => {
 } ,
   
 
-//   deleteFromCart:  async (req, res) => {
-//   const { id } = req.params;
-//   const { userId } = req.session;
 
-//   try {
-//     const cartDocument = await cartCollections.findOne({ userId });
-//     const { product } = cartDocument;
 
-//     const index = product.findIndex(item => item.pid.toString() === id);
-
-//     if (index === -1) {
-//       return res.status(404).send('Item not found in cart');
-//     }
-
-//     // remove the item from the array
-//     product.splice(index, 1);
-
-//     await cartCollections.updateOne(
-//       { _id: cartDocument._id },
-//       { $set: { product } }
-//     );
-
-//     return res.status(204).send();
-//   } catch (err) {
-//     console.error(err);
-//     return res.status(500).send('Internal server error');
-//   }
-// },
-
-    deleteFromCart:async(req,res)=>{   //delete from cart
+    deleteFromCart:async(req,res)=>{ 
+      if (req.session.loggedIn) {  //delete from cart
      const id=req.params.id
      const uEmail=req.session.userid.email
       console.log("in delete method");
       const cartDocument = await cartcollections.findOne({ userEmail:uEmail});
-      console.log(cartDocument);
-
-      const updatedCart = await cartcollections.updateOne({ _id:cartDocument._id},{ $pull: { product: { pid: id } } })
-
-      res.redirect('/showCart');
-    },
+     // console.log(cartDocument.product);
+       const updatedCart = await cartcollections.updateOne({ _id:cartDocument._id},{ $pull: { product: { pid: id } } })
+       console.log(updatedCart);
+       res.redirect('/showCart');
+     
+    }
+    else{
+      res.redirect('/login');
+    }
+  },
 
  checkOut:async (req,res)=>{
-
+  try {
         if (req.session.loggedIn) {
          let uEmail = req.session.userid.email ;  
         // let uid= req.session.userid
@@ -590,7 +509,11 @@ getCart: async (req, res) => {
         let uid = await users.findOne({ email: uEmail });
       res.render('user/CHECKOUT',{uid, product: cart[0].products });  
         }
-    },
+      }
+     catch (error) {
+      console.log(error);
+      next();
+    }  }  ,
     addtoWishlist:async(req,res)=>{
       if(req.session.loggedIn)
       {
@@ -622,7 +545,8 @@ getCart: async (req, res) => {
 }
 else{
   res.redirect('/login');
-}             
+}  
+      
   },
 
     wishlist:async(req,res)=>{ 
@@ -786,9 +710,7 @@ else{
         }
       
         await users.updateOne({ username:uid.username},{ $push: { address:newAddress} });
-        //require('user/CHECKOUT')
-       //delete require.cache[require.resolve('user/CHECKOUT.ejs')];
-       // delete require.cache[require.resolve('./views/user/CHECKOUT.ejs')];
+       
 
         
         res.redirect('/checkout');

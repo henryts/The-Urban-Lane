@@ -8,6 +8,7 @@ const Catagory = mongooseModels.catagory;
 const newProduct = mongooseModels.products;
 const admins = mongooseModels.adminCred;
 const users = usersDetails.User;
+const shortid = require('shortid');
 var path = require("path");
 const { render } = require("ejs");
 
@@ -209,8 +210,13 @@ module.exports = {
   {
     try {
       const orders = await userOrders.find({});
-    
-     res.render('admin/pageOrders',{order:orders});
+      let userID=[];
+      for(let i=0;i<orders.length;i++)
+      {
+         userID[i] = shortid.generate(orders[i].userId);
+      }
+      console.log("userID :", userID);
+     res.render('admin/pageOrders',{order:orders, shortIds});
   } catch (err) {
     console.log(err);
   }
