@@ -7,7 +7,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-9">
+                <div class="col-md-12">
                     <div class="card mb-4">
                         <header class="card-header">
                             <div class="row gx-3">
@@ -36,22 +36,27 @@
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
+                                            <th>No.</th>
+                                            <th>OrderID</th>
                                             <th>Customer name</th>
                                             <th>Price</th>
                                             <th>Status</th>
+                                            <th>Payment Method</th>
                                             <th>Date</th>
                                             <th class="text-end"> Action </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                       
+                                       <% let k=1 %>
                                         <%   for(let i=0;i<order.length;i++) { %>
                                             <%for(let j=0;j<order[i].orderList.length;j++) { %>
-                                          <td><%= userID[i]%>%></td> 
+                                          <td><%=k%></td> 
+                                          <% k++ %>
+                                          <td>#<%=order[i].orderList[j].orderHashId%></td> 
                                     <td><b><%=order[i].userName%></b></td>
                                             <td>$<%=order[i].orderList[j].totalPrice%></td>
                                             <td><span class="badge rounded-pill alert-danger"><%=order[i].orderList[j].status%></span></td>
+                                            <td><span class="badge rounded-pill alert-danger"><%=order[i].orderList[j].paymentMethod%></span></td>
                                             <% const timestamp = new Date(order[i].orderList[j].creationTime);
                                             const options = { month: 'long', day: 'numeric', year: 'numeric' };
                                             const formattedDate = timestamp.toLocaleDateString('en-US', options); %>
@@ -78,7 +83,7 @@
                         </div> <!-- card-body end// -->
                     </div> <!-- card end// -->
                 </div>
-                <div class="col-md-3">
+                <!-- <div class="col-md-3">
                     <div class="card mb-4">
                         <div class="card-body">
                             <h5 class="mb-3">Filter by</h5>
@@ -116,8 +121,8 @@
                                 </div>
                             </form>
                         </div>
-                    </div> <!-- card end// -->
-                </div>
+                    </div> 
+                </div> -->
             </div>
             <div class="pagination-area mt-15 mb-50">
                 <nav aria-label="Page navigation example">

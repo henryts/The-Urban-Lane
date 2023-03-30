@@ -30,7 +30,8 @@ const orderSchema= new mongoose.Schema({
                    paymentStatus:{ type:Boolean, default:false},
                    paymentMethod:{ type:String},
                    cancellationRequest:{ type:Boolean, default:false} ,
-                   returnRequest:{ type:Boolean, default:false}                                     
+                   returnRequest:{ type:Boolean, default:false},
+                   orderHashId:String                                    
 
      } ]
               

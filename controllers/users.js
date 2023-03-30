@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 const paypal = require('paypal-rest-sdk');
 const Razorpay = require('razorpay');
 const shortid = require('shortid');
+const crypto = require('crypto');
 const cartService = require("./cartinfo");
 
 const mongooseModels = require("../models/admin-schema");
@@ -42,6 +43,23 @@ loginUser: async (req, res) => {
         req.session.loggedIn = true;
         req.session.userid = userObj;
         res.send("Login successful"); // return success message
+       //generation and updation of new hash id for user
+        let id = req.session.userid._id;
+        const hash = crypto.createHash('sha256');
+        hash.update(id.toString());
+        let userHashId= hash.digest('hex').substr(0, 8);
+        try {
+          const user = await users.findOneAndUpdate(
+            { _id: req.session.userid._id },
+            { $set: { userHashId: userHashId } },
+            { upsert: true, new: true }
+          );
+          //console.log("userHashId updated",user);
+        } catch (err) {
+          console.error(err);
+        }
+
+
       } else {
         res.status(400).send("Invalid password");
       }
@@ -146,6 +164,8 @@ loginUser: async (req, res) => {
   //********SIGNUP PAGE POST**********
   signupUser: async (req, res) => {
     const hashPassword = await bcrypt.hash(req.body.password, 10);
+   
+    
 
     const newUser = new users({
       username: req.body.username,
@@ -802,7 +822,7 @@ else{
             },
           },
         ]);
-        
+       
         if (cart.length == 0) {
           res.send("Cart is Empty!!");
          // res.redirect('/');
@@ -1022,13 +1042,33 @@ confirmOrder:async(req,res)=>
       'cache-control': 'no-cache, no-store, must-revalidate'
     });
    const mongoId =req.session.userid._id;
-   const uid = shortid.generate(mongoId);
-   const orderId= req.session.latestOrderId;
+  
+  
+    //generating unique orderid :
+    let orderId =req.session.latestOrderId;
+    const hash = crypto.createHash('sha256');
+    hash.update(orderId.toString());
+    let orderHashId= hash.digest('hex').substr(0, 8);
+    try {
+      const rslt = await userOrders.updateOne(
+        {userId: mongoId, "orderList._id": orderId },
+        {
+          $set: {
+            "orderList.$.orderHashId": orderHashId,
+              }   
+        },
+        { upsert: true, new: true }
+      );
+      //console.log("userHashId updated",user);
+    } catch (err) {
+      console.error(err);
+    }
+
    const newOrder = await userOrders.findOne(
     { userId: mongoId, "orderList._id": orderId },
     { "orderList.$": 1 }
   );
-    console.log("newOrder  ", newOrder);
+    //console.log("newOrder  ", newOrder);
     if(req.body.payoption=='cod')
     {
       const result = await userOrders.updateOne(

@@ -15,7 +15,7 @@
                 <div class="card-body p-4">
                   <div class="d-flex justify-content-between align-items-center mb-4">
                     <p class="lead fw-normal mb-0" style="font-size: 20px;color: #2e2b2b;">Order Details </p>
-                    <p class="small mb-0" style="font-size: 18px;color: #2e2b2b;">Order Id :#<%=uid%></p>
+                    <p class="small mb-0" style="font-size: 18px;color: #2e2b2b;">Order Id :#<%=order.orderHashId%></p>
                     <% const timestamp = new Date(order.creationTime);
                     const options = { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
                     const formattedDate = timestamp.toLocaleDateString('en-US', options); %>
@@ -23,7 +23,7 @@
                     <h4 class=" small  mb-0" style="font-size: 15px;color: #272222be;">Ordered Date: <%=formattedDate%> </h4>
                     
                   </div>
-                  <p class= class="lead fw-normal mb-0" style="font-size: 20px;color: #272222be;">Payment-ethod:<%=order.paymentMethod%></p>
+                  <p class= class="lead fw-normal mb-0" style="font-size: 20px;color: #272222be;">Payment-Method:<%=order.paymentMethod%></p>
                   <div class="card shadow-0 border mb-4">
                   <% for(let i=0;i<order.items.length;i++) { %>
                     <div class="card-body">
@@ -36,7 +36,7 @@
                             <div class="col-md-10">
                               <div class="row align-items-center">
                                 <div class="col-md-4">
-                                  <a href="#"  onmouseover="this.style.textDecoration='underline';" onmouseout="this.style.textDecoration='none';"><%=order.items[i].productName%></a>
+                                  <a href="/productDetails/<%=order.items[i].productId%>" target="_blank" onmouseover="this.style.textDecoration='underline';" onmouseout="this.style.textDecoration='none';"><%=order.items[i].productName%></a>
                                 </div>
                                 <div class="col-md-3 text-muted">
                                     <p class=" mb-0 small" style="font-size: 17px;color: #4a5252;">Price $<%=order.items[i].price%></p> 

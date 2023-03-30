@@ -210,13 +210,19 @@ module.exports = {
   {
     try {
       const orders = await userOrders.find({});
-      let userID=[];
+      let orderID=[];
+      let k=0;
+    //console.log(orders[1].orderList);
       for(let i=0;i<orders.length;i++)
       {
-         userID[i] = shortid.generate(orders[i].userId);
+       for(let j=0;j<orders[i].orderList.length;j++,k++)
+       {
+         orderID[k] = shortid.generate(orders[i].orderList[j]._id);
+       
+       }
       }
-      console.log("userID :", userID);
-     res.render('admin/pageOrders',{order:orders, shortIds});
+      console.log("userID :", orderID);
+     res.render('admin/pageOrders',{order:orders,orderID});
   } catch (err) {
     console.log(err);
   }
