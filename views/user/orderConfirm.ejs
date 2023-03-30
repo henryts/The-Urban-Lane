@@ -1,10 +1,10 @@
-<%- include('../partials/checkOutPartial') %> 
+<%- include('../partials/OrderSummary') %> 
 <body>
     <section class="h-100 gradient-custom" >
         <div class="container py-5 h-100" >
           <div class="row d-flex justify-content-center align-items-center h-100" >
-            <div class="col-lg-10 col-xl-8"style="width: 90%;" >
-              <div class="card" style="border-radius: 10px;">
+            <div class="col-lg-10 col-xl-8"style="width: 78%;" >
+              <div class="card" style="margin-left:50px;border-radius: 10px;border-color: #046963;border-width: 2px;">
                 <div class="card-header px-4 py-5" style="background-color: #046963;">
                 
                   
@@ -23,7 +23,7 @@
                     <h4 class=" small  mb-0" style="font-size: 15px;color: #272222be;">Ordered Date: <%=formattedDate%> </h4>
                     
                   </div>
-                  <p class="small text-success mb-0 ">payment-method:<%=order.paymentMethod%></p>
+                  <p class= class="lead fw-normal mb-0" style="font-size: 20px;color: #272222be;">Payment-ethod:<%=order.paymentMethod%></p>
                   <div class="card shadow-0 border mb-4">
                   <% for(let i=0;i<order.items.length;i++) { %>
                     <div class="card-body">
@@ -89,7 +89,7 @@
                                                                                       
                         <%} %>
                         <%if(order.status=='confirmed'){ %>   
-                         <button  class="btn btn-primary text-center"  onclick="cancelOrder('<%=orderDetails._id%>');Swal.fire({
+                         <button  class="btn btn-primary text-center"  onclick="cancelOrder('<%=order._id%>');Swal.fire({
                           position: 'center',
                           icon: 'success',
                           title: 'Item Canceled',

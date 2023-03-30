@@ -507,6 +507,7 @@ getCart: async (req, res) => {
         ]).exec();
        
         let uid = await users.findOne({ email: uEmail });
+      
       res.render('user/CHECKOUT',{uid, product: cart[0].products });  
         }
       }
@@ -915,6 +916,7 @@ else{
             }
           }
         ]).exec();
+        
          res.render('user/paymentSelection',{ product: cart[0].products });  
         }     
         else{
@@ -1016,6 +1018,9 @@ confirmOrder:async(req,res)=>
   
  
   if (req.session.loggedIn) {
+    res.set({
+      'cache-control': 'no-cache, no-store, must-revalidate'
+    });
    const mongoId =req.session.userid._id;
    const uid = shortid.generate(mongoId);
    const orderId= req.session.latestOrderId;
@@ -1023,15 +1028,39 @@ confirmOrder:async(req,res)=>
     { userId: mongoId, "orderList._id": orderId },
     { "orderList.$": 1 }
   );
-    console.log(newOrder.orderList[0]);
+    console.log("newOrder  ", newOrder);
     if(req.body.payoption=='cod')
     {
       const result = await userOrders.updateOne(
-        { "orderList._id": orderId },
-        { $set: { "orderList.$.paymentMethod": "COD" } },
-        { $set: { "orderList.$.status": "confirmed" } }
+        {userId: mongoId, "orderList._id": orderId },
+        {
+          $set: {
+            "orderList.$.paymentMethod": 'COD',
+            "orderList.$.status": 'confirmed',
+            "orderList.$.paymentStatus": true,
+          },
+        }
       );
-   res.render('user/orderConfirm',{order:newOrder.orderList[0],uid}); 
+      console.log("oderrr", result);
+      const newOrder = await userOrders.findOne(
+        { userId: mongoId, "orderList._id": orderId },
+        { "orderList.$": 1 }
+      );
+        console.log("newOrder after updation ", newOrder);
+      // try {
+      //   const updatedOrder = await userOrders.findByIdAndUpdate(orderId, {
+      //     $set: {
+      //       paymentStatus: true,
+      //       paymentMethod:'COD'
+      //     }
+      //   });
+      //   //return updatedOrder;
+      // } catch (err) {
+      //   console.error(err);
+      //   throw err;
+      // }
+      
+   res.render('user/orderConfirm',{order:newOrder.orderList[0],uid,orderdet:newOrder}); 
  } 
     else if(req.body.payoption=='razorpay')
     {

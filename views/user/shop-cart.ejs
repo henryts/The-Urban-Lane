@@ -286,6 +286,16 @@
             </div>
         </div>
     </div> -->
+    <script>
+        window.history.forward();
+        function preventBack() {
+          window.history.forward();
+        }
+        setTimeout("preventBack()", 0);
+        window.onunload = function() {
+          null
+        };
+      </script>
     <!-- Vendor JS-->
     <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>
     <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
