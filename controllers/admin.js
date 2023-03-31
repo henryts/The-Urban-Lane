@@ -211,17 +211,6 @@ module.exports = {
     try {
       const orders = await userOrders.find({});
       let orderID=[];
-      let k=0;
-    //console.log(orders[1].orderList);
-      for(let i=0;i<orders.length;i++)
-      {
-       for(let j=0;j<orders[i].orderList.length;j++,k++)
-       {
-         orderID[k] = shortid.generate(orders[i].orderList[j]._id);
-       
-       }
-      }
-      console.log("userID :", orderID);
      res.render('admin/pageOrders',{order:orders,orderID});
   } catch (err) {
     console.log(err);
@@ -229,9 +218,32 @@ module.exports = {
 
   }
   else{
-    res.redirect('/adminlogin');
+    res.redirect('/admin/adminlogin');
   }
+  },
+  orderDetails:async(req,res)=>{
+    if(req.session.loggedIn)
+    {
 
 
+     const userId= req.query.userId;
+     const orderId = req.query.orderId;
+     const newOrder = await userOrders.findOne(
+      { userId: userId, "orderList._id": orderId },
+      { "orderList.$": 1 }
+    );
+      const userDetails = await users.findOne({
+        _id:userId
+        });
+      
+ console.log(newOrder);
+ 
+      res.render('admin/OrderDetail',{order:newOrder,user: userDetails});
+
+    }
+    else{
+      res.redirect('/admin/adminlogin');
+    }
   }
+
 };

@@ -27,7 +27,8 @@ const orderSchema= new mongoose.Schema({
 
                    creationTime: String,
                    modifiedAt: String,
-                   paymentStatus:{ type:Boolean, default:false},
+                   deliveryStatus:{ type:String, default:'Shipped'},
+                   paymentStatus:{ type:String, default:'pending'},
                    paymentMethod:{ type:String},
                    cancellationRequest:{ type:Boolean, default:false} ,
                    returnRequest:{ type:Boolean, default:false},

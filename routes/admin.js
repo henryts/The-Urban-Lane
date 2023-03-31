@@ -59,6 +59,7 @@ router.get('/editCat',adminController.editCatagory);
 router.post('/categoryPostUpdate/:id',adminController.editCatagoryPost);
 
 router.get('/pageOrders',adminController.orderListDisplay);
+router.get('/orderDetails',adminController.orderDetails);
 
 
 
