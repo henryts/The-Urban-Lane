@@ -1077,7 +1077,7 @@ confirmOrder:async(req,res)=>
           $set: {
             "orderList.$.paymentMethod": 'COD',
             "orderList.$.status": 'confirmed',
-            "orderList.$.paymentStatus": true,
+            "orderList.$.paymentStatus": 'Pending',
           },
         }
       );
@@ -1107,10 +1107,12 @@ confirmOrder:async(req,res)=>
        const userId= req.session.userid._id;
        const result = await userOrders.updateOne(
         { "orderList._id": orderId },
-        { $set: { "orderList.$.paymentMethod": "Razor Pay" } }
+        { $set: { "orderList.$.paymentMethod": "Razor Pay" },
+                  "orderList.$.status": 'confirmed',
+                  "orderList.$.paymentStatus": 'Payment Recieved' }
       );
      // const orderDetails = await userOrders.findOne({ userId:userId });
-     console.log(newOrder.orderList[0].totalPrice);
+    // console.log(newOrder.orderList[0].totalPrice);
      let totalINR = (newOrder.orderList[0].totalPrice);
     
      //console.log("inr",totalINR);
@@ -1128,7 +1130,7 @@ confirmOrder:async(req,res)=>
       instance.orders.create(options, function (err, orderz) {
         console.log("error from razr pay api:",err);
         console.log("order from razor pay:",orderz);
-        let id = orderz.id
+        let id = x;
         res.render("user/razorpayButton",{totalINR,id,orderDetail:newOrder.orderList[0]});
       });
 
@@ -1233,7 +1235,29 @@ passwordReset: async (req, res) => {
        // res.json({ success: false, message: 'password does not match' }) ;
       }
     }
-  }}
+  }},
+  cancelOrder:async(req,res)=>{
+    if (req.session.loggedIn) {
+      let response={};
+      const uid = req.session.userid._id;
+      const orderId= req.session.latestOrderId;
+      await userOrders.findOneAndUpdate(
+        { userId: uid, "orderList._id": orderId },
+        { $set: { "orderList.$.status": "cancelled", "orderList.$.paymentStatus": "Refund Issued" } }
+      );
+      console.log("UPDATED");
+      response.ok=true;
+      res.json(response);
+
+
+    }
+    else{
+       res.redirect('/login');
+    }
+    
+
+  }
+
 }
      
 

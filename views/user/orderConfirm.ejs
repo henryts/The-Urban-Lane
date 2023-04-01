@@ -1,4 +1,12 @@
 <%- include('../partials/OrderSummary') %> 
+<!-- Include the SweetAlert CSS file -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.min.css">
+
+<!-- Include the SweetAlert JS file -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
 <body>
     <section class="h-100 gradient-custom" >
         <div class="container py-5 h-100" >
@@ -70,7 +78,7 @@
                     </div>
                     <% } %>
                     </div>
-                    <div class="d-flex justify-content-between pt-2">
+                    <!-- <div class="d-flex justify-content-between pt-2">
                         <p class="fw-bold mb-0">Address Details</p>
                         <p class="text-muted mb-0"><span class="fw-bold me-4"></span></p>
                       </div>
@@ -80,6 +88,13 @@
                           <p class="fw-bold mb-0"><%=order.address.firstName%></p>
                         <%if(order.status=='confirmed'){ %>   
                           <p class="text-muted mb-0"><span class="fw-bold me-4" ><span>Order Status</span>:   <span style="color:green;"><%=order.status%> </span> </p>
+                          <button  class="btn btn-primary text-center"  onclick="cancelOrder('<%=order._id%>');Swal.fire({
+                            position: 'center',
+                            icon: 'success',
+                            title: 'Item Canceled',
+                            showConfirmButton: false,
+                            timer: 2000
+                          })">Cancel Order</button>
                         <%} else if(order.status=='Delivered') {%>
                           <p class="text-muted mb-0"><span class="fw-bold me-4" ><span>Order Status</span>:   <span style="color: orange;"><%=order.status%> </span> </p>
                                             
@@ -88,15 +103,7 @@
                           <p class="text-muted mb-0"><span class="fw-bold me-4" ><span>Order Status</span>:   <span style="color: red;"><%=order.status%> </span> </p>
                                                                                       
                         <%} %>
-                        <%if(order.status=='confirmed'){ %>   
-                         <button  class="btn btn-primary text-center"  onclick="cancelOrder('<%=order._id%>');Swal.fire({
-                          position: 'center',
-                          icon: 'success',
-                          title: 'Item Canceled',
-                          showConfirmButton: false,
-                          timer: 2000
-                        })">Cancel Order</button>
-                        <%} %>
+                
                         <%if(order.status=='delivered'){ %>   
                        <button class="btn btn-primary text-center" style="background: slateblue; height:2rem" onclick="returnOrder('<%=orderDetails._id%>')">Return</button>
                         <%} %>
@@ -125,7 +132,81 @@
                       <h5 class="d-flex align-items-center justify-content-end text-black text-uppercase mb-0">Total
                         paid: $<%=order.totalPrice%><span class="h2 mb-0 ms-2"></span></h5>
                     </div>
-                  </div>
+                  </div> -->
+                  <table>
+                    <tr>
+                      <td class="fw-bold">Delivering to:</td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td>Customer Name:</td>
+                      <td><%=order.address.firstName%></td>
+                     
+                    </tr>
+                    <tr>
+                      <td class="fw-bold">Address:</td>
+                      <td><%=order.address.addressLine1%></td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold">Street:</td>
+                      <td><%=order.address.addressLine2%></td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold">City:</td>
+                      <td><%= order.address.city%></td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold">PinCode:</td>
+                      <td><%= order.address.postalCode%></td>
+                    </tr>
+                    <tr>
+                      <td class="fw-bold">Contact No:</td>
+                      <td><%= order.address.contactNumber%></td>
+                    </tr>
+                    <tr>
+                      <td><span class="fw-bold">Grand Total</span></td>
+                      <td>$<%=order.totalPrice%></td>
+                    </tr>
+                    <tr>
+                      <td></td>
+                      <td>
+                        <p class="text-success mb-0"></p>
+                        <p class="text-muted mb-0"><span class="fw-bold me-4">Delivery Charges</span>Free</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <td>
+                          <%if(order.status=='confirmed'){ %>
+                            <span class="fw-bold me-4">Order Status: </span>
+                            <span style="color:green;" id="statusmsg"><%=order.status%></span>
+                            <button class="button button-add-to-cart" id="button-add-to-cart" style="background-color: grey;margin-left: 200px; font-size: 14px;
+                            padding: 5px 10px;" onclick="showCancelOrderWarning()">Cancel Order</button>
+
+
+                            <!-- <button class="btn  btn-primary text-center" style="margin-left: 20px;" onclick="cancelOrder('<%=order._id%>');Swal.fire({
+                              position: 'center',
+                              icon: 'success',
+                              title: 'Item Canceled',
+                              showConfirmButton: false,
+                              timer: 2000
+                            })">Cancel Order</button> -->
+                          <%} else if(order.status=='Delivered') {%>
+                            <span class="fw-bold me-4">Order Status: </span>
+                            <span style="color: orange;"><%=order.status%></span>
+                          <%} else  {%>
+                            <span class="fw-bold me-4">Order Status: </span>
+                            <span style="color: red;"><%=order.status%></span>
+                          <%} %>
+                        
+                        </td>
+                      </td>
+                      <td>
+                        <h5 class="d-flex align-items-center justify-content-end text-black text-uppercase mb-0">Grand Total: $<%=order.totalPrice%><span class="h2 mb-0 ms-2"></span></h5>
+                      </td>
+                    </tr>
+                  </table>
+                  
                 </div>
               </div>
             </div>
@@ -139,7 +220,7 @@
                 
       </section>
       
-      <script>
+      <!-- <script>
         function cancelOrder(orderId){
           // console.log(orderId);
           $.ajax({
@@ -164,189 +245,53 @@
           })
         }
         
-      </script> 
+      </script>  -->
+      <script>
+        function showCancelOrderWarning() {
+          // Show a confirmation dialog using SweetAlert
+          swal.fire({
+            title: 'Are you sure you want to cancel this order?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: 'grey',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!',
+            cancelButtonText: 'No, keep it'
+          }).then((result) => {
+            if (result.value) {
+      $.ajax({
+        type: 'POST',
+        url: '/cancel-order',
+        data: JSON.stringify({orderId: null}),
+        contentType: 'application/json',
+        success: function(response) {
+          // If the cancel order request was successful, display a success message
+          if(response.ok){
+          swal.fire({
+            title: 'Order canceled',
+            text: 'Your order has been canceled successfully',
+            type: 'success'
+          });
+          document.getElementById("statusmsg").textContent = "cancelled";
+          
+        }
+        },
+        error: function(xhr, status, error) {
+          // If the cancel order request failed, display an error message
+          swal.fire({
+            title: 'Error',
+            text: 'Failed to cancel the order',
+            type: 'error'
+          });
+        }
+      });
+    }
+   });
+  }
+ </script>
+      
+ 
+      
 </body>
 </html>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        body {
-    background-color: #5165ff;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center
-}
-
-.modal-body {
-    background-color: #fff;
-    border-color: #fff;
-
-}
-
-
-.close {
-    color: #000;
-    cursor: pointer;
-}
-
-.close:hover {
-    color: #000;
-}
-
-
-.theme-color{
-
-    color: #004cb9;
-}
-hr.new1 {
-    border-top: 2px dashed #fff;
-    margin: 0.4rem 0;
-}
-
-
-.btn-primary {
-    color: #fff;
-    background-color: #004cb9;
-    border-color: #004cb9;
-    padding: 12px;
-    padding-right: 30px;
-    padding-left: 30px;
-    border-radius: 1px;
-    font-size: 17px;
-}
-
-
-.btn-primary:hover {
-    color: #fff;
-    background-color: #004cb9;
-    border-color: #004cb9;
-    padding: 12px;
-    padding-right: 30px;
-    padding-left: 30px;
-    border-radius: 1px;
-    font-size: 17px;
-}
-    </style>
-</head>
-<body>
-    
-    <style>
-
-
-        .payment
-     {
-      border:1px solid #f2f2f2;
-      height:280px;
-            border-radius:20px;
-            background:#fff;
-     }
-       .payment_header
-       {
-        background:#20B6CA;
-        padding:20px;
-           border-radius:20px 20px 0px 0px;
-        
-       }
-       
-       .check
-       {
-        margin:0px auto;
-        width:50px;
-        height:50px;
-        border-radius:100%;
-        background:#fff;
-        text-align:center;
-       }
-       
-       .check i
-       {
-        vertical-align:middle;
-        line-height:50px;
-        font-size:30px;
-       }
-    
-        .content 
-        {
-            text-align:center;
-        }
-    
-        .content  h1
-        {
-            font-size:25px;
-            padding-top:25px;
-        }
-    
-        .content a
-        {
-            width:200px;
-            height:35px;
-            color:#fff;
-            border-radius:30px;
-            padding:5px 10px;
-            background:#20B6CA;
-            transition:all ease-in-out 0.3s;
-        }
-    
-        .content a:hover
-        {
-            text-decoration:none;
-            background:#000;
-        }
-       
-    </style>
-    
-    
-    
-    <div class="container mt-30">
-      <div class="row">
-         <div class="col-md-6 mx-auto mt-5">
-            <div class="payment">
-               <div class="payment_header">
-                  <div class="check"><i class="fa fa-check" aria-hidden="true"></i></div>
-               </div>
-               <div class="content">
-                  <h1>Payment Success !</h1>
-                  <p>We received your purchase request;<br/> we'll be in touch shortly!</p>
-                  <a href="/" >Go to Home</a>
-               </div>
-               
-            </div>
-         </div>
-      </div>
-    </div>
-    
-    
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-</html> -->

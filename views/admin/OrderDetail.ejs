@@ -2,8 +2,8 @@
 <section class="content-main">
     <div class="content-header">
         <div>
-            <h2 class="content-title card-title">Order detail</h2>
-            <p>Details for Order ID: <%=order.orderList[0].orderHashId%></p>
+            <h2 class="content-title card-title">Order Detail</h2>
+            <p style="color: red;">ORDER STATUS: <%=order.orderList[0].status%></p>
         </div>
     </div>
     <div class="card">
@@ -82,10 +82,10 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th width="40%">Product</th>
-                                    <th width="20%">Unit Price</th>
-                                    <th width="20%">Quantity</th>
-                                    <th width="20%" class="text-end">Total</th>
+                                    <th width="70%">Product</th>   <!-- Increased to 50% -->
+                                    <th width="10%">Unit Price</th>
+                                    <th width="10%">Quantity</th>
+                                    <th width="10%" class="text-center">Total</th>  
                                 </tr>
                             </thead>
                             <tbody>
@@ -94,40 +94,38 @@
                                    
                                     <td>
                                         <a class="itemside" href="#">
-                                            <div class="left">
-                                                <img src="/uploads/<%=order.orderList[0].items[i].productImages[1].filename%>"  width="40" height="40" class="img-xs" alt="Item">
-                                            </div>
-                                        <!-- </td>
-                                        <td> -->
-                                            <div class="info"><%=order.orderList[0].items[i].productName%> </div>
+                                          <div style="display: flex; align-items: center;">
+                                            <img src="/uploads/<%=order.orderList[0].items[i].productImages[1].filename%>" width="40" height="40" class="img-xs" alt="Item" style="margin-right: 10px;">
+                                            <div style="font-weight: bold;"><%=order.orderList[0].items[i].productName%></div>
+                                          </div>
                                         </a>
-                                    </td>
+                                      </td>
                                     <td> $<%=order.orderList[0].items[i].price%></td>
                                     <td> <%=order.orderList[0].items[i].quantity%> </td>
-                                    <td class="text-end"> $<%=order.orderList[0].items[i].productTotal%> </td>
+                                    <td class="text-center"> $<%=order.orderList[0].items[i].productTotal%> </td>
                                 </tr>                               
                                
                             </td>
                             <% } %>
-                                <tr>
-                                    <td colspan="4">
+                                <tr >
+                                    <td colspan="4" >
                                         <article class="float-end">
-                                            <dl class="dlist">
-                                                <dt>Subtotal:</dt>
+                                            <dl class="dlist" style="margin-right: 90px;">
+                                                <dt >Subtotal:</dt>
                                                 <dd>$<%=order.orderList[0].totalPrice%></dd>
                                             </dl>
-                                            <dl class="dlist">
+                                            <dl class="dlist" style="margin-right: 90px;">
                                                 <dt>Shipping cost:</dt>
                                                 <dd>$00.00</dd>
                                             </dl>
-                                            <dl class="dlist">
+                                            <dl class="dlist" style="margin-right: 90px;">
                                                 <dt>Grand total:</dt>
                                                 <dd> <b class="h5">$<%=order.orderList[0].totalPrice%></b> </dd>
                                             </dl>
-                                            <dl class="dlist">
-                                                <dt class="text-muted">Status:</dt>
+                                            <dl class="dlist" style="margin-right: 90px;">
+                                                <dt class="text-muted">Payment Status:</dt>
                                                 <dd>
-                                                    <span class="badge rounded-pill alert-success text-success">Payment done</span>
+                                                    <span class="badge rounded-pill alert-success text-success"><%=order.orderList[0].paymentStatus%></span>
                                                 </dd>
                                             </dl>
                                         </article>
@@ -139,16 +137,16 @@
                 </div> <!-- col// -->
                 <div class="col-lg-1"></div>
                 <div class="col-lg-4">
-                    <div class="box shadow-sm bg-light">
+                    <!-- <div class="box shadow-sm bg-light">
                         <h6 class="mb-15">Payment info</h6>
                         <p>
                             <img src="assets/imgs/card-brands/2.png" class="border" height="20"> Master Card **** **** 4768 <br>
                             Business name: Grand Market LLC <br>
                             Phone: +1 (800) 555-154-52
                         </p>
-                    </div>
+                    </div> -->
                    
-                </div> <!-- col// -->
+                </div> 
             </div>
         </div> <!-- card-body end// -->
     </div> <!-- card end// -->

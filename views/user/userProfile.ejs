@@ -231,7 +231,7 @@
                                                         <tbody>
                                                       <% for(let i=0;i<orders.length;i++) { %>
                                                             <tr>
-                                                                <td>#<%=orders[i].orderList._id %></td>
+                                                                <td>#<%=orders[i].orderList.orderHashId %></td>
                                                                 <% const timestamp = new Date(orders[i].orderList.creationTime);
                                                                 const options = { month: 'long', day: 'numeric', year: 'numeric' };
                                                                 const formattedDate = timestamp.toLocaleDateString('en-US', options); %>

@@ -84,6 +84,9 @@ router.get('/byfilter', UserController2.shopbycatagory);
 router.get('/cat1', UserController2.catagory1); 
 
 
+router.post('/cancel-order', UserController.cancelOrder); 
+
+
 
 
 // router.use(verifyLogin)
