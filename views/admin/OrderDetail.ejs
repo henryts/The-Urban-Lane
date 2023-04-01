@@ -1,4 +1,10 @@
 <%- include('../partials/adminHeader') %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.min.css">
+
+<!-- Include the SweetAlert JS file -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.4/dist/sweetalert2.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <section class="content-main">
     <div class="content-header">
         <div>
@@ -19,6 +25,7 @@
                     <small class="text-muted">Order ID: <%=order.orderList[0].orderHashId%></small>
                 </div>
                 <div class="col-lg-6 col-md-6 ms-auto text-md-end">
+                    <form action="/orderStatusUpdate" method="post" id="statusUpdate" >
                     <select class="form-select d-inline-block mb-lg-0 mb-15 mw-200">
                         <option>Change status</option>
                         <option>Awaiting payment</option>
@@ -26,7 +33,9 @@
                         <option>Shipped</option>
                         <option>Delivered</option>
                     </select>
-                    <a class="btn btn-primary" href="#">Save</a>
+                    <button class="btn btn-primary" type="submit" >Save</button>
+                </form>
+                    <!-- <a class="btn btn-primary" href="#"></a> -->
                     <a class="btn btn-secondary print ms-2" href="#"><i class="icon material-icons md-print"></i></a>
                 </div>
             </div>
@@ -166,6 +175,33 @@
     </div>
 </footer>
 </main>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$('#statusUpdate').on('submit', function(event) {
+    event.preventDefault(); // prevent default form submission
+    console.log("button clicked");
+    if (true) {
+        // make AJAX call to server method
+        $.ajax({
+            type: 'POST',
+            url: '/orderStatusUpdate',
+            data: $('#statusUpdate').serialize(),
+            success: function(response) {
+                alert("Status updated successfully.");
+                // do something with response from server
+            },
+            error: function(error) {
+                alert("Something went wrong.");
+            }
+        });
+    } else {
+        alert("Status update cancelled.");
+    }
+});
+
+</script>
+
 <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
 <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
 <script src="assets/js/vendors/select2.min.js"></script>

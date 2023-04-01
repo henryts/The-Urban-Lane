@@ -244,6 +244,41 @@ module.exports = {
     else{
       res.redirect('/admin/adminlogin');
     }
-  }
+  },
+  orderStatusUpdater:async(req,res)=>{
+    if(req.session.loggedIn)
+    { console.log("control cobra");
 
-};
+      const uid = req.session.userid._id;
+      const orderId= req.session.latestOrderId;
+      const selectedStatus = req.body.status;
+      let response = {};
+      console.log("status selected",selectedStatus);
+      if(selectedStatus=='Delivered')
+      {
+     await userOrders.findOneAndUpdate(
+    { userId: uid, "orderList._id": orderId },
+    { $set: { "orderList.$.status": selectedStatus, "orderList.$.paymentStatus": "Payment Recieved", 
+               "orderList.$.deliveryStatus":'Package Delivered'} }
+
+               
+     );
+     response.ok=true;
+     res.json(response);
+    }
+    else if (selectedStatus=='Shipped')
+    {
+
+     await userOrders.findOneAndUpdate(
+    { userId: uid, "orderList._id": orderId },
+    { $set: { "orderList.$.status": 'Shipped',
+               "orderList.$.deliveryStatus":'Shipped'} }
+       );
+       response.ok=true;
+       res.json(response);
+    
+    }
+
+    }
+  }
+}

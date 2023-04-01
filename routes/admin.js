@@ -60,6 +60,7 @@ router.post('/categoryPostUpdate/:id',adminController.editCatagoryPost);
 
 router.get('/pageOrders',adminController.orderListDisplay);
 router.get('/orderDetails',adminController.orderDetails);
+router.post('/orderStatusUpdate', adminController.orderStatusUpdater); 
 
 
 
