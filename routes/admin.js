@@ -62,6 +62,8 @@ router.get('/pageOrders',adminController.orderListDisplay);
 router.get('/orderDetails',adminController.orderDetails);
 router.post('/orderStatusUpdate', adminController.orderStatusUpdater); 
 
+router.get('/salesReport', adminController.salesReport); 
+router.post('/salesReportPost', adminController.salesReportPost); 
 
 
 

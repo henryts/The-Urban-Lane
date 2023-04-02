@@ -228,6 +228,8 @@ module.exports = {
 
      const userId= req.query.userId;
      const orderId = req.query.orderId;
+     req.session.userid=userId;
+     req.session.orderid=orderId;
      const newOrder = await userOrders.findOne(
       { userId: userId, "orderList._id": orderId },
       { "orderList.$": 1 }
@@ -247,10 +249,10 @@ module.exports = {
   },
   orderStatusUpdater:async(req,res)=>{
     if(req.session.loggedIn)
-    { console.log("control cobra");
+    { 
 
-      const uid = req.session.userid._id;
-      const orderId= req.session.latestOrderId;
+      const uid = req.session.userid;
+      const orderId= req.session.orderid;
       const selectedStatus = req.body.status;
       let response = {};
       console.log("status selected",selectedStatus);
@@ -278,7 +280,51 @@ module.exports = {
        res.json(response);
     
     }
+    else if (selectedStatus=='Cancel')
+    {
+
+     await userOrders.findOneAndUpdate(
+    { userId: uid, "orderList._id": orderId },
+    { $set: { "orderList.$.status": 'Cancelled',
+               "orderList.$.deliveryStatus":'Returning',
+               "orderList.$.paymentStatus":'pending'} }
+       );
+       response.ok=true;
+       res.json(response);
+    
+    }
+    
 
     }
-  }
+  },
+  salesReport:async (req,res)=>{
+    if(req.session.loggedIn)
+    {
+        
+         res.render("admin/salesReport",{})
+          }
+},
+salesReportPost:async(req,res)=>{
+
+  console.log(req.body.startdate);
+  console.log(req.body.enddate); 
+  const startdate = new Date(req.body.startdate);
+  const enddate = new Date(req.body.enddate);
+  userOrders.find({
+    "orderList.creationTime": { $gte: startdate, $lte: enddate }
+  }).exec((err, orders) => {
+    if (err) {
+      console.log(err);
+    } else {
+     // console.log(orders);
+      res.json(orders);
+    }
+  });
+  
+
+
+}
+
+
+
 }
