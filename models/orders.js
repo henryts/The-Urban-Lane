@@ -3,6 +3,7 @@ const orderSchema= new mongoose.Schema({
      userId: mongoose.Schema.Types.ObjectId,
      userName: String,
      userEmail:String,
+    
      
      orderList:[{
                    items: [ { productId:  mongoose.Schema.Types.ObjectId,
@@ -25,7 +26,7 @@ const orderSchema= new mongoose.Schema({
                                           contactNumber:{ type: String, default:null},
                                           shippingEmail:{ type: String, default:null}},
 
-                   creationTime: String,
+                   creationTime: Date,
                    modifiedAt: String,
                    deliveryStatus:{ type:String, default:'Yet to Dispatch'},
                    paymentStatus:{ type:String, default:'pending'},

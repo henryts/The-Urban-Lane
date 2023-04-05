@@ -4,7 +4,7 @@
                 
 <div style="text-align: right;">
 
-<form action="/admin/sales-report" method="POST" id="dateForm">
+<form action="/admin/sales-report" method="post" id="dateForm">
     <div>
       <label for="startdate">Start Date:</label>
       <input type="date" name="startdate" id="startdate">
@@ -54,35 +54,35 @@
         // Send AJAX request
         $.ajax({
           url: '/admin/salesReportPost',
-          type: 'POST',
+          type: '',
           data: formData,
           success: function(orders) {
             // Handle response data
-            const order_data = $('#order_data');
-            const total_earnings = $('#total_earnings');
-            let total = 0;
+            // const order_data = $('#order_data');
+            // const total_earnings = $('#total_earnings');
+            // let total = 0;
     
-            // Loop through each order and add a row to the table
-            orders.forEach(function(order) {
-              order.orderList.forEach(function(item) {
-                const row = $('<tr></tr>');
-                row.append($('<td></td>').text(order._id));
-                row.append($('<td></td>').text(order.userId));
-                row.append($('<td></td>').text(item.items[0].productId));
-                row.append($('<td></td>').text(item.items[0].price));
-                row.append($('<td></td>').text(item.items[0].quantity));
-                row.append($('<td></td>').text(item.paymentMethod));
-                row.append($('<td></td>').text(item.creationTime));
-                order_data.append(row);
-                total += parseFloat(item.items[0].price) * parseFloat(item.items[0].quantity);
-              });
-            });
+            // // Loop through each order and add a row to the table
+            // orders.forEach(function(order) {
+            //   order.orderList.forEach(function(item) {
+            //     const row = $('<tr></tr>');
+            //     row.append($('<td></td>').text(order.orderHashId));
+            //     row.append($('<td></td>').text(order.userId));
+            //     row.append($('<td></td>').text(item.items[0].productId));
+            //     row.append($('<td></td>').text(item.items[0].price));
+            //     row.append($('<td></td>').text(item.items[0].quantity));
+            //     row.append($('<td></td>').text(item.paymentMethod));
+            //     row.append($('<td></td>').text(item.creationTime));
+            //     order_data.append(row);
+            //     total += parseFloat(item.items[0].price) * parseFloat(item.items[0].quantity);
+            //   });
+            // });
     
-            // Set the total earnings
-            total_earnings.text(total.toLocaleString("en-IN", {
-              style: "currency",
-              currency: "INR"
-            }));
+            // // Set the total earnings
+            // total_earnings.text(total.toLocaleString("en-IN", {
+            //   style: "currency",
+            //   currency: "INR"
+            // }));
           },
           error: function(error) {
             // Handle errors

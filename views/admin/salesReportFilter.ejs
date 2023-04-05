@@ -1,0 +1,140 @@
+<%- include('../partials/adminHeader') %>
+
+
+                
+<div style="display: flex; align-items: center; justify-content: center;">
+  <form action="/admin/salesReportPost" method="post" id="dateForm" style="display: flex;">
+    <div style="display: flex; align-items: center; margin-right: 10px;">
+      <label for="startdate" style="margin-right: 5px;">Start Date:</label>
+      <input type="date" name="startdate" id="startdate" style="padding: 5px; border-radius: 5px; border: 1px solid #ccc;">
+    </div>
+    <div style="display: flex; align-items: center; margin-right: 10px;">
+      <label for="enddate" style="margin-right: 5px;">End Date:</label>
+      <input type="date" name="enddate" id="enddate" style="padding: 5px; border-radius: 5px; border: 1px solid #ccc;">
+    </div>
+    <button class="btn btn-primary" type="submit" style="padding: 5px; border-radius: 5px; background-color: #007bff; color: #fff;">Submit</button>
+  </form>
+</div>
+<%if(locals.orders){%>
+
+
+
+
+  <table style="width:100%;max-width:900px;margin:auto;border-collapse:collapse;border:1px solid #ddd;" class="table table-striped">
+    <thead>
+      <tr style="background-color:#f2f2f2;color:#444;">
+        <th style="padding:12px;text-align:left;">OrderId</th>
+        <th style="padding:12px;text-align:left;">Customer Email</th>
+        <th style="padding:12px;text-align:left;">Order Total</th>
+        <th style="padding:12px;text-align:left;">Order Status</th>
+        <th style="padding:12px;text-align:left;">Payment Method</th>
+        <th style="padding:12px;text-align:left;">Order Date</th>
+        <!-- <th style="padding:12px;text-align:left;">Delivered Date</th> -->
+      </tr>
+      <%  
+    for(let i=0;i<orders.orders.length;i++)
+    {
+    %>
+    <tr style="background-color:#f2f2f2;color:#444;">
+      <td style="padding:12px;text-align:left;">#<%=orders.orders[i].orderHashId %>   </td>
+      <td style="padding:12px;text-align:left;"><%=orders.orders[i].userEmail %> </td>
+        <td style="padding:12px;text-align:left;">$ <%=orders.orders[i].totalPrice %> </td>
+          <td style="padding:12px;text-align:left;"><%=orders.orders[i].orderStatus %> </td>
+            <td style="padding:12px;text-align:left;"><%=orders.orders[i].paymentMethod %> </td>
+            <% const timestamp = new Date(orders.orders[i].creationTime);
+                    const options = { month: 'long', day: 'numeric', year: 'numeric'};
+                    const formattedDate = timestamp.toLocaleDateString('en-US', options); %>
+              <td style="padding:12px;text-align:left;"><%=formattedDate %> </td>
+                
+    </tr>
+    <%} %>
+    
+    <!-- <tbody id="order_data"> -->
+    </tbody>
+    <tfoot>
+      <tr style="background-color:#f2f2f2;color:#444;">
+        <td colspan="7" style="padding:12px;text-align:right;">Total Earnings:&nbsp;<span style="font-weight:bold;"><strong id="total_earnings">$<%=orders.totalRevenue%></strong></span></td>
+      </tr>
+  </table> 
+  <%}%>
+  <!-- <table class="table table-striped" id="container_content">
+    <thead>
+      <tr>
+        <th scope="col">OrderId</th>
+        <th scope="col">User Id</th>
+        <th scope="col">Item Id</th>
+        <th scope="col">Price</th>
+        <th scope="col">Quantity</th>
+        <th scope="col">Payment Method</th>
+        <th scope="col">Delivered Date</th>
+      </tr>
+    </thead>
+    <tbody id="order_data">
+  
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="7" class="text-right">Total Earnings: &nbsp; <span class="fw-bold"></span> <strong id="total_earnings"></strong></td>
+      </tr>
+    </tfoot>
+  </table>
+         -->
+</div>
+</body>
+</html>
+<!-- <script>
+    $(document).ready(function() {
+      $('#dateForm').submit(function(event) {
+        event.preventDefault(); // Prevent default form submission
+    
+        const formData = $(this).serialize(); // Get form data
+        
+        // Send AJAX request
+        $.ajax({
+          url: '/admin/salesReportPost',
+          type: 'POST',
+          data: formData,
+          success: function(orders) {
+         //   Handle response data
+             console.log(orders);
+            const order_data = $('#order_data');
+            const total_earnings = $('#total_earnings');
+            let total = 0;
+    
+            // Loop through each order and add a row to the table
+            // orders[0].orders.forEach(function(order) {
+              orders[0].orders.forEach(function(item) {
+                const row = $('<tr></tr>');
+                var creationTime = new Date(order.creationTime);
+                var date = creationTime.toLocaleDateString(undefined, {month: 'long', day: 'numeric', year: 'numeric'});
+                var time = creationTime.toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'});
+                var formattedTime = date + ' ' + time;
+                row.append($('<td></td>').text(order.orderHashId));
+                row.append($('<td></td>').text(order.userId));
+                row.append($('<td></td>').text(order.totalPrice));
+                row.append($('<td></td>').text(order.orderStatus));
+                row.append($('<td></td>').text(order.paymentMethod));
+                row.append($('<td></td>').text(item.paymentMethod));
+              //  row.append($('<td></td>').text(formattedTime));
+                order_data.append(row);
+              
+              });
+            
+    
+            // Set the total earnings
+            total_earnings.text(order[0].totalRevenue.toLocaleString("en-IN", {
+              style: "currency",
+              currency: "USD"
+            }));
+          },
+          error: function(error) {
+            // Handle errors
+            console.error(error);
+          }
+        });
+      });
+    });
+    </script> -->
+ 
+ 
+ 

@@ -16,10 +16,129 @@ module.exports = {
   adminDashboard: async (req, res) => {
     //admin-dashboard
     if (req.session.loggedIn) {
-      res.render("admin/admin-index");
-    } else {
-      res.redirect("/admin/adminlogin");
+      // Import the UserOrders model
+
+orderStat= await userOrders.aggregate([
+  {
+    $unwind: '$orderList' // Unwind the orderList array
+  },
+  {
+    $group: {
+      _id: {
+        $dateToString: { format: '%Y-%m', date: '$orderList.creationTime' } // Group by year and month
+      },
+      count: { $sum: 1 } // Count the number of orders
     }
+  },
+  {
+    $sort: { _id: 1 } // Sort by year and month
+  }
+]);
+
+//console.log(orderStat);
+
+    
+    const currentDate = new Date();
+
+    // First, let's find the total revenue for the current year
+    const totalRevenueOfYear = await userOrders.aggregate([
+      {
+        $unwind: "$orderList"
+      },
+      {
+        $match: {
+          "orderList.status": "Delivered",
+          "orderList.creationTime": {
+            $gte: new Date(currentDate.getFullYear(), 0, 1),
+            $lte: new Date(currentDate.getFullYear(), 11, 31, 23, 59, 59, 999)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: {
+            $sum: {
+              $toDouble: "$orderList.totalPrice"
+            }
+          }
+        }
+      }
+    ]);
+    
+    // Then, let's find the total number of orders of the current month
+    const totalOrdersOfMonth = await userOrders.aggregate([
+      {
+        $unwind: "$orderList"
+      },
+      {
+        $match: {
+          "orderList.creationTime": {
+            $gte: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
+            $lte: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalOrders: {
+            $sum: 1
+          }
+        }
+      }
+    ]);
+    
+    // Finally, let's find the total revenue for the current month
+    const totalRevenueOfMonth = await userOrders.aggregate([
+      {
+        $unwind: "$orderList"
+      },
+      {
+        $match: {
+          "orderList.status": "Delivered",
+          "orderList.creationTime": {
+            $gte: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
+            $lte: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: {
+            $sum: {
+              $toDouble: "$orderList.totalPrice"
+            }
+          }
+        }
+      }
+    ]);
+    
+    console.log("Total revenue of the current year:", totalRevenueOfYear[0].totalRevenue);
+    console.log("Total number of orders of the current month:", totalOrdersOfMonth[0].totalOrders);
+    console.log("Total revenue of the current month:", totalRevenueOfMonth[0].totalRevenue);
+    
+   res.render("admin/admin-index", {
+  orderStat: orderStat,
+  totalRevenue: totalRevenueOfYear[0].totalRevenue,
+  totalOrders: totalOrdersOfMonth[0].totalOrders,
+  revenueOfMonth: totalRevenueOfMonth[0].totalRevenue
+});
+
+
+
+  } else {
+    res.redirect("/admin/adminlogin");
+  }
+
+
+
+
+
+
+
+
   },
 
   userlist: async (req, res) => {
@@ -291,37 +410,73 @@ module.exports = {
        );
        response.ok=true;
        res.json(response);
-    
     }
-    
-
     }
   },
-  salesReport:async (req,res)=>{
+  salesReportFilter:async (req,res)=>{
     if(req.session.loggedIn)
     {
         
-         res.render("admin/salesReport",{})
-          }
+         res.render("admin/salesReportFilter",{})
+     }
 },
 salesReportPost:async(req,res)=>{
-
-  console.log(req.body.startdate);
-  console.log(req.body.enddate); 
   const startdate = new Date(req.body.startdate);
   const enddate = new Date(req.body.enddate);
-  userOrders.find({
-    "orderList.creationTime": { $gte: startdate, $lte: enddate }
-  }).exec((err, orders) => {
-    if (err) {
-      console.log(err);
-    } else {
-     // console.log(orders);
-      res.json(orders);
-    }
-  });
+  console.log("start date",startdate);
+  console.log("end date",enddate); 
+  
+ 
+  try {
+    const orders = await userOrders.aggregate([
+      {
+        $unwind: "$orderList"
+      },
+      {
+        $match: {
+          "orderList.status": "Delivered",
+          "orderList.creationTime": { $gte: startdate, $lte: enddate }
+        }
+      },
+      {
+        $project: {
+          orderHashId: "$orderList.orderHashId",
+          userEmail: "$userEmail",
+          totalPrice: "$orderList.totalPrice",
+          orderStatus: "$orderList.status",
+          paymentMethod: "$orderList.paymentMethod",
+          creationTime: "$orderList.creationTime"
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: { $toDouble: "$totalPrice" } },
+          orders: { $push: "$$ROOT" }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          totalRevenue: 1,
+          orders: 1
+        }
+      }
+    ]);
+
+    //res.status(200).json(orders[0]);
+    console.log(orders[0].orders);
+    res.render("admin/salesReportFilter",{orders:orders[0]});
+    //console.log(orders[0].orders);
+     
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+
   
 
+
+ 
 
 }
 

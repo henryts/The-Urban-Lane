@@ -96,3 +96,113 @@ changeQuantity:(req, res) => {
                                                 
                                             </div>
                                         </td>
+
+
+<div class="row">
+    <div class="col-xl-8 col-lg-12">
+      <div class="card mb-4">
+        <article class="card-body">
+          <h5 class="card-title">Sale statistics</h5>
+          <canvas id="myChart1" height="120px"></canvas>
+        </article>
+      </div>
+    </div>
+    <div class="col-xl-4 col-lg-12">
+      <div class="card mb-4">
+        <article class="card-body">
+          <h5 class="card-title">Types of Orders</h5>
+          <canvas id="myChart2" height="217"></canvas>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p style="visibility: hidden" id="days">
+      <%= JSON.stringify(locals.ordersPerDay) %>
+    </p>
+    <p style="visibility: hidden" id="payment">
+      <%=JSON.stringify(locals.paymentCount) %>
+    </p>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+<script>
+  document.write(new Date());
+
+  // Sample data
+  var xValues = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
+  var yValues = [0, 5, 10, 15, 20, 25, 50];
+  var buyed = [];
+  let daysData = JSON.parse(document.getElementById('days').innerHTML);
+  console.log(daysData+"llkjjdj")
+
+  for (let i = 0; i < xValues.length; i++) {
+    if (xValues[i] in daysData) {
+      buyed.push(daysData[xValues[i]]);
+    } else {
+      buyed.push(0);
+    }
+  }
+
+  new Chart('myChart1', {
+    type: 'bar',
+    data: {
+      labels: xValues,
+      datasets: [
+        {
+          fill: false,
+          lineTension: 0,
+          backgroundColor: 'yellow',
+          borderColor: 'rgba(0,0,255,0.1)',
+          data: buyed,
+          label: 'Sales',
+        },
+      ],
+    },
+    options: {
+      legend: { display: false },
+      scales: {
+        yAxes: [{ ticks: { min: 0, max: 25 } }],
+      },
+    },
+  });
+
+  var xValue = ['Razorpay', 'COD', 'Paypal'];
+  var yValue = [];
+  let paymentData = JSON.parse(document.getElementById('payment').innerHTML);
+  yValue.push(paymentData[0]);
+  yValue.push(paymentData[1]);
+  yValue.push(paymentData[2]);
+
+  var barColors = ['#27968B', 'grey', 'orange'];
+
+  new Chart('myChart2', {
+    type: 'pie',
+    data: {
+      labels: xValue,
+      datasets: [
+        {
+          backgroundColor: barColors,
+          data: yValue,
+        },
+      ],
+    },
+    options: {
+      title: {
+        display: true,
+        text: 'Payment mode',
+      },
+    },
+  });
+</script>

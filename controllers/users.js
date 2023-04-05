@@ -1130,7 +1130,7 @@ confirmOrder:async(req,res)=>
       instance.orders.create(options, function (err, orderz) {
         console.log("error from razr pay api:",err);
         console.log("order from razor pay:",orderz);
-        let id = x;
+        let id = orderz.id;
         res.render("user/razorpayButton",{totalINR,id,orderDetail:newOrder.orderList[0]});
       });
 

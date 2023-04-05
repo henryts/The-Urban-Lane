@@ -1,4 +1,7 @@
 <%- include('../partials/adminHeader') %>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+
         <section class="content-main">
             <div class="content-header">
                 <div>
@@ -16,7 +19,7 @@
                             <span class="icon icon-sm rounded-circle bg-primary-light"><i class="text-primary material-icons md-monetization_on"></i></span>
                             <div class="text">
                                 <h6 class="mb-1 card-title">Revenue</h6>
-                                <span>$13,456.5</span>
+                                <span>$<%=totalRevenue  %></span>
                                 <span class="text-sm">
                                     Shipping fees are not included
                                 </span>
@@ -29,7 +32,7 @@
                         <article class="icontext">
                             <span class="icon icon-sm rounded-circle bg-success-light"><i class="text-success material-icons md-local_shipping"></i></span>
                             <div class="text">
-                                <h6 class="mb-1 card-title">Orders</h6> <span>53.668</span>
+                                <h6 class="mb-1 card-title">Orders</h6> <span><%=totalOrders %></span>
                                 <span class="text-sm">
                                     Excluding orders in transit
                                 </span>
@@ -55,7 +58,7 @@
                         <article class="icontext">
                             <span class="icon icon-sm rounded-circle bg-info-light"><i class="text-info material-icons md-shopping_basket"></i></span>
                             <div class="text">
-                                <h6 class="mb-1 card-title">Monthly Earning</h6> <span>$6,982</span>
+                                <h6 class="mb-1 card-title">Monthly Earning</h6> <span>$<%=revenueOfMonth %></span>
                                 <span class="text-sm">
                                     Based in your local time.
                                 </span>
@@ -69,7 +72,49 @@
                     <div class="card mb-4">
                         <article class="card-body">
                             <h5 class="card-title">Sale statistics</h5>
-                            <canvas id="myChart" height="120px"></canvas>
+                           
+                            <script
+                            src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+                            </script>
+                            <canvas id="myChart1" style="width:100%;max-width:700px"></canvas>
+                            <script>
+                                               
+                                var xValues = ["January", "February", "March", "April","May","June","July","August","September","October","November","December"]
+                                var yValues = [<%=orderStat[0].count%>, <%=orderStat[1].count%>, <%=orderStat[2].count%>, <%=orderStat[3].count%>];
+                               
+                
+                                var barColors = ["red", "green", "blue", "orange", "brown"];
+                              
+                                new Chart("myChart1", {
+                                    type: "bar",
+                                    data: {
+                                        labels: xValues,
+                                        datasets: [{
+                                            backgroundColor: barColors,
+                                            data: yValues
+                                        }]
+                                    },
+                                    options: { scales: {
+            yAxes: [{
+                type: 'linear',
+               
+            }]
+        }}
+
+                                });
+                                function updateChart(newXValues, newYValues) {
+    myChart.data.labels = newXValues;
+    myChart.data.datasets[0].data = newYValues;
+    myChart.options.scales.yAxes[0].ticks.min = Math.min(...newYValues);
+    myChart.options.scales.yAxes[0].ticks.max = Math.max(...newYValues);
+    myChart.update();
+}
+
+// Call the updateChart() function at the beginning of the script
+updateChart(xValues, yValues);
+                               
+                            </script>
+                            <!-- <canvas id="myChart" height="120px"></canvas> -->
                         </article>
                     </div>
                     <div class="row">
