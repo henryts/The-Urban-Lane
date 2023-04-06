@@ -2,12 +2,15 @@ const express = require("express");
 const shortid = require('shortid');
 const app = express();
 var path = require("path");
+
 app.use(express.json()); 
 app.use(
   express.urlencoded({
     extended: false,
   })
 );
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: true }));
 const dbConnection = require("./models/mong-conct");
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");

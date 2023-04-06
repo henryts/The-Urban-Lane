@@ -3,6 +3,8 @@ const users=userModel.User;
 const cartcollections = userModel.cartcollections;
 const orderModel =  require("../models/orders");
 const wishlistModel =  require("../models/wishlist-schema");
+const bannerModels = require("../models/banner");
+const bannerdb=bannerModels.bannerdb;
 const wishlistdb = wishlistModel.wishlistdb;
 const userOrders = orderModel.userOrders;
 const express = require("express");
@@ -147,11 +149,13 @@ loginUser: async (req, res) => {
 
   //********Index PAGE RENDER-----redirect-login**********
   IndexPage: async (req, res) => {
-    pData = await newProduct.find({});    
-
+    pData = await newProduct.find({});   
+    bannerData = await  bannerdb.find({});
+    let bLength = bannerData.length;
+     console.log(bannerData[0].bannerImages );
     if (req.session.loggedIn) {
       uid = req.session.userid;
-      res.render("user/index", { uid, pData });
+      res.render("user/index", { uid, pData,bData:bannerData[bLength-1] });
     } else {
       uid=null;
       res.render("user/index", {uid, pData });
@@ -320,6 +324,14 @@ getCart: async (req, res) => {
         
         let cartempty =await cartcollections.find({userEmail:uid.email});
         console.log(cartempty);
+        if(cartempty[0]=='undefined')
+        { 
+          uid.cartCount=0;
+          console.log("empty");
+          res.render("user/shop-cart", { products: null, uid });
+
+        } 
+
         if(!cartempty[0].product.length)
         { 
           uid.cartCount=0;
@@ -1130,7 +1142,7 @@ confirmOrder:async(req,res)=>
       instance.orders.create(options, function (err, orderz) {
         console.log("error from razr pay api:",err);
         console.log("order from razor pay:",orderz);
-        let id = orderz.id;
+        let id = order.id
         res.render("user/razorpayButton",{totalINR,id,orderDetail:newOrder.orderList[0]});
       });
 

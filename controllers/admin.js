@@ -1,14 +1,14 @@
 const usersDetails = require("../models/user-schema");
-//const admin_cred = require("../models/admin-schema");
-//const adminCred=require("../models/admin-schema")
 const mongooseModels = require("../models/admin-schema");
+const bannerModels = require("../models/banner");
+const bannerdb=bannerModels.bannerdb;
 const orderModel =  require("../models/orders");
 const userOrders = orderModel.userOrders;
 const Catagory = mongooseModels.catagory;
 const newProduct = mongooseModels.products;
+
 const admins = mongooseModels.adminCred;
 const users = usersDetails.User;
-const shortid = require('shortid');
 var path = require("path");
 const { render } = require("ejs");
 
@@ -131,14 +131,6 @@ orderStat= await userOrders.aggregate([
   } else {
     res.redirect("/admin/adminlogin");
   }
-
-
-
-
-
-
-
-
   },
 
   userlist: async (req, res) => {
@@ -471,15 +463,36 @@ salesReportPost:async(req,res)=>{
      
   } catch (err) {
     res.status(500).json({ message: err.message });
-  }
+  }},
+  bannerForm: (req,res)=>{
+    if(req.session.loggedIn)
+        {
+         
+          res.render('admin/bannerUpload');
 
-  
+        }
+          else {
+            res.redirect("/admin/adminlogin");
+          }        
+        
+  },
+  bannerFormPost:(req,res)=>{
+    if(req.session.loggedIn)
+        {
+          const newbanner = new bannerdb({
+            title: req.body.bTitle,
+            description: req.body.bDescription,
+            bannerImages: req.files,
+          });
+          newbanner.save().then(() => {
+            res.redirect("/admin/bannerForm");
+          });
+        }
 
-
- 
-
+}
 }
 
 
 
-}
+
+

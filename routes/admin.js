@@ -5,7 +5,7 @@ const adminController = require("../controllers/admin");
 const users = require("../models/user-schema");
 const bcrypt = require("bcrypt");
 var multer = require('multer');
-var path = require('path')
+var path = require('path');
 
 var storage = multer.diskStorage({
     destination: "public/uploads",
@@ -16,9 +16,21 @@ var storage = multer.diskStorage({
     cb(null,Date.now()+path.extname(file.originalname))
   }
 })
+var bannerStorage = multer.diskStorage({
+  destination: "public/bannerUploads",
+filename: (req,file,cb,err) =>{
+  if(err){
+      console.log(err);
+  }
+  cb(null,Date.now()+path.extname(file.originalname))
+}
+})
 const upload = multer({
   storage:storage
 }).array("file");
+const uploadBanner = multer({
+  storage:bannerStorage
+}).array("bannerfile");
 
 
 router.get('/adminlogin', adminController.adminLoginPage); //admin login page display
@@ -58,12 +70,18 @@ router.get('/deleteCat',adminController.deleteCatagory);
 router.get('/editCat',adminController.editCatagory);
 router.post('/categoryPostUpdate/:id',adminController.editCatagoryPost);
 
+router.get('/bannerForm',adminController.bannerForm);
+router.post('/bannerFormPost',uploadBanner,adminController.bannerFormPost);
+
+
 router.get('/pageOrders',adminController.orderListDisplay);
 router.get('/orderDetails',adminController.orderDetails);
 router.post('/orderStatusUpdate', adminController.orderStatusUpdater); 
 
 router.get('/salesReport', adminController.salesReportFilter); 
 router.post('/salesReportPost', adminController.salesReportPost); 
+// router.get('/ToPdfSalesReport', adminController.ToPdfSalesReport); 
+
 
 
 
