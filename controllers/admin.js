@@ -480,8 +480,10 @@ salesReportPost:async(req,res)=>{
     if(req.session.loggedIn)
         {
           const newbanner = new bannerdb({
-            title: req.body.bTitle,
-            description: req.body.bDescription,
+            offerTitle: req.body.offerTitle,
+            heading1: req.body.heading1,
+            heading2: req.body.heading2,
+            bottomline: req.body.bottomline,
             bannerImages: req.files,
           });
           newbanner.save().then(() => {

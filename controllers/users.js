@@ -149,13 +149,13 @@ loginUser: async (req, res) => {
 
   //********Index PAGE RENDER-----redirect-login**********
   IndexPage: async (req, res) => {
-    pData = await newProduct.find({});   
-    bannerData = await  bannerdb.find({});
+    const pData = await newProduct.find({});   
+    const bannerData = await  bannerdb.find({});
     let bLength = bannerData.length;
-     console.log(bannerData[0].bannerImages );
+     console.log(bannerData );
     if (req.session.loggedIn) {
       uid = req.session.userid;
-      res.render("user/index", { uid, pData,bData:bannerData[bLength-1] });
+      res.render("user/index", { uid, pData,bData:bannerData });
     } else {
       uid=null;
       res.render("user/index", {uid, pData });
