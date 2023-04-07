@@ -152,7 +152,7 @@ loginUser: async (req, res) => {
     const pData = await newProduct.find({});   
     const bannerData = await  bannerdb.find({});
     let bLength = bannerData.length;
-     console.log(bannerData );
+     //console.log(bannerData );
     if (req.session.loggedIn) {
       uid = req.session.userid;
       res.render("user/index", { uid, pData,bData:bannerData });
@@ -167,11 +167,8 @@ loginUser: async (req, res) => {
   },
   //********SIGNUP PAGE POST**********
   signupUser: async (req, res) => {
-    const hashPassword = await bcrypt.hash(req.body.password, 10);
-   
-    
-
-    const newUser = new users({
+    const hashPassword = await bcrypt.hash(req.body.password, 10);  
+     const newUser = new users({
       username: req.body.username,
       email: req.body.email,
       mobile: req.body.mobile,

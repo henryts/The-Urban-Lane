@@ -82,6 +82,10 @@ router.get('/salesReport', adminController.salesReportFilter);
 router.post('/salesReportPost', adminController.salesReportPost); 
 // router.get('/ToPdfSalesReport', adminController.ToPdfSalesReport); 
 
+router.get('/couponGenerate', adminController.couponGenerateForm);
+router.post('/couponPost', adminController.couponPost);
+
+
 
 
 

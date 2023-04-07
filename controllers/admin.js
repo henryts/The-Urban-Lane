@@ -1,6 +1,9 @@
 const usersDetails = require("../models/user-schema");
 const mongooseModels = require("../models/admin-schema");
 const bannerModels = require("../models/banner");
+const couponModels = require("../models/coupon");
+const coupondb=couponModels.coupondb;
+var couponCode = require('coupon-code');
 const bannerdb=bannerModels.bannerdb;
 const orderModel =  require("../models/orders");
 const userOrders = orderModel.userOrders;
@@ -490,8 +493,47 @@ salesReportPost:async(req,res)=>{
             res.redirect("/admin/bannerForm");
           });
         }
+        else {
+          res.redirect("/admin/adminlogin");
+        } 
+
+},
+couponGenerateForm: (req,res)=>{
+  if(req.session.loggedIn)
+        {
+  
+    res.render("admin/couponGenerate");
+}
+else {
+  res.redirect("/admin/adminlogin");
+} },
+couponPost:(req,res)=>{
+  if(req.session.loggedIn)
+  {
+    const couponName = req.body.couponName;
+    const discountPercent = req.body.discount;
+    const minTotalPrice = req.body.minTotalPrice;
+    const maxDiscount = req.body.maxDiscount;
+    const expiryDate = req.body.expiryDate;
+    const Code  =    couponCode.generate();
+    const newCoupon = new coupondb({
+    name: couponName,
+     code: Code,
+    discount: discountPercent,
+    minTotalPrice: minTotalPrice,
+    maxDiscount:maxDiscount,
+    expirationDate:expiryDate 
+    });
+    newCoupon.save().then(() => {
+      res.redirect("/admin/couponGenerate");
+    }); 
+  }
+  else {
+    res.redirect("/admin/adminlogin");
+  }
 
 }
+
 }
 
 
