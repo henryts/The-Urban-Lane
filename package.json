@@ -34,6 +34,7 @@
     "shortid": "^2.2.16",
     "start": "^5.1.0",
     "sweetalert": "^2.1.2",
+    "sweetalert2": "^11.7.3",
     "twilio": "^2.5.2"
   }
 }

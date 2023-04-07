@@ -4,6 +4,7 @@ const bannerModels = require("../models/banner");
 const couponModels = require("../models/coupon");
 const coupondb=couponModels.coupondb;
 var couponCode = require('coupon-code');
+const swal = require('sweetalert2');
 const bannerdb=bannerModels.bannerdb;
 const orderModel =  require("../models/orders");
 const userOrders = orderModel.userOrders;
@@ -14,6 +15,7 @@ const admins = mongooseModels.adminCred;
 const users = usersDetails.User;
 var path = require("path");
 const { render } = require("ejs");
+const { response } = require("express");
 
 module.exports = {
   adminDashboard: async (req, res) => {
@@ -516,6 +518,7 @@ couponPost:(req,res)=>{
     const maxDiscount = req.body.maxDiscount;
     const expiryDate = req.body.expiryDate;
     const Code  =    couponCode.generate();
+    let response= {};
     const newCoupon = new coupondb({
     name: couponName,
      code: Code,
@@ -525,12 +528,47 @@ couponPost:(req,res)=>{
     expirationDate:expiryDate 
     });
     newCoupon.save().then(() => {
-      res.redirect("/admin/couponGenerate");
+      response.ok=true;
+      response.code=Code;
+      res.json(response);
+     // res.redirect("/admin/couponGenerate");
+     
+     
     }); 
+  }
+  else {
+    
+    res.redirect("/admin/adminlogin");
+  }
+
+},
+couponlist:async(req,res)=>
+{
+  if(req.session.loggedIn)
+  {
+    const couponList = await coupondb.find({});
+   // console.log(couponList);
+    res.render("admin/couponList",{cList:couponList});
+
   }
   else {
     res.redirect("/admin/adminlogin");
   }
+},
+editCoupon:async(req,res)=>
+{ if(req.session.loggedIn)
+  {
+    const id = req.query.id;
+    console.log("control in edit coupon");
+   
+   const cData = await coupondb.findOne({ _id:id});
+   console.log(cData);
+   res.render('admin/couponEditForm',{cData:cData});
+  }
+  else {
+    res.redirect("/admin/adminlogin");
+  }
+
 
 }
 

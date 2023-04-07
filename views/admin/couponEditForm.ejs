@@ -3,9 +3,9 @@
     <section class="content-main">
         
         <div class="row">
-            <div class="col-6">
+            <div class="col-8">
                 <div class="content-header">
-                    <h2 class="content-title">Coupon Generation</h2>
+                    <h2 class="content-title">Edit Coupon Info: <%=cData.code %></h2>
                 </div>
             </div>
         </div>
@@ -21,24 +21,31 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="mb-4">
-                                    <label class="form-label">Coupon Name</label>
-                                    <input type="text" placeholder="Coupon Name" name="couponName" class="form-control">
+                                    <label class="form-label">Coupon Name:</label>
+                                    <input type="text" placeholder=<%=cData.name %> name="couponName" class="form-control" >
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Discount Percent</label>
-                                    <input type="text" placeholder="Dicscount %" name="discount" class="form-control">
+                                    <input type="text" placeholder=<%=cData.discount %> name="discount" class="form-control">
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Minimum Purchase Amount</label>
-                                    <input type="text" placeholder="Minimum Purchase Amount" name="minTotalPrice" class="form-control">
+                                    <input type="text" placeholder=<%=cData.minTotalPrice %> name="minTotalPrice" class="form-control">
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Maximum Discount Amount</label>
-                                    <input type="text" placeholder="Maximum Discount Amount" name="maxDiscount" class="form-control">
+                                    <input type="text" placeholder=<%=cData.maxDiscount%> name="maxDiscount" class="form-control">
                                 </div>
                                 <div class="mb-4 col-md-4">
                                     <label class="form-label">Expiry Date</label>
-                                    <input type="date"  name="expiryDate" class="form-control">
+                                    <% const mongoDate=cData.expirationDate; %>
+                                
+                                        <% const dateObj=new Date(mongoDate); %>
+                                            <% const year=dateObj.getFullYear(); %>
+                                                <% const month=(dateObj.getMonth() + 1).toString().padStart(2, "0" ); %>
+                                                    <% const day=dateObj.getDate().toString().padStart(2, "0" ); %>
+                                                    <input type="date" name="expiryDate" class="form-control" value="<%= `${year}-${month}-${day}` %>">
+                                                   
                                 </div>
                             <div class="col-md-9">
                                 
