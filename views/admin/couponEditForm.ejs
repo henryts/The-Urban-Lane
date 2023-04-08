@@ -5,14 +5,14 @@
         <div class="row">
             <div class="col-8">
                 <div class="content-header">
-                    <h2 class="content-title">Edit Coupon Info: <%=cData.code %></h2>
+                    <h2 class="content-title">Edit Coupon: <%=cData.code %></h2>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-6">
                 <div class="card mb-4">
-                    <form action="/admin/couponPost" method="post"  >
+                    <form action="/admin/couponUpdatePost/<%=cData._id%>" method="post"  >
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-3">
@@ -22,19 +22,19 @@
                             <div class="col-md-12">
                                 <div class="mb-4">
                                     <label class="form-label">Coupon Name:</label>
-                                    <input type="text" placeholder=<%=cData.name %> name="couponName" class="form-control" >
+                                    <input type="text" value=<%=cData.name %> name="couponName" class="form-control" >
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Discount Percent</label>
-                                    <input type="text" placeholder=<%=cData.discount %> name="discount" class="form-control">
+                                    <input type="text" value=<%=cData.discount %> name="discount" class="form-control">
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Minimum Purchase Amount</label>
-                                    <input type="text" placeholder=<%=cData.minTotalPrice %> name="minTotalPrice" class="form-control">
+                                    <input type="text" value=<%=cData.minTotalPrice %> name="minTotalPrice" class="form-control">
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Maximum Discount Amount</label>
-                                    <input type="text" placeholder=<%=cData.maxDiscount%> name="maxDiscount" class="form-control">
+                                    <input type="text" value=<%=cData.maxDiscount%> name="maxDiscount" class="form-control">
                                 </div>
                                 <div class="mb-4 col-md-4">
                                     <label class="form-label">Expiry Date</label>
@@ -50,7 +50,7 @@
                             <div class="col-md-9">
                                 
                                 <div>
-                                    <button class="btn btn-md rounded font-sm hover-up" type="submit">Generate Coupon </button>
+                                    <button class="btn btn-md rounded font-sm hover-up" type="submit">Update Coupon </button>
                                 </div>
                             </div> <!-- col.// -->
                         </div> <!-- .row end// -->
@@ -78,9 +78,9 @@
       data: formData,
       success: function(response) {
         // Handle the success response
-        console.log("hello"+response.code);
-        swal("Success!", "Coupon Code: "+response.code, "success").then(()=>{
-            location.reload();
+    
+        swal("Success!", "Coupon Info Updated ", "success").then(()=>{
+            window.location.replace("/admin/couponlist");
         });
         
 

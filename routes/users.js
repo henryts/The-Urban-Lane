@@ -67,6 +67,9 @@ router.get('/orderConfirmationpart4', UserController.payPalconfirmOrder);
 router.get('/razorPayConfirmOrder', UserController.razorPayConfirmOrder);
 
 
+router.post('/userCouponPost', UserController.userCouponPost);
+
+
 
 //router.post('/checkOut/deleteAddress/:id', UserController.deleteAddress);  //delete adddress from checkout form
 

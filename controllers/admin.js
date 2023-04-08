@@ -568,11 +568,74 @@ editCoupon:async(req,res)=>
   else {
     res.redirect("/admin/adminlogin");
   }
+},
+editCouponPost:async(req,res)=>{
+  if(req.session.loggedIn)
+  {
+    const couponName = req.body.couponName;
+    const discountPercent = req.body.discount;
+    const minTotalPrice = req.body.minTotalPrice;
+    const maxDiscount = req.body.maxDiscount;
+    const expiryDate = req.body.expiryDate;
+    const id = req.params.id;
+    let response= {};
+    const updateCoupon = {
+      name: req.body.couponName,
+      discount: req.body.discount,
+      minTotalPrice: req.body.minTotalPrice,
+      maxDiscount: req.body.maxDiscount,
+      expirationDate: req.body.expiryDate,
+  };
+  
+  try {
+      const result = await coupondb.updateOne({ _id: id }, { $set: updateCoupon });
+      response.success = true;
+      response.message = "Coupon updated successfully";
+      res.status(200).json(response);
+  } catch (error) {
+      response.success = false;
+      response.message = "Error updating coupon";
+      res.status(500).json(response);
+  }
+
+
+
+  }
+  else {
+    res.redirect("/admin/adminlogin");
+  }
+
+},
+deleteCoupon:async(req,res)=>
+{ 
+  if(req.session.loggedIn)
+  {
+
+     const id=req.body.id;
+     const response = {}
+      coupondb.findByIdAndDelete(id, (err, doc) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(doc);
+          response.ok=true;
+          res.json(response);
+        }
+      });
+
+  }
+  else{
+    
+      res.redirect("/admin/adminlogin");
+    }
+  }
+
+
 
 
 }
 
-}
+
 
 
 

@@ -11,12 +11,12 @@
                          
                             <div class="panel-body">
                                 <p class="mb-30 font-sm">If you have a coupon code, please apply it below.</p>
-                                <form method="post">
+                                <form method="post" action="/userCouponPost" id ="coupon-form">
                                     <div class="form-group">
-                                        <input type="text" placeholder="Enter Coupon Code...">
+                                        <input type="text" name="couponCod" placeholder="Enter Coupon Code...">
                                     </div>
                                     <div class="form-group">
-                                        <button class="btn  btn-md" name="login">Apply Coupon</button>
+                                        <button class="btn  btn-md"  type = "submit" name="login">Apply Coupon</button>
                                     </div>
                                 </form>
                             </div>
@@ -314,6 +314,30 @@
     </div>
    
     <!-- Vendor JS-->
+    <script>
+   $(document).ready(function() {
+  $('#coupon-form').submit(function(event) {
+    // Prevent the default form submission
+    event.preventDefault();
+
+    // Get the form data
+    var formData = $('#coupon-form').serialize();
+
+    // Make the AJAX request
+    $.ajax({
+      type: 'POST',
+      url: '/userCouponPost',
+      data: formData,
+      success: function(response) {
+        // Handle the success response
+      },
+      error: function(xhr, status, error) {
+        // Handle the error response
+      }
+    });
+  });
+})
+    </script>
     <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>
     <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
     <script src="assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>

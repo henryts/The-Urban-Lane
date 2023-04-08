@@ -18,7 +18,8 @@ const userSchema= new mongoose.Schema({
         postalCode: { type: Number, default:null},
         contactNumber:{ type: String, default:null},
         shippingEmail:{ type: String, default:null}
-    }]
+    }],
+    coupon: {type:Array}
 });
 
 const cartSchema= new mongoose.Schema({ 

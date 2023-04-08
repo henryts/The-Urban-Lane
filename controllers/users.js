@@ -4,6 +4,9 @@ const cartcollections = userModel.cartcollections;
 const orderModel =  require("../models/orders");
 const wishlistModel =  require("../models/wishlist-schema");
 const bannerModels = require("../models/banner");
+const couponModels = require("../models/coupon");
+
+const coupondb=couponModels.coupondb;
 const bannerdb=bannerModels.bannerdb;
 const wishlistdb = wishlistModel.wishlistdb;
 const userOrders = orderModel.userOrders;
@@ -1263,14 +1266,64 @@ passwordReset: async (req, res) => {
     else{
        res.redirect('/login');
     }
+  },
+  userCouponPost:async(req,res)=>{
+    if (req.session.loggedIn) {
+    
+   const couponCode= req.body.couponCode;
+   let id =req.session.latestOrderId
+   const mongoId = mongoose.Types.ObjectId(req.session.latestOrderId);
+ 
+   const uid = req.session.userid._id;
+   console.log(mongoId );
+   const cData = await coupondb.findOne({code:couponCode});
+   const orderData =  await userOrders.findOne(
+   { userId: uid, "orderList._id": mongoId }, { "orde3rList.$": 1 });
+   const userData= await users.findOne({_id:uid});
+   console.log("order",orderData);
+   console.log(cData);
+   const response={};
+   const currentDate = new Date();
+   if (cData.expirationDate <currentDate) {
+    response.expiry=true;
+    //console.log(response.date);
+    res.json(response);
+ }else if(userData.coupon.includes(couponCode))
+ {
+  response.exist=true;
+  res.json(response);
+ }
+ else if(orderData.totalPrice<cData.minTotalPrice)
+ {
+  response.totalHigh=true;
+  res.json(response);
+
+ }else{
+  try {
+    const result = await users.updateOne(
+      { _id: uid},
+      { $push: { coupon: couponCode } }
+    );
+    console.log("New coupon added to user document:", couponCode);
+    return { success: true, message: "Coupon added to user document" };
+  } catch (error) {
+    console.log("Error updating user document:", error);
+    return { success: false, message: "Error updating user document" };
   }
- 
- 
-        
-  
+
+
+ }
+}
+
+  else {
+    res.redirect('/login');
 
 }
-     
+
+  } 
+
+}
+
 
     
   

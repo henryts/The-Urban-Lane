@@ -86,6 +86,10 @@ router.get('/couponGenerate', adminController.couponGenerateForm);
 router.post('/couponPost', adminController.couponPost);
 router.get('/couponlist', adminController.couponlist);
 router.get('/editCoupon', adminController.editCoupon);
+router.post('/couponUpdatePost/:id',adminController.editCouponPost);
+router.post('/deleteCoupon', adminController.deleteCoupon);
+
+
 
 
 
