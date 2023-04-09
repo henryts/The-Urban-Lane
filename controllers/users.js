@@ -1271,33 +1271,47 @@ passwordReset: async (req, res) => {
     if (req.session.loggedIn) {
     
    const couponCode= req.body.couponCode;
+   console.log(couponCode);
    let id =req.session.latestOrderId
    const mongoId = mongoose.Types.ObjectId(req.session.latestOrderId);
- 
    const uid = req.session.userid._id;
    console.log(mongoId );
    const cData = await coupondb.findOne({code:couponCode});
    const orderData =  await userOrders.findOne(
-   { userId: uid, "orderList._id": mongoId }, { "orde3rList.$": 1 });
+   { userId: uid, "orderList._id": mongoId }, { "orderList.$": 1 });
    const userData= await users.findOne({_id:uid});
    console.log("order",orderData);
-   console.log(cData);
-   const response={};
+   //console.log(cData);
+   let response={};
+   response.expiry=false;
+   response.exist=false;
+   response.totallow=false;
+   response.discountedTotal=0;
    const currentDate = new Date();
+   console.log("toaal db",orderData.orderList[0].totalPrice);
+   console.log("toaal coupon",cData.minTotalPrice);
+
    if (cData.expirationDate <currentDate) {
     response.expiry=true;
-    //console.log(response.date);
+    console.log("expiry true");    
     res.json(response);
- }else if(userData.coupon.includes(couponCode))
+  }else if(userData.coupon.includes(couponCode))
  {
   response.exist=true;
+  console.log("Coupon already exists");
   res.json(response);
+ // res.json({ success: false, message: "Coupon already exists" });
  }
- else if(orderData.totalPrice<cData.minTotalPrice)
+ else if(orderData.orderList[0].totalPrice<cData.minTotalPrice)
  {
-  response.totalHigh=true;
+  try {
+  response.totallow=true;
+  response.minAmount=cData.minTotalPrice;
   res.json(response);
-
+} catch (error) {
+  console.log("Error:", error);
+  res.status(500).json({ success: false, message: "Internal server error" });
+}
  }else{
   try {
     const result = await users.updateOne(
@@ -1305,10 +1319,37 @@ passwordReset: async (req, res) => {
       { $push: { coupon: couponCode } }
     );
     console.log("New coupon added to user document:", couponCode);
-    return { success: true, message: "Coupon added to user document" };
+   let total= parseFloat(orderData.orderList[0].totalPrice);
+   let maxDiscount=cData.maxDiscount;
+   let discountApplied=0;
+   const discount = cData.discount;
+   const discountAmount=(discount/100)*total;
+   
+   if(discountAmount<=maxDiscount)
+   {
+   total = total- discountAmount;
+    discountApplied=discountAmount;
+   }
+   else{
+    total = total-maxDiscount;
+     discountApplied=maxDiscount;
+   }
+  
+   const rslt = await userOrders.updateOne(
+    { "orderList._id": mongoId  },
+    { $set: { "orderList.$.totalPrice": total },
+             }
+  );
+  const neworderData =  await userOrders.findOne(
+    { userId: uid, "orderList._id": mongoId }, { "orderList.$": 1 });
+    response.discountedTotal =neworderData.orderList[0].totalPrice;
+    response.discountAmount=discountApplied;
+    console.log("discounted total",response.discountedTotal);
+
+    res.json(response);
   } catch (error) {
     console.log("Error updating user document:", error);
-    return { success: false, message: "Error updating user document" };
+    res.json({ success: false, message: "Error updating user document" });
   }
 
 
@@ -1325,8 +1366,6 @@ passwordReset: async (req, res) => {
 }
 
 
-    
-  
     
   
 
