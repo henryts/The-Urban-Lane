@@ -9,7 +9,7 @@ const couponSchema= new mongoose.Schema({
     expirationDate: { type: Date, required: true },
     });
     module.exports ={ 
-        coupondb: mongoose.model(" coupondb",couponSchema),
+        coupondbs: mongoose.model(" coupondbs",couponSchema),
        
      
      }

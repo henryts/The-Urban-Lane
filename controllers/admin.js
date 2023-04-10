@@ -2,7 +2,7 @@ const usersDetails = require("../models/user-schema");
 const mongooseModels = require("../models/admin-schema");
 const bannerModels = require("../models/banner");
 const couponModels = require("../models/coupon");
-const coupondb=couponModels.coupondb;
+const coupondbs=couponModels.coupondbs;
 var couponCode = require('coupon-code');
 const swal = require('sweetalert2');
 const bannerdb=bannerModels.bannerdb;
@@ -34,19 +34,96 @@ orderStat= await userOrders.aggregate([
       },
       count: { $sum: 1 } // Count the number of orders
     }
+  }
+  ,
+  {
+    $project: {
+      _id: 1,
+      count: { $ifNull: ["$count", 0] } // If count is null, replace it with 0
+    }
   },
   {
     $sort: { _id: 1 } // Sort by year and month
   }
 ]);
+const formattedMonthlyOrderCount = orderStat.reduce((acc, curr) => {
+  const monthYear = (curr._id === '2023-01' ? 'January' : curr._id);
+  const count = curr.count;
+  return { ...acc, [monthYear]: count };
+});
+///console.log("orderStat",orderStat);  
+//console.log("formattedMonthlyOrderCount",formattedMonthlyOrderCount);  
+//console.log("janary count in fotmatedmonth",formattedMonthlyOrderCount);
+const monthsToDisplay = ['2023-01', '2023-02', '2023-03', '2023-04', '2023-05', '2023-06','2023-07', '2023-08', '2023-09', '2023-10', '2023-11','2023-12'];
 
-//console.log(orderStat);
+const monthlyOrderCount = monthsToDisplay.reduce((acc, month) => {
+  const count = formattedMonthlyOrderCount[month] || 0;
+  acc[month] = count;
+  return acc;
+}, {});
+monthlyOrderCount['2023-01']=formattedMonthlyOrderCount['count'];
 
-    
-    const currentDate = new Date();
+//console.log(monthlyOrderCount);
+//console.log("january count",monthlyOrderCount['2023-01']);
 
-    // First, let's find the total revenue for the current year
-    const totalRevenueOfYear = await userOrders.aggregate([
+//find the payment method count
+const results = await userOrders.aggregate([
+  {
+    $unwind: '$orderList'
+  },
+  {
+    $group: {
+      _id: '$orderList.paymentMethod',
+      count: { $sum: 1 }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      paymentMethod: '$_id',
+      count: 1
+    }
+  },
+  {
+    $sort: {
+      paymentMethod: 1
+    }
+  }
+]);
+
+// Create a map to hold the counts for each payment method
+const countMap = new Map();
+countMap.set('COD', 0);
+countMap.set('Razor Pay', 0);
+countMap.set('PayPal', 0);
+
+// Loop through the results and update the count map
+results.forEach(result => {
+  const { paymentMethod, count } = result;
+  countMap.set(paymentMethod, count);
+});
+
+// Get the counts for each payment method
+const codCount = countMap.get('COD');
+const razorPayCount = countMap.get('Razor Pay');
+const payPalCount = countMap.get('PayPal');
+
+console.log(`COD count: ${codCount}`);
+console.log(`Razor Pay count: ${razorPayCount}`);
+console.log(`PayPal count: ${payPalCount}`);
+
+
+
+
+
+
+
+
+
+
+const currentDate = new Date();
+ // First, let's find the total revenue for the current year
+ const totalRevenueOfYear = await userOrders.aggregate([
       {
         $unwind: "$orderList"
       },
@@ -71,7 +148,7 @@ orderStat= await userOrders.aggregate([
       }
     ]);
     
-    // Then, let's find the total number of orders of the current month
+    // find the total number of orders of the current month
     const totalOrdersOfMonth = await userOrders.aggregate([
       {
         $unwind: "$orderList"
@@ -94,7 +171,7 @@ orderStat= await userOrders.aggregate([
       }
     ]);
     
-    // Finally, let's find the total revenue for the current month
+    // Finally, find the total revenue for the current month
     const totalRevenueOfMonth = await userOrders.aggregate([
       {
         $unwind: "$orderList"
@@ -119,17 +196,31 @@ orderStat= await userOrders.aggregate([
         }
       }
     ]);
-    
-    console.log("Total revenue of the current year:", totalRevenueOfYear[0].totalRevenue);
-    console.log("Total number of orders of the current month:", totalOrdersOfMonth[0].totalOrders);
-    console.log("Total revenue of the current month:", totalRevenueOfMonth[0].totalRevenue);
-    
+
+   
+    console.log("totalRevenueOfYear ",totalRevenueOfYear);
+    if( totalRevenueOfYear.length==0||totalOrdersOfMonth.length==0)
+    {
+      res.render("admin/admin-index", {
+        orderStat: null,
+        totalRevenue: 0,
+        totalOrders: totalOrdersOfMonth[0].totalOrders,
+        revenueOfMonth: 0
+      });
+
+    }
+    else
+    {   
+
    res.render("admin/admin-index", {
   orderStat: orderStat,
-  totalRevenue: totalRevenueOfYear[0].totalRevenue,
-  totalOrders: totalOrdersOfMonth[0].totalOrders,
-  revenueOfMonth: totalRevenueOfMonth[0].totalRevenue
+  totalRevenue: totalRevenueOfYear[0]?.totalRevenue,
+  totalOrders: totalOrdersOfMonth[0]?.totalOrders,
+  revenueOfMonth: totalRevenueOfMonth[0]?.totalRevenue,
+  monthlyOrderCount:monthlyOrderCount
+
 });
+    }
 
 
 
@@ -500,6 +591,21 @@ salesReportPost:async(req,res)=>{
         } 
 
 },
+bannerList: async(req,res)=>{
+  if(req.session.loggedIn)
+  {
+    const bannerList  = await bannerdb.find({});
+    console.log(bannerList);
+    res.render('admin/bannerList',{bannerList});
+
+  }
+
+  else {
+    res.redirect("/admin/adminlogin");
+  }
+
+},
+
 couponGenerateForm: (req,res)=>{
   if(req.session.loggedIn)
         {
@@ -519,7 +625,7 @@ couponPost:(req,res)=>{
     const expiryDate = req.body.expiryDate;
     const Code  =    couponCode.generate();
     let response= {};
-    const newCoupon = new coupondb({
+    const newCoupon = new coupondbs({
     name: couponName,
      code: Code,
     discount: discountPercent,
@@ -546,7 +652,7 @@ couponlist:async(req,res)=>
 {
   if(req.session.loggedIn)
   {
-    const couponList = await coupondb.find({});
+    const couponList = await coupondbs.find({});
    // console.log(couponList);
     res.render("admin/couponList",{cList:couponList});
 
@@ -561,7 +667,7 @@ editCoupon:async(req,res)=>
     const id = req.query.id;
     console.log("control in edit coupon");
    
-   const cData = await coupondb.findOne({ _id:id});
+   const cData = await coupondbs.findOne({ _id:id});
    console.log(cData);
    res.render('admin/couponEditForm',{cData:cData});
   }
@@ -588,7 +694,7 @@ editCouponPost:async(req,res)=>{
   };
   
   try {
-      const result = await coupondb.updateOne({ _id: id }, { $set: updateCoupon });
+      const result = await coupondbs.updateOne({ _id: id }, { $set: updateCoupon });
       response.success = true;
       response.message = "Coupon updated successfully";
       res.status(200).json(response);
@@ -613,7 +719,7 @@ deleteCoupon:async(req,res)=>
 
      const id=req.body.id;
      const response = {}
-      coupondb.findByIdAndDelete(id, (err, doc) => {
+      coupondbs.findByIdAndDelete(id, (err, doc) => {
         if (err) {
           console.log(err);
         } else {

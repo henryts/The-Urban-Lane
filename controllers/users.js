@@ -6,7 +6,7 @@ const wishlistModel =  require("../models/wishlist-schema");
 const bannerModels = require("../models/banner");
 const couponModels = require("../models/coupon");
 
-const coupondb=couponModels.coupondb;
+const coupondbs=couponModels.coupondbs;
 const bannerdb=bannerModels.bannerdb;
 const wishlistdb = wishlistModel.wishlistdb;
 const userOrders = orderModel.userOrders;
@@ -545,7 +545,7 @@ getCart: async (req, res) => {
       }
      catch (error) {
       console.log(error);
-      next();
+      //next();
     }  }  ,
     addtoWishlist:async(req,res)=>{
       if(req.session.loggedIn)
@@ -1142,7 +1142,7 @@ confirmOrder:async(req,res)=>
       instance.orders.create(options, function (err, orderz) {
         console.log("error from razr pay api:",err);
         console.log("order from razor pay:",orderz);
-        let id = order.id
+        let id = orderz.id
         res.render("user/razorpayButton",{totalINR,id,orderDetail:newOrder.orderList[0]});
       });
 
@@ -1189,7 +1189,7 @@ razorPayConfirmOrder:async(req,res)=>
    );
    await userOrders.findOneAndUpdate(
     { userId: mongoId, "orderList._id": orderId },
-    { $set: { "orderList.$.paymentMethod": "Razor PAY", "orderList.$.status": "confirmed" } }
+    { $set: { "orderList.$.paymentMethod": "Razor Pay", "orderList.$.status": "confirmed" } }
   );
     res.render('user/orderConfirm',{order:newOrder.orderList[0],uid}); 
 }
@@ -1270,15 +1270,21 @@ passwordReset: async (req, res) => {
   userCouponPost:async(req,res)=>{
     if (req.session.loggedIn) {
     
-   const couponCode= req.body.couponCode;
+   const couponCode= req.body.couponCode.toString();
    console.log(couponCode);
    let id =req.session.latestOrderId
    const mongoId = mongoose.Types.ObjectId(req.session.latestOrderId);
    const uid = req.session.userid._id;
    console.log(mongoId );
-   const cData = await coupondb.findOne({code:couponCode});
+   
+   const cData = await coupondbs.findOne({code:couponCode});
+
+   console.log(cData);
+ 
+  
    const orderData =  await userOrders.findOne(
    { userId: uid, "orderList._id": mongoId }, { "orderList.$": 1 });
+
    const userData= await users.findOne({_id:uid});
    console.log("order",orderData);
    //console.log(cData);
@@ -1289,7 +1295,7 @@ passwordReset: async (req, res) => {
    response.discountedTotal=0;
    const currentDate = new Date();
    console.log("toaal db",orderData.orderList[0].totalPrice);
-   console.log("toaal coupon",cData.minTotalPrice);
+   //console.log("toaal coupon",cData.minTotalPrice);
 
    if (cData.expirationDate <currentDate) {
     response.expiry=true;

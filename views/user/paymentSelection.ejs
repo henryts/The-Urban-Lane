@@ -1,6 +1,13 @@
 <%- include('../partials/checkOutPartial') %> 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/js-confetti@latest/dist/js-confetti.browser.js"></script>
+<link rel="stylesheet" href="@sweetalert2/themes/dark/dark.css">
+<script src="sweetalert2/dist/sweetalert2.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+
+
         <section class="mt-50 mb-50">
             <div class="container">
                
@@ -22,6 +29,7 @@
                                     </div>
                                     <p id="errormsg" style="color:red" ></p>
                                 </form>
+                               
                             </div>
                         </div>
                     </div>
@@ -92,6 +100,7 @@
                             <span id="totalTag">$<%=cartTotal %></span>
                           </li>
                         </ul>
+                        <canvas id="confetti-canvas"></canvas>
                         
                        
                         </div> 
@@ -268,6 +277,7 @@
       </script> -->
       <script>
         $(document).ready(function() {
+           
        $('#coupon-form').submit(function(event) {
          // Prevent the default form submission
          event.preventDefault();
@@ -301,8 +311,16 @@
               else{
                 let Total = document.getElementById("totalTag");
                 let discountTag=document.getElementById("discountTag");
-                Total.textContent = response.discountedTotal;
-                discountTag.textContent= response.discountAmount;  
+                Total.textContent = "$"+response.discountedTotal;
+                discountTag.textContent= "$"+response.discountAmount;
+              
+                const jsConfetti = new JSConfetti()
+
+                 jsConfetti.addConfetti();
+    
+                swal("Congrats!!", "You saved: $"+response.discountAmount, "success");
+
+               
            }
         },
            error: function(xhr, status, error) {

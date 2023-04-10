@@ -72,6 +72,8 @@ router.post('/categoryPostUpdate/:id',adminController.editCatagoryPost);
 
 router.get('/bannerForm',adminController.bannerForm);
 router.post('/bannerFormPost',uploadBanner,adminController.bannerFormPost);
+router.get('/bannerList',uploadBanner,adminController.bannerList);
+
 
 
 router.get('/pageOrders',adminController.orderListDisplay);

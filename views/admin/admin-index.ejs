@@ -80,8 +80,12 @@
                             <script>
                                                
                                 var xValues = ["January", "February", "March", "April","May","June","July","August","September","October","November","December"]
-                                var yValues = [<%=orderStat[0].count%>, <%=orderStat[1].count%>, <%=orderStat[2].count%>, <%=orderStat[3].count%>];
-                               
+                                
+                                
+                                var yValues = [ <%=monthlyOrderCount['2023-01']%>, <%=monthlyOrderCount['2023-02']%>, <%=monthlyOrderCount['2023-03']%>, <%=monthlyOrderCount['2023-04']%>,
+                                <%=monthlyOrderCount['2023-05']%>, <%=monthlyOrderCount['2023-06']%>, <%=monthlyOrderCount['2023-07']%>, <%=monthlyOrderCount['2023-08']%>,
+                                <%=monthlyOrderCount['2023-09']%>, <%=monthlyOrderCount['2023-10']%>, <%=monthlyOrderCount['2023-11']%>, <%=monthlyOrderCount['2023-12']%>];
+                                
                 
                                 var barColors = ["red", "green", "blue", "orange", "brown"];
                               
@@ -102,13 +106,13 @@
         }}
 
                                 });
-                                function updateChart(newXValues, newYValues) {
-    myChart.data.labels = newXValues;
-    myChart.data.datasets[0].data = newYValues;
-    myChart.options.scales.yAxes[0].ticks.min = Math.min(...newYValues);
-    myChart.options.scales.yAxes[0].ticks.max = Math.max(...newYValues);
-    myChart.update();
-}
+//                                 function updateChart(newXValues, newYValues) {
+//     myChart.data.labels = newXValues;
+//     myChart.data.datasets[0].data = newYValues;
+//     myChart.options.scales.yAxes[0].ticks.min = Math.min(...newYValues);
+//     myChart.options.scales.yAxes[0].ticks.max = Math.max(...newYValues);
+//     myChart.update();
+// }
 
 // Call the updateChart() function at the beginning of the script
 updateChart(xValues, yValues);
