@@ -22,7 +22,7 @@ module.exports = {
     //admin-dashboard
     if (req.session.loggedIn) {
       // Import the UserOrders model
-
+//CHART1  
 orderStat= await userOrders.aggregate([
   {
     $unwind: '$orderList' // Unwind the orderList array
@@ -108,21 +108,12 @@ const codCount = countMap.get('COD');
 const razorPayCount = countMap.get('Razor Pay');
 const payPalCount = countMap.get('PayPal');
 
-console.log(`COD count: ${codCount}`);
-console.log(`Razor Pay count: ${razorPayCount}`);
-console.log(`PayPal count: ${payPalCount}`);
-
-
-
-
-
-
-
-
-
+// console.log(`COD count: ${codCount}`);
+// console.log(`Razor Pay count: ${razorPayCount}`);
+// console.log(`PayPal count: ${payPalCount}`);
 
 const currentDate = new Date();
- // First, let's find the total revenue for the current year
+ 
  const totalRevenueOfYear = await userOrders.aggregate([
       {
         $unwind: "$orderList"
@@ -149,63 +140,127 @@ const currentDate = new Date();
     ]);
     
     // find the total number of orders of the current month
-    const totalOrdersOfMonth = await userOrders.aggregate([
-      {
-        $unwind: "$orderList"
-      },
-      {
-        $match: {
-          "orderList.creationTime": {
-            $gte: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
-            $lte: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999)
-          }
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          totalOrders: {
-            $sum: 1
-          }
-        }
-      }
-    ]);
-    
-    // Finally, find the total revenue for the current month
-    const totalRevenueOfMonth = await userOrders.aggregate([
-      {
-        $unwind: "$orderList"
-      },
-      {
-        $match: {
-          "orderList.status": "Delivered",
-          "orderList.creationTime": {
-            $gte: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
-            $lte: new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59, 999)
-          }
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          totalRevenue: {
-            $sum: {
-              $toDouble: "$orderList.totalPrice"
-            }
-          }
-        }
-      }
-    ]);
+   const  startOfMonth1 = new Date();
+startOfMonth1.setDate(1);
+startOfMonth1.setHours(0, 0, 0, 0);
 
+const endOfMonth = new Date();
+endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+endOfMonth.setDate(0);
+endOfMonth.setHours(23, 59, 59, 999);
+
+const totalRevenueOfMonth = await userOrders.aggregate([
+  {
+    $match: {
+      "orderList.creationTime": { $gte: startOfMonth1, $lte: endOfMonth },
+    },
+  },
+  {
+    $unwind: "$orderList",
+  },
+  {
+    $group: {
+      _id: null,
+      totalPrice: {
+        $sum: { $toInt: "$orderList.totalPrice" },
+      },
+    },
+  },
+]);
+
+console.log("new Monthly revenue",totalRevenueOfMonth[0]?.totalPrice);
+    
+  
+  
+    //console.log("month revenue",totalRevenueOfMonth);
+    //FOR CATAGORY CHART
+    const startOfMonth = new Date();
+startOfMonth.setDate(1); // Set to the first day of the current month
+
+const pipeline = [
+  // Match orders placed in the present month
+  {
+    $match: {
+      "orderList.creationTime": { $gte: startOfMonth }
+    }
+  },
+  // Flatten the orderList array and unwind the items array
+  { $unwind: "$orderList" },
+  { $unwind: "$orderList.items" },
+  // Lookup product details for each item using productId
+  {
+    $lookup: {
+      from: "products",
+      localField: "orderList.items.productId",
+      foreignField: "_id",
+      as: "product"
+    }
+  },
+  // Flatten the product array and group by category
+  { $unwind: "$product" },
+  {
+    $group: {
+      _id: "$product.productCatogory",
+      count: { $sum: 1 }
+    }
+  }
+];
+
+const result = await userOrders.aggregate(pipeline);
+
+const catCount =result.reduce((acc, curr) => {
+  // Convert the _id to lowercase and use it as the key
+  const key = curr._id.toLowerCase();
+  // Add the count to the accumulator object
+  acc[key] = curr.count;
+  return acc;
+}, {});
+//console.log("catCount:",catCount);
+const now = new Date();
+const startOfMonth2 = new Date(now.getFullYear(), now.getMonth(), 1);
+const endOfMonth2 = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+// Use the aggregate function to group the orders and count them
+const result1 = await userOrders.aggregate([
+  {
+    $unwind: "$orderList"
+  },
+  {
+    $match: {
+      "orderList.creationTime": {
+        $gte: startOfMonth2,
+        $lte: endOfMonth2
+      }
+    }
+  },
+  {
+    $group: {
+      _id: null,
+      count: { $sum: 1 }
+    }
+  }
+]);
+//total number of products
+const totalProducts = await newProduct.aggregate([
+  { $group: { _id: null, total: { $sum: 1 } } }
+]);
+//console.log("total products",totalProducts);
+const totalOrders = result1.length > 0 ? result1[0].count : 0;
+
+console.log("Total orders in current month:", totalOrders);
    
     console.log("totalRevenueOfYear ",totalRevenueOfYear);
-    if( totalRevenueOfYear.length==0||totalOrdersOfMonth.length==0)
+    if( totalRevenueOfYear.length==0||totalRevenueOfMonth.length==0)
     {
       res.render("admin/admin-index", {
         orderStat: null,
         totalRevenue: 0,
         totalOrders: totalOrdersOfMonth[0].totalOrders,
-        revenueOfMonth: 0
+        revenueOfMonth: 0,
+        catCount:catCount,
+        codCount,
+        razorPayCount,
+        payPalCount,
       });
 
     }
@@ -215,9 +270,15 @@ const currentDate = new Date();
    res.render("admin/admin-index", {
   orderStat: orderStat,
   totalRevenue: totalRevenueOfYear[0]?.totalRevenue,
-  totalOrders: totalOrdersOfMonth[0]?.totalOrders,
-  revenueOfMonth: totalRevenueOfMonth[0]?.totalRevenue,
-  monthlyOrderCount:monthlyOrderCount
+  totalOrders: totalOrders,
+  revenueOfMonth:totalRevenueOfMonth[0]?.totalPrice,
+  monthlyOrderCount:monthlyOrderCount,
+  codCount,
+  razorPayCount,
+  payPalCount,
+  catCount:catCount,
+  totalProducts:totalProducts[0]?.total
+
 
 });
     }
@@ -558,7 +619,7 @@ salesReportPost:async(req,res)=>{
     //console.log(orders[0].orders);
      
   } catch (err) {
-    res.status(500).json({ message: err.message });
+   // res.status(500).json({ message: err.message });
   }},
   bannerForm: (req,res)=>{
     if(req.session.loggedIn)

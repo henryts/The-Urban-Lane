@@ -1,5 +1,12 @@
 <%- include('../partials/adminHeader') %>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script<script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+<script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>>
+
+
+
 
 
         <section class="content-main">
@@ -16,10 +23,11 @@
                 <div class="col-lg-3">
                     <div class="card card-body mb-4">
                         <article class="icontext">
-                            <span class="icon icon-sm rounded-circle bg-primary-light"><i class="text-primary material-icons md-monetization_on"></i></span>
+                            <span class="icon icon-sm rounded-circle bg-primary-light" style="display: flex; justify-content: center; align-items: center;"><i class="text-primary material-icons md-monetization_on"></i></span>
+
                             <div class="text">
                                 <h6 class="mb-1 card-title">Revenue</h6>
-                                <span>$<%=totalRevenue  %></span>
+                                <span><%= totalRevenue.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) %></span>
                                 <span class="text-sm">
                                     Shipping fees are not included
                                 </span>
@@ -30,7 +38,7 @@
                 <div class="col-lg-3">
                     <div class="card card-body mb-4">
                         <article class="icontext">
-                            <span class="icon icon-sm rounded-circle bg-success-light"><i class="text-success material-icons md-local_shipping"></i></span>
+                            <span class="icon icon-sm rounded-circle bg-success-light" style="display: flex; justify-content: center; align-items: center;" ><i class="text-success material-icons md-local_shipping"></i></span>
                             <div class="text">
                                 <h6 class="mb-1 card-title">Orders</h6> <span><%=totalOrders %></span>
                                 <span class="text-sm">
@@ -43,9 +51,9 @@
                 <div class="col-lg-3">
                     <div class="card card-body mb-4">
                         <article class="icontext">
-                            <span class="icon icon-sm rounded-circle bg-warning-light"><i class="text-warning material-icons md-qr_code"></i></span>
+                            <span class="icon icon-sm rounded-circle bg-warning-light" style="display: flex; justify-content: center; align-items: center;"><i class="text-warning material-icons md-qr_code"></i></span>
                             <div class="text">
-                                <h6 class="mb-1 card-title">Products</h6> <span>9.856</span>
+                                <h6 class="mb-1 card-title">Products</h6> <span><%=totalProducts%></span>
                                 <span class="text-sm">
                                     In 19 Categories
                                 </span>
@@ -56,9 +64,9 @@
                 <div class="col-lg-3">
                     <div class="card card-body mb-4">
                         <article class="icontext">
-                            <span class="icon icon-sm rounded-circle bg-info-light"><i class="text-info material-icons md-shopping_basket"></i></span>
+                            <span class="icon icon-sm rounded-circle bg-info-light" style="display: flex; justify-content: center; align-items: center;"><i class="text-info material-icons md-shopping_basket"></i></span>
                             <div class="text">
-                                <h6 class="mb-1 card-title">Monthly Earning</h6> <span>$<%=revenueOfMonth %></span>
+                                <h6 class="mb-1 card-title">Monthly Earning</h6> <span><%=revenueOfMonth.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) %></span>
                                 <span class="text-sm">
                                     Based in your local time.
                                 </span>
@@ -73,22 +81,23 @@
                         <article class="card-body">
                             <h5 class="card-title">Sale statistics</h5>
                            
-                            <script
-                            src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
-                            </script>
-                            <canvas id="myChart1" style="width:100%;max-width:700px"></canvas>
+                            
+                            
+                            <!-- <canvas id="myChart1" style="width:100%;max-width:700px"></canvas> -->
+                            <div id="orderCount"></div>
+                           
                             <script>
-                                               
-                                var xValues = ["January", "February", "March", "April","May","June","July","August","September","October","November","December"]
-                                
-                                
-                                var yValues = [ <%=monthlyOrderCount['2023-01']%>, <%=monthlyOrderCount['2023-02']%>, <%=monthlyOrderCount['2023-03']%>, <%=monthlyOrderCount['2023-04']%>,
-                                <%=monthlyOrderCount['2023-05']%>, <%=monthlyOrderCount['2023-06']%>, <%=monthlyOrderCount['2023-07']%>, <%=monthlyOrderCount['2023-08']%>,
-                                <%=monthlyOrderCount['2023-09']%>, <%=monthlyOrderCount['2023-10']%>, <%=monthlyOrderCount['2023-11']%>, <%=monthlyOrderCount['2023-12']%>];
-                                
-                
+
+                                var xValues = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+
+                                var yValues = [ <%=monthlyOrderCount['2023-01'] %>, <%=monthlyOrderCount['2023-02'] %>, <%=monthlyOrderCount['2023-03'] %>, <%=monthlyOrderCount['2023-04'] %>,
+                                                            <%=monthlyOrderCount['2023-05'] %>, <%=monthlyOrderCount['2023-06'] %>, <%=monthlyOrderCount['2023-07'] %>, <%=monthlyOrderCount['2023-08'] %>,
+                                                            <%=monthlyOrderCount['2023-09'] %>, <%=monthlyOrderCount['2023-10'] %>, <%=monthlyOrderCount['2023-11'] %>, <%=monthlyOrderCount['2023-12'] %>];
+
+
                                 var barColors = ["red", "green", "blue", "orange", "brown"];
-                              
+
                                 new Chart("myChart1", {
                                     type: "bar",
                                     data: {
@@ -98,27 +107,440 @@
                                             data: yValues
                                         }]
                                     },
-                                    options: { scales: {
-            yAxes: [{
-                type: 'linear',
-               
-            }]
-        }}
+                                    options: {
+                                        scales: {
+                                            yAxes: [{
+                                                type: 'linear',
+
+                                            }]
+                                        }
+                                    }
 
                                 });
-//                                 function updateChart(newXValues, newYValues) {
-//     myChart.data.labels = newXValues;
-//     myChart.data.datasets[0].data = newYValues;
-//     myChart.options.scales.yAxes[0].ticks.min = Math.min(...newYValues);
-//     myChart.options.scales.yAxes[0].ticks.max = Math.max(...newYValues);
-//     myChart.update();
-// }
 
-// Call the updateChart() function at the beginning of the script
-updateChart(xValues, yValues);
-                               
+                                updateChart(xValues, yValues);
+
                             </script>
-                            <!-- <canvas id="myChart" height="120px"></canvas> -->
+                            <style>
+                                #chartdiv {
+                                  width: 250px;
+                                  height: 150px;
+
+                                }
+                                </style>
+                                
+                                <!-- Resources -->
+                                <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+                                <script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
+                                <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+                                
+                                <!-- Chart code -->
+                                <script>
+                                am5.ready(function() {
+                                
+                                // Create root element
+                                // https://www.amcharts.com/docs/v5/getting-started/#Root_element
+                                var root = am5.Root.new("chartdiv");
+                                
+                                // Set themes
+                                // https://www.amcharts.com/docs/v5/concepts/themes/
+                                root.setThemes([
+                                  am5themes_Animated.new(root)
+                                ]);
+                                
+                                // Create chart
+                                // https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/
+                                // start and end angle must be set both for chart and series
+                                var chart = root.container.children.push(am5percent.PieChart.new(root, {
+                                  startAngle: 180,
+                                  endAngle: 360,
+                                  layout: root.verticalLayout,
+                                  innerRadius: am5.percent(50)
+                                }));
+                                
+                                // Create series
+                                // https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/#Series
+                                // start and end angle must be set both for chart and series
+                                var series = chart.series.push(am5percent.PieSeries.new(root, {
+                                  startAngle: 180,
+                                  endAngle: 360,
+                                  valueField: "value",
+                                  categoryField: "category",
+                                  alignLabels: false
+                                }));
+                                // series.labelRadius = am5.percent(80);
+                                // series.labels.template.wrap = true;
+                                // series.labels.template.fontSize = 5;
+                                // chart.layout = am5.Layout.vertical
+                                series.states.create("hidden", {
+                                  startAngle: 180,
+                                  endAngle: 180
+                                });
+                                
+                                series.slices.template.setAll({
+                                  cornerRadius: 5
+                                });
+                                
+                                series.ticks.template.setAll({
+                                  forceHidden: true
+                                });
+                                
+                                // Set data
+                                // https://www.amcharts.com/docs/v5/charts/percent-charts/pie-chart/#Setting_data
+                                series.data.setAll([
+                                  { value: <%=codCount%>, category:"COD" },
+                                  { value: <%=razorPayCount%>, category:"RazorPay" },
+                                  { value: <%=payPalCount%>, category:"PayPal" },
+                                  
+                                ]);
+                                
+                                series.appear(1000, 100);
+                                
+                                }); // end am5.ready()
+                                </script>
+                                
+                               <!-- catagory chart -->
+                               <script>
+                                am5.ready(function() {
+                                
+                                // Create root element
+                                // https://www.amcharts.com/docs/v5/getting-started/#Root_element
+                                var root = am5.Root.new("catChart");
+                                
+                                
+                                var myTheme = am5.Theme.new(root);
+                                
+                                myTheme.rule("Grid", ["base"]).setAll({
+                                  strokeOpacity: 0.1
+                                });
+                                
+                                
+                                // Set themes
+                                // https://www.amcharts.com/docs/v5/concepts/themes/
+                                root.setThemes([
+                                  am5themes_Animated.new(root),
+                                  myTheme
+                                ]);
+                                
+                                
+                                // Create chart
+                                // https://www.amcharts.com/docs/v5/charts/xy-chart/
+                                var chart = root.container.children.push(
+                                  am5xy.XYChart.new(root, {
+                                    panX: false,
+                                    panY: false,
+                                    wheelX: "none",
+                                    wheelY: "none"
+                                  })
+                                );
+                                
+                                
+                                // Create axes
+                                // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+                                var yRenderer = am5xy.AxisRendererY.new(root, { minGridDistance: 30 });
+                                yRenderer.grid.template.set("location", 1);
+                                
+                                var yAxis = chart.yAxes.push(
+                                  am5xy.CategoryAxis.new(root, {
+                                    maxDeviation: 0,
+                                    categoryField: "country",
+                                    renderer: yRenderer
+                                  })
+                                );
+                                
+                                var xAxis = chart.xAxes.push(
+                                  am5xy.ValueAxis.new(root, {
+                                    maxDeviation: 0,
+                                    min: 0,
+                                    renderer: am5xy.AxisRendererX.new(root, {
+                                      visible: true,
+                                      strokeOpacity: 0.1
+                                    })
+                                  })
+                                );
+                                
+                                
+                                // Create series
+                                // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
+                                var series = chart.series.push(
+                                  am5xy.ColumnSeries.new(root, {
+                                    name: "Series 1",
+                                    xAxis: xAxis,
+                                    yAxis: yAxis,
+                                    valueXField: "value",
+                                    sequencedInterpolation: true,
+                                    categoryYField: "country"
+                                  })
+                                );
+                                
+                                var columnTemplate = series.columns.template;
+                                
+                                columnTemplate.setAll({
+                                  draggable: true,
+                                  cursorOverStyle: "pointer",
+                                  tooltipText: "drag to rearrange",
+                                  cornerRadiusBR: 10,
+                                  cornerRadiusTR: 10,
+                                  strokeOpacity: 0
+                                });
+                                columnTemplate.adapters.add("fill", (fill, target) => {
+                                  return chart.get("colors").getIndex(series.columns.indexOf(target));
+                                });
+                                
+                                columnTemplate.adapters.add("stroke", (stroke, target) => {
+                                  return chart.get("colors").getIndex(series.columns.indexOf(target));
+                                });
+                                
+                                columnTemplate.events.on("dragstop", () => {
+                                  sortCategoryAxis();
+                                });
+                                
+                                // Get series item by category
+                                function getSeriesItem(category) {
+                                  for (var i = 0; i < series.dataItems.length; i++) {
+                                    var dataItem = series.dataItems[i];
+                                    if (dataItem.get("categoryY") == category) {
+                                      return dataItem;
+                                    }
+                                  }
+                                }
+                                
+                                
+                                // Axis sorting
+                                function sortCategoryAxis() {
+                                  // Sort by value
+                                  series.dataItems.sort(function(x, y) {
+                                    return y.get("graphics").y() - x.get("graphics").y();
+                                  });
+                                
+                                  var easing = am5.ease.out(am5.ease.cubic);
+                                
+                                  // Go through each axis item
+                                  am5.array.each(yAxis.dataItems, function(dataItem) {
+                                    // get corresponding series item
+                                    var seriesDataItem = getSeriesItem(dataItem.get("category"));
+                                
+                                    if (seriesDataItem) {
+                                      // get index of series data item
+                                      var index = series.dataItems.indexOf(seriesDataItem);
+                                
+                                      var column = seriesDataItem.get("graphics");
+                                
+                                      // position after sorting
+                                      var fy =
+                                        yRenderer.positionToCoordinate(yAxis.indexToPosition(index)) -
+                                        column.height() / 2;
+                                
+                                      // set index to be the same as series data item index
+                                      if (index != dataItem.get("index")) {
+                                        dataItem.set("index", index);
+                                
+                                        // current position
+                                        var x = column.x();
+                                        var y = column.y();
+                                
+                                        column.set("dy", -(fy - y));
+                                        column.set("dx", x);
+                                
+                                        column.animate({ key: "dy", to: 0, duration: 600, easing: easing });
+                                        column.animate({ key: "dx", to: 0, duration: 600, easing: easing });
+                                      } else {
+                                        column.animate({ key: "y", to: fy, duration: 600, easing: easing });
+                                        column.animate({ key: "x", to: 0, duration: 600, easing: easing });
+                                      }
+                                    }
+                                  });
+                                
+                                  // Sort axis items by index.
+                                  // This changes the order instantly, but as dx and dy is set and animated,
+                                  // they keep in the same places and then animate to true positions.
+                                  yAxis.dataItems.sort(function(x, y) {
+                                    return x.get("index") - y.get("index");
+                                  });
+                                }
+                                
+                                // Set data
+                                var data = [{
+                                  country: "MEN'S",
+                                  value: <%=catCount?.men%>
+                                }, {
+                                  country: "WOMEN'S",
+                                  value: <%=catCount?.women%>
+                                }, {
+                                  country: "GIRL'S",
+                                  value: <%=catCount?.boy%>
+                                },
+                                {
+                                  country: "BOY'S",
+                                  value: <%=catCount?.girl%>
+                                }];
+                                
+                                yAxis.data.setAll(data);
+                                series.data.setAll(data);
+                                
+                                
+                                // Make stuff animate on load
+                                // https://www.amcharts.com/docs/v5/concepts/animations/
+                                series.appear(1000);
+                                chart.appear(1000, 100);
+                                
+                                }); // end am5.ready()
+                                </script>
+                            <style>
+                                #catChart {
+                                  width: 100%;
+                                  height: 200px;
+                                }
+                                </style>
+                                <style>
+                                    #orderCount{
+                                      width: 100%;
+                                      height: 500px;
+                                    }
+                                    </style>
+
+                                <!-- ORDER COUNT CHART SCRIPT -->
+                           <script>
+                            am5.ready(function() {
+                            
+                            // Create root element
+                            // https://www.amcharts.com/docs/v5/getting-started/#Root_element
+                            var root = am5.Root.new("orderCount");
+                            
+                            
+                            // Set themes
+                            // https://www.amcharts.com/docs/v5/concepts/themes/
+                            root.setThemes([
+                              am5themes_Animated.new(root)
+                            ]);
+                            
+                            
+                            // Create chart
+                            // https://www.amcharts.com/docs/v5/charts/xy-chart/
+                            var chart = root.container.children.push(am5xy.XYChart.new(root, {
+                              panX: true,
+                              panY: true,
+                              wheelX: "panX",
+                              wheelY: "zoomX",
+                              pinchZoomX: true
+                            }));
+                            
+                            // Add cursor
+                            // https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
+                            var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {}));
+                            cursor.lineY.set("visible", false);
+                            
+                            
+                            // Create axes
+                            // https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+                            var xRenderer = am5xy.AxisRendererX.new(root, { minGridDistance: 30 });
+                            xRenderer.labels.template.setAll({
+                              rotation: -90,
+                              centerY: am5.p50,
+                              centerX: am5.p100,
+                              paddingRight: 15
+                            });
+                            
+                            xRenderer.grid.template.setAll({
+                              location: 1
+                            })
+                            
+                            var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+                              maxDeviation: 0.3,
+                              categoryField: "Month",
+                              renderer: xRenderer,
+                              tooltip: am5.Tooltip.new(root, {})
+                            }));
+                            
+                            var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                              maxDeviation: 0.3,
+                              renderer: am5xy.AxisRendererY.new(root, {
+                                strokeOpacity: 0.1
+                              })
+                            }));
+                            
+                            
+                            // Create series
+                            // https://www.amcharts.com/docs/v5/charts/xy-chart/series/
+                            var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+                              name: "Series 1",
+                              xAxis: xAxis,
+                              yAxis: yAxis,
+                              valueYField: "value",
+                              sequencedInterpolation: true,
+                              categoryXField: "Month",
+                              tooltip: am5.Tooltip.new(root, {
+                                labelText: "{valueY}"
+                              })
+                            }));
+                            
+                            series.columns.template.setAll({ cornerRadiusTL: 5, cornerRadiusTR: 5, strokeOpacity: 0 });
+                            series.columns.template.adapters.add("fill", function(fill, target) {
+                              return chart.get("colors").getIndex(series.columns.indexOf(target));
+                            });
+                            
+                            series.columns.template.adapters.add("stroke", function(stroke, target) {
+                              return chart.get("colors").getIndex(series.columns.indexOf(target));
+                            });
+                            
+                            
+                            // Set data
+                            var data = [{
+                              Month: "January",
+                              value:  <%=monthlyOrderCount['2023-01'] %>
+                            }, {
+                              Month: "February",
+                              value:  <%=monthlyOrderCount['2023-02'] %>
+                            }, 
+                            {
+                                Month: "March",
+                              value: <%=monthlyOrderCount['2023-03'] %>
+                            },
+                             {
+                                Month: "April",
+                              value: <%=monthlyOrderCount['2023-04'] %>
+                            },
+                             {
+                              Month: "May",
+                              value: <%=monthlyOrderCount['2023-05'] %>
+                            }, 
+                            {
+                              Month: "June",
+                              value:  <%=monthlyOrderCount['2023-06'] %>
+                            }, {
+                                Month: "July",
+                              value: <%=monthlyOrderCount['2023-07'] %>
+                            }, {
+                                Month: "August",
+                              value: <%=monthlyOrderCount['2023-08'] %>
+                            }, {
+                                Month: "September",
+                              value: <%=monthlyOrderCount['2023-09'] %>
+                            }, {
+                                Month: "October",
+                              value: <%=monthlyOrderCount['2023-10'] %>
+                            }, {
+                                Month: "Novermber",
+                              value: <%=monthlyOrderCount['2023-11'] %>
+                            },
+                            {
+                                Month: "December",
+                              value: <%=monthlyOrderCount['2023-12'] %>
+                            }
+                        ];
+                            
+                            xAxis.data.setAll(data);
+                            series.data.setAll(data);
+                            
+                            
+                            // Make stuff animate on load
+                            // https://www.amcharts.com/docs/v5/concepts/animations/
+                            series.appear(1000);
+                            chart.appear(1000, 100);
+                            
+                            }); // end am5.ready()
+                            </script>
+                          
                         </article>
                     </div>
                     <div class="row">
@@ -255,15 +677,18 @@ updateChart(xValues, yValues);
                 </div>
                 <div class="col-xl-4 col-lg-12">
                     <div class="card mb-4">
-                        <article class="card-body">
-                            <h5 class="card-title">Revenue Base on Area</h5>
-                            <canvas id="myChart2" height="217"></canvas>
+                        <article class="card-body small">
+                            <h5 class="card-title">Payment method chart</h5>
+                            <div id="chartdiv"></div>
+                            
                         </article>
                     </div>
                     <div class="card mb-4">
                         <article class="card-body">
-                            <h5 class="card-title">Marketing Chanel</h5>
-                            <span class="text-muted font-xs">Facebook</span>
+                            <h5 class="card-title">Sales by Catagory</h5>
+                            <div id="catChart"></div>
+                            
+                            <!-- <span class="text-muted font-xs">Facebook</span>
                             <div class="progress mb-3">
                                 <div class="progress-bar" role="progressbar" style="width: 15%">15%</div>
                             </div>
@@ -282,7 +707,7 @@ updateChart(xValues, yValues);
                             <span class="text-muted font-xs">Other</span>
                             <div class="progress mb-3">
                                 <div class="progress-bar" role="progressbar" style="width: 80%"> 80%</div>
-                            </div>
+                            </div> -->
                         </article>
                     </div>
                 </div>

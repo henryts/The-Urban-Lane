@@ -1,4 +1,8 @@
 <%- include('../partials/adminSalesReportHeader') %>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
 
 
 
@@ -17,7 +21,7 @@
     <button class="btn btn-primary" type="submit" style="padding: 5px; border-radius: 5px; background-color: #007bff; color: #fff;">Submit</button>
   </form>
   <div style="display: flex; align-items: center; margin-left:50px;">
-    <button id="generate-report-button" style="background-color: rgb(203, 44, 44); color: white; font-size: 1rem; padding: 5px 10px; border: none; border-radius: 3px; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);">Generate PDF of Sales Report</button>
+    <button id="generate-pdf" style="background-color: rgb(203, 44, 44); color: white; font-size: 1rem; padding: 5px 10px; border: none; border-radius: 3px; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);" onclick="javascript:demoFromHTML()">Generate PDF of Sales Report</button>
 
   </div>
 
@@ -26,17 +30,17 @@
 <%if(locals.orders){%>
 
 
+<div id="content">
 
-
-  <table style="width:100%;max-width:900px;margin:auto;border-collapse:collapse;border:1px solid #ddd;" class="table table-striped">
+  <table style="width:100%;max-width:900px;margin:auto;border-collapse:collapse;border:1px solid #ddd;" class="table table-striped" >
     <thead>
       <tr style="background-color:#f2f2f2;color:#444;">
-        <th style="padding:12px;text-align:left;">OrderId</th>
-        <th style="padding:12px;text-align:left;">Customer Email</th>
-        <th style="padding:12px;text-align:left;">Order Total</th>
-        <th style="padding:12px;text-align:left;">Order Status</th>
-        <th style="padding:12px;text-align:left;">Payment Method</th>
-        <th style="padding:12px;text-align:left;">Order Date</th>
+        <th style="padding:12px;text-align:left;width: 50px;">OrderId</th>
+        <th style="padding:12px;text-align:left;width: 50px;">Customer Email</th>
+        <th style="padding:12px;text-align:left;width: 50px;">Order Total</th>
+        <th style="padding:12px;text-align:left;width: 50px;">Order Status</th>
+        <th style="padding:12px;text-align:left;width: 50px;">Payment Method</th>
+        <th style="padding:12px;text-align:left;width: 50px;">Order Date</th>
         <!-- <th style="padding:12px;text-align:left;">Delivered Date</th> -->
       </tr>
       <%  
@@ -65,40 +69,22 @@
       </tr>
   </table>
   <%}%>
-  <script>
-   
-  const generateReportButton = document.getElementById('generate-report-button');
-  generateReportButton.addEventListener('click', () => {
-    // Generate the sales report PDF using jsPDF
-    const salesData = [
-    { date: '2022-04-01', amount: 100 },
-    { date: '2022-04-02', amount: 200 },
-    { date: '2022-04-03', amount: 300 },
-  ];
-    const doc = new jsPDF();
-   
-    doc.text('Sales Report', 10, 10);
-    doc.autoTable({
-      head: [['Date', 'Amount']],
-      body: salesData.map((sale) => [sale.date, sale.amount]),
-    });
-    doc.save('sales-report.pdf');
-  });
-</script> 
+</div>
+
 
   <!-- <table class="table table-striped" id="container_content">
     <thead>
       <tr>
-        <th scope="col">OrderId</th>
-        <th scope="col">User Id</th>
-        <th scope="col">Item Id</th>
-        <th scope="col">Price</th>
-        <th scope="col">Quantity</th>
-        <th scope="col">Payment Method</th>
-        <th scope="col">Delivered Date</th>
+        <th scope="col" style="width: 50px;">OrderId</th>
+        <th scope="col" style="width: 50px;">User Id</th>
+        <th scope="col" style="width: 50px;">Item Id</th>
+        <th scope="col" style="width: 50px;">Price</th>
+        <th scope="col" style="width: 50px;">Quantity</th>
+        <th scope="col" style="width: 50px;">Payment Method</th>
+        <th scope="col" style="width: 50px;">Delivered Date</th>
       </tr>
     </thead>
-    <tbody id="order_data">
+    <tbody  style="width: 50px;" id="order_data">
   
     </tbody>
     <tfoot>
@@ -108,9 +94,50 @@
     </tfoot>
   </table>
          -->
+         <script>
+    function demoFromHTML() {
+        var pdf = new jsPDF('p', 'pt', 'letter');
+        
+        source = $('#content')[0];
+
+
+        specialElementHandlers = {
+            // element with id of "bypass" - jQuery style selector
+            '#bypassme': function (element, renderer) {
+                // true = "handled elsewhere, bypass text extraction"
+                return true
+            }
+        };
+        margins = {
+            top: 30,
+            bottom: 30,
+            left: 10,
+            right:10,
+            width: 200,
+            autoPaging:true
+        };
+        // all coords and widths are in jsPDF instance's declared units
+        // 'inches' in this case
+        pdf.fromHTML(
+            source, // HTML string or DOM elem ref.
+            margins.left, // x coord
+            margins.top, { // y coord
+                'width': margins.width, // max width of content on PDF
+                'elementHandlers': specialElementHandlers
+            },
+
+            function (dispose) {
+                // dispose: object with X, Y of the last line add to the PDF 
+                //          this allow the insertion of new lines after html
+                pdf.save('Test.pdf');
+            }, margins
+        );
+    }
+</script>
 </div>
 </body>
 </html>
+
 <!-- <script>
     $(document).ready(function() {
       $('#dateForm').submit(function(event) {
@@ -138,7 +165,7 @@
                 var date = creationTime.toLocaleDateString(undefined, {month: 'long', day: 'numeric', year: 'numeric'});
                 var time = creationTime.toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'});
                 var formattedTime = date + ' ' + time;
-                row.append($('<td></td>').text(order.orderHashId));
+                row.append($('<td  style="width: 50px;"></td>').text(order.orderHashId));
                 row.append($('<td></td>').text(order.userId));
                 row.append($('<td></td>').text(order.totalPrice));
                 row.append($('<td></td>').text(order.orderStatus));
