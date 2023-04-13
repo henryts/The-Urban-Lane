@@ -1,4 +1,9 @@
 ﻿<%- include('../partials/userHeader') %> 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+
     <div class="mobile-header-active mobile-header-wrapper-style">
         <div class="mobile-header-wrapper-inner">
             <div class="mobile-header-top">
@@ -389,12 +394,51 @@
                                 <h4>Save 17% on <br>Office Dress</h4>
                                 <a href="shop-grid-right.html">Shop Now <i class="fi-rs-arrow-right"></i></a>
                             </div>
-                        </div>
+                        </div>sidebar
                     </div>
                 </div>
             </div>
         </section>
     </main>
+    <script>
+  $(document).ready(function() {
+  var slider = $('#slider-range');
+  var amount = $('#amount');
+  
+  // Initialize slider
+  slider.slider({
+    range: true,
+    min: 0,
+    max: 1000,
+    values: [0, 1000],
+    slide: function(event, ui) {
+      amount.val("$" + ui.values[0] + " - $" + ui.values[1]);
+    }
+  });
+  
+  // Update input field on slider change
+  slider.on('slidechange', function() {
+    var minValue = slider.slider("values", 0);
+    var maxValue = slider.slider("values", 1);
+    amount.val("$" + minValue + " - $" + maxValue);
+   
+    
+    // AJAX call to send filter values
+    $.ajax({
+      url: '/filter',
+      type: 'POST',
+      data: {minPrice: minValue, maxPrice: maxValue},
+      success: function(response) {
+        // Handle success response
+      },
+      error: function(xhr, status, error) {
+        // Handle error response
+      }
+    });
+  });
+});
+
+    </script> 
     <footer class="main">
         <section class="newsletter p-30 text-white wow fadeIn animated">
             <div class="container">

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 const orderSchema= new mongoose.Schema({
      userId: mongoose.Schema.Types.ObjectId,
      userName: String,
@@ -32,12 +33,14 @@ const orderSchema= new mongoose.Schema({
                    paymentStatus:{ type:String, default:'pending'},
                    paymentMethod:{ type:String},
                    cancellationRequest:{ type:Boolean, default:false} ,
+                   cancelReason:{ type:String, default:null} ,
                    returnRequest:{ type:Boolean, default:false},
                    orderHashId:String                                    
 
      } ]
               
-    })
+    });
+    
 
     module.exports ={ 
         userOrders: mongoose.model("userOrders",orderSchema),

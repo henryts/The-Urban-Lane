@@ -221,6 +221,7 @@
                                                     <table class="table">
                                                         <thead>
                                                             <tr>
+                                                                
                                                                 <th>Order</th>
                                                                 <th>Date</th>
                                                                 <th>Status</th>
@@ -229,24 +230,39 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
+                                                            <% let k=1 %>
                                                       <% for(let i=0;i<orders.length;i++) { %>
-                                                            <tr>
-                                                                <td>#<%=orders[i].orderList.orderHashId %></td>
-                                                                <% const timestamp = new Date(orders[i].orderList.creationTime);
+                                                            <tr> 
+                                                               
+                                                                <td>#<%=orders[i].orderHashId %></td>
+                                                                <% const timestamp = new Date(orders[i].creationTime);
                                                                 const options = { month: 'long', day: 'numeric', year: 'numeric' };
                                                                 const formattedDate = timestamp.toLocaleDateString('en-US', options); %>
                                                                 <td><%=formattedDate %></td>
-                                                                <td><%=orders[i].orderList.status %></td>
-                                                                <td><%=orders[i].orderList.totalPrice%></td>
+                                                                <td><%=orders[i].status %></td>
+                                                                <td><%=orders[i].totalPrice%></td>
                                                                 <td><a href="#" class="btn-small d-block">View</a></td>
                                                             </tr>
                                                           <% } %>
                                                         </tbody>
                                                     </table>
+                                                    
+                                                </div>
+                                                <div class="pagination" style="display: flex; flex-direction: row; justify-content: center; margin-right: 80%; margin-top: 20px;">
+                                                    <ul style="display: flex; flex-direction: row; list-style: none; padding: 0; margin: 0;">
+                                                      <% for(let i = 1; i <= pages ; i++) { %>
+                                                        <li style="margin: 0 5px;">
+                                                          <a href="?page=<%= i %>" id="pagination" style="display: inline-block; padding: 5px 10px; background-color: #f5f5f5; color: #333; text-decoration: none; border-radius: 5px;">
+                                                            <%= i %>
+                                                          </a>
+                                                        </li>
+                                                      <% } %>
+                                                    </ul>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    
                                     <div class="tab-pane fade" id="track-orders" role="tabpanel" aria-labelledby="track-orders-tab">
                                         <div class="card">
                                             <div class="card-header">
@@ -332,7 +348,7 @@
                                                       </div>
                                                     </div>
                                                   </form>
-                                                  
+                                                 
                                                   <script>
  $(document).ready(function(){
   $('#passwordResetForm').submit(function(e){

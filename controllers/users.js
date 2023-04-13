@@ -5,7 +5,7 @@ const orderModel =  require("../models/orders");
 const wishlistModel =  require("../models/wishlist-schema");
 const bannerModels = require("../models/banner");
 const couponModels = require("../models/coupon");
-
+const paginate =require('mongoose-paginate-v2');
 const coupondbs=couponModels.coupondbs;
 const bannerdb=bannerModels.bannerdb;
 const wishlistdb = wishlistModel.wishlistdb;
@@ -155,10 +155,10 @@ loginUser: async (req, res) => {
     const pData = await newProduct.find({});   
     const bannerData = await  bannerdb.find({});
     let bLength = bannerData.length;
-     //console.log(bannerData );
+    // console.log(bannerData );
     if (req.session.loggedIn) {
       uid = req.session.userid;
-      res.render("user/index", { uid, pData,bData:bannerData });
+      res.render("user/index", { uid, pData, bData:bannerData });
     } else {
       uid=null;
       res.render("user/index", {uid, pData });
@@ -698,17 +698,50 @@ else{
          const shortid = require('shortid');
          const userID = shortid.generate(req.session.userid._id);//chjange
          const uid = mongoose.Types.ObjectId(req.session.userid._id);  
-         console.log( uid);
-         const order =await userOrders.aggregate([{ $match: { userId:uid } },
-        { $unwind: "$orderList" }
+         //console.log( uid);
 
+
+        const page= req.query.page || 1;
+        const perPage =10;
+        const query = { userId: uid };
+        const count = await userOrders.findOne({query});
+        const orderListCount = count.orderList.length;
         
-         ]).exec();
-        res.render("user/userProfile",{orders:order,userID})
+      const pipeline = [
+        { $match: query },
+        { $unwind: "$orderList" },
+        { $project: { 
+            _id: "$orderList._id",
+            userId: 1,
+            userName: 1,
+            userEmail: 1,
+            items: "$orderList.items",
+            totalPrice: "$orderList.totalPrice",
+            status: "$orderList.status",
+            address: "$orderList.address",
+            creationTime: "$orderList.creationTime",
+            modifiedAt: "$orderList.modifiedAt",
+            deliveryStatus: "$orderList.deliveryStatus",
+            paymentStatus: "$orderList.paymentStatus",
+            paymentMethod: "$orderList.paymentMethod",
+            cancellationRequest: "$orderList.cancellationRequest",
+            returnRequest: "$orderList.returnRequest",
+            orderHashId: "$orderList.orderHashId"
+          }
+        }
+      ];
+      
+      const orderz = await userOrders.aggregate(pipeline).skip((page-1)*perPage).limit(perPage);
+      //console.log(orderz);
+    
+     
+     res.render("user/userProfile",
+     {orders:orderz,
+      userID,
+      pages:Math.ceil(orderListCount/perPage)
+    });
 
-        console.log(order);
-
-
+     
 
         }
         else{
@@ -1253,9 +1286,12 @@ passwordReset: async (req, res) => {
       let response={};
       const uid = req.session.userid._id;
       const orderId= req.session.latestOrderId;
+      const reason= req.body.reason;
+      console.log(reason);
       await userOrders.findOneAndUpdate(
         { userId: uid, "orderList._id": orderId },
-        { $set: { "orderList.$.status": "cancelled", "orderList.$.paymentStatus": "Refund Issued" } }
+        { $set: { "orderList.$.status": "cancelled", "orderList.$.paymentStatus": "Refund Issued",
+        "orderList.$.cancelReason":  reason } }
       );
       console.log("UPDATED");
       response.ok=true;
@@ -1270,7 +1306,7 @@ passwordReset: async (req, res) => {
   userCouponPost:async(req,res)=>{
     if (req.session.loggedIn) {
     
-   const couponCode= req.body.couponCode.toString();
+   const couponCode= req.body.couponCode.toString(); 
    console.log(couponCode);
    let id =req.session.latestOrderId
    const mongoId = mongoose.Types.ObjectId(req.session.latestOrderId);

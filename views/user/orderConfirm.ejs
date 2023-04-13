@@ -180,10 +180,11 @@
                           <%if(order.status=='confirmed'){ %>
                             <span class="fw-bold me-4">Order Status: </span>
                             <span style="color:green;" id="statusmsg"><%=order.status%></span>
+                           
                             <button class="button button-add-to-cart" id="button-add-to-cart" style="background-color: grey;margin-left: 200px; font-size: 14px;
                             padding: 5px 10px;" onclick="showCancelOrderWarning()">Cancel Order</button>
 
-
+                            
                             <!-- <button class="btn  btn-primary text-center" style="margin-left: 20px;" onclick="cancelOrder('<%=order._id%>');Swal.fire({
                               position: 'center',
                               icon: 'success',
@@ -259,35 +260,55 @@
             cancelButtonText: 'No, keep it'
           }).then((result) => {
             if (result.value) {
+              Swal.fire({
+        title: 'Reason for Cancellation:',
+        input: 'select',
+        inputOptions: {
+          'Decision Changed': 'Decision Changed',
+          'Order by mistake': 'Order by mistake',
+          'Wrong item Ordered': 'Wrong item Ordered'
+        },
+        inputAttributes: {
+          autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Submit',
+        showLoaderOnConfirm: true,
+        preConfirm: (reason) => {
       $.ajax({
         type: 'POST',
         url: '/cancel-order',
-        data: JSON.stringify({orderId: null}),
-        contentType: 'application/json',
-        success: function(response) {
-          // If the cancel order request was successful, display a success message
-          if(response.ok){
-          swal.fire({
-            title: 'Order canceled',
-            text: 'Your order has been canceled successfully',
-            type: 'success'
-          });
-          document.getElementById("statusmsg").textContent = "cancelled";
-          
-        }
-        },
-        error: function(xhr, status, error) {
-          // If the cancel order request failed, display an error message
-          swal.fire({
-            title: 'Error',
-            text: 'Failed to cancel the order',
-            type: 'error'
-          });
-        }
-      });
-    }
-   });
+        data: JSON.stringify({orderId: null,reason: reason}),
+        contentType: 'application/json'
+        ,
+  success: function(response) {
+    // Display a success message if the request was successful
+    Swal.fire({
+      icon: 'success',
+      title: 'Order cancelled',
+      text: response.message
+    });
+    $('#button-add-to-cart').hide();
+    $('#statusmsg').text('Cancelled').css('color', 'red');
+  },
+  error: function(error) {
+    // Display an error message if the request failed
+    Swal.fire({
+      icon: 'error',
+      title: 'Error cancelling order',
+      text: error.message
+    });
   }
+});
+          }})}})};
+
+
+
+
+
+
+
+
  </script>
       
  

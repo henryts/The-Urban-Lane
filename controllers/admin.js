@@ -292,9 +292,25 @@ console.log("Total orders in current month:", totalOrders);
 
   userlist: async (req, res) => {
     //user data listing
-    const uData = await users.find({});
+    const page= req.query.page || 1;
+      const perPage =10;
+      if(page==1)
+      {
+        sno=1;
+      }
+     else if(page>=2)
+      {
+        sno=(page-1)*11
+      }
+      const uData = await users.find({}).skip((page-1)*perPage).limit(perPage);;
+      
+      console.log("length=",uData.length);
     var num = 1;
-    res.render("admin/user-list", { uData, num });
+    res.render("admin/user-list", { uData,
+       num,
+       pages:Math.ceil(uData.length/perPage),
+       sno });
+       
   },
 
   adminLoginPage: (req, res) => {
@@ -477,9 +493,60 @@ console.log("Total orders in current month:", totalOrders);
   if(req.session.loggedIn)
   {
     try {
-      const orders = await userOrders.find({});
+      const page= req.query.page || 1;
+      const perPage =10;
+      if(page==1)
+      {
+        sno=1;
+      }
+
+    //  let sno=req.query.sno ||1;
+     else if(page>=2)
+      {
+      sno=(page-1)*11;
+      }
+     
+     // const count = await userOrders.findOne({query}); 
+      //const orders = await userOrders.find({}).skip((page-1)*perPage).limit(perPage);
+      const orderscount = await userOrders.aggregate([
+        {
+          $unwind: "$orderList"
+        },
+        {
+          $project: {
+            _id: 0,
+            userId: 1,
+            userName: 1,
+            orderDetails: "$orderList",
+          }
+        }
+      ]);
+
+      const orders = await userOrders.aggregate([
+        {
+          $unwind: "$orderList"
+        },
+        {
+          $project: {
+            _id: 0,
+            userId: 1,
+            userName: 1,
+            orderDetails: "$orderList",
+          }
+        }
+      ]).skip((page-1)*perPage).limit(perPage);
+      
+        // console.log("orderscount:",orderscount.length);
+        // console.log("page:",page);
+        // console.log("orders in page",orders.length);
+ 
       let orderID=[];
-     res.render('admin/pageOrders',{order:orders,orderID});
+      res.render('admin/pageOrders',{
+      order:orders,
+      pages:Math.ceil(orderscount.length/perPage),
+      sno
+
+    });
   } catch (err) {
     console.log(err);
   }

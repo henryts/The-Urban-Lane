@@ -49,20 +49,20 @@
                                     <tbody>
                                        <% let k=1 %>
                                         <%   for(let i=0;i<order.length;i++) { %>
-                                            <%for(let j=0;j<order[i].orderList.length;j++) { %>
-                                          <td><%=k%></td> 
-                                          <% k++ %>
-                                          <td>#<%=order[i].orderList[j].orderHashId%></td> 
-                                    <td><b><%=order[i].userName%></b></td>
-                                            <td>$<%=order[i].orderList[j].totalPrice%></td>
-                                            <td><span class="badge rounded-pill alert-danger"><%=order[i].orderList[j].status%></span></td>
-                                            <td><span class="badge rounded-pill alert-danger"><%=order[i].orderList[j].paymentMethod%></span></td>
-                                            <% const timestamp = new Date(order[i].orderList[j].creationTime);
+                                           
+                                          <td><%=sno%></td> 
+                                          <% sno++ %>
+                                          <td>#<%=order[i].orderDetails.orderHashId%></td> 
+                                          <td><b><%=order[i].userName%></b></td>
+                                            <td>$<%=order[i].orderDetails.totalPrice%></td>
+                                            <td><span class="badge rounded-pill alert-danger"><%=order[i].orderDetails.status%></span></td>
+                                            <td><span class="badge rounded-pill alert-danger"><%=order[i].orderDetails.paymentMethod%></span></td>
+                                            <% const timestamp = new Date(order[i].orderDetails.creationTime);
                                             const options = { month: 'long', day: 'numeric', year: 'numeric' };
                                             const formattedDate = timestamp.toLocaleDateString('en-US', options); %>
                                             <td><%=formattedDate%></td>
                                             <td class="text-end">
-                                                <a href="/admin/orderDetails?orderId=<%=order[i].orderList[j]._id %>&userId=<%=order[i].userId%>" class="btn btn-md rounded font-sm">Detail</a>
+                                                <a href="/admin/orderDetails?orderId=<%=order[i].orderDetails._id %>&userId=<%=order[i].userId%>" class="btn btn-md rounded font-sm">Detail</a>
                                                 <div class="dropdown">
                                                     <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
                                                     <div class="dropdown-menu">
@@ -74,7 +74,7 @@
                                             </td>
                                         </tr>
                                         <%}%>
-                                        <%}%>
+                                        
                                       
                                       
                                     </tbody>
@@ -82,6 +82,17 @@
                             </div> <!-- table-responsive //end -->
                         </div> <!-- card-body end// -->
                     </div> <!-- card end// -->
+                </div>
+                <div class="pagination-area mt-15 mb-50">
+                    <!-- <nav aria-label="Page navigation example"> -->
+                        <ul class="pagination justify-content-start">
+                            <% for(let i =1; i <=pages ; i++) { %>
+                            <!-- <li class="page-item "><a class="page-link" href="#">01</a></li> -->
+                           
+                            <li class="page-item"><a class="page-link" href="?page=<%=i%>&&sno=<%=sno  %>"><%= i%></a></li>
+                            <% } %>
+                        </ul>
+                    <!-- </nav> -->
                 </div>
                 <!-- <div class="col-md-3">
                     <div class="card mb-4">
@@ -124,18 +135,18 @@
                     </div> 
                 </div> -->
             </div>
-            <div class="pagination-area mt-15 mb-50">
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-start">
-                        <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                        <li class="page-item"><a class="page-link" href="#">02</a></li>
-                        <li class="page-item"><a class="page-link" href="#">03</a></li>
-                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
-                        <li class="page-item"><a class="page-link" href="#">16</a></li>
-                        <li class="page-item"><a class="page-link" href="#"><i class="material-icons md-chevron_right"></i></a></li>
-                    </ul>
-                </nav>
-            </div>
+          
+            <!-- <div class="pagination" style="display: flex; flex-direction: row; justify-content: center; margin-right: 80%; margin-top: 20px;">
+                <ul style="display: flex; flex-direction: row; list-style: none; padding: 0; margin: 0;">
+                  <% for(let i = 1; i <= pages ; i++) { %>
+                    <li style="margin: 0 5px;">
+                      <a href="?page=<%= i %>#orders" id="pagination" style="display: inline-block; padding: 5px 10px; background-color: #f5f5f5; color: #333; text-decoration: none; border-radius: 5px;">
+                        <%= i %>
+                      </a>
+                    </li>
+                  <% } %>
+                </ul>
+            </div> -->
         </section> <!-- content-main end// -->
         <footer class="main-footer font-xs">
             <div class="row pb-30 pt-15">

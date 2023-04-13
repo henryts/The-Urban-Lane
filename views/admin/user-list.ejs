@@ -31,7 +31,7 @@
                         <tbody>
                             <% uData.forEach((uData, index) => { %>
                             <tr>
-                                <td><%=num++ %> </td>
+                                <td><%=sno++ %> </td>
                                 <!-- <td><a href="#"><img src="/examples/images/avatar/1.jpg" class="avatar" alt="Avatar"> <%= uData.username %></a></td> -->
                                 <td><%= uData.username %></td>                        
                                 <td><%= uData.email %></td>
@@ -53,10 +53,6 @@
                                         <button type="submit" class="btn   btn-light btn-outline-success btn-sm " data-toggle="modal">Unblock</button>
                                     </div>
                                     </form>
-                          
-
-                                    
-                                
                                    <!-- <form  method="" action="/admin/User-list ">
                                    <% if(uData.block){ %>  
                                    <button type="submit" name="unblock_btn"   class="btn btn-danger btn-xs">Unblock</button>
@@ -69,7 +65,19 @@
                             </tr>
                             <% }) %>
                         </tbody>
+                        <div class="pagination-area mt-15 mb-50">
+                            <!-- <nav aria-label="Page navigation example"> -->
+                                <ul class="pagination justify-content-start">
+                                    <% for(let i =1; i <=2 ; i++) { %>
+                                    <!-- <li class="page-item "><a class="page-link" href="#">01</a></li> -->
+                                   
+                                    <li class="page-item"><a class="page-link" href="?page=<%=i%>&&sno=<%=sno%>"><%= i%></a></li>
+                                    <% } %>
+                                </ul>
+                            <!-- </nav> -->
+                        </div>
                     </table>
+                   
                     <!-- <div class="clearfix">
                         <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
                         <ul class="pagination">
