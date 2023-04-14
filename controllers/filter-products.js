@@ -67,5 +67,42 @@ module.exports = {
     }
 
 
+   },
+   priceFilter:async(req,res)=>{
+    if (req.session.loggedIn) {
+      const minPrice = req.body.minPrice;
+      const maxPrice = req.body.maxPrice;
+       console.log("minPrice",minPrice);
+      // console.log("maxPrice",maxPrice);
+      // Query the database for products that match the price range
+      newProduct.find({productCost: {$gte: minPrice, $lte: maxPrice}}, function(err, products) {
+        if (err) {
+          // Handle error
+          console.error(err);
+          res.status(500).send(err);
+        } else {
+          // Return the products as JSON
+          console.log(products);
+          res.json(products);
+        }
+      });
+
+     } else{
+        res.redirect("/login");
+    }
+
+   },
+   priceFilterGet:(req,res)=>
+   {
+    if (req.session.loggedIn) {
+      const uid=req.session.userid._id;
+      const pData = req.query.productz;
+      console.log((product));
+      res.render("user/filter-products",{uid,pData});
+
+    } else{
+      res.redirect("/login");
+  }
+
    }
 }
