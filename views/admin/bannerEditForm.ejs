@@ -1,0 +1,104 @@
+<%- include('../partials/adminHeader') %>
+
+    <section class="content-main">
+        
+        <div class="row">
+            <div class="col-8">
+                <div class="content-header">
+                    <h2 class="content-title">Edit Banner: </h2>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <form action="/admin/bannerUpdatePost/<%=bData._id%>" method="post"  >
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <!-- <form action="/admin/addProductPost" method="post" enctype="multipart/form-data"> -->
+                                <!-- <h6>1. General info</h6> -->
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-4">
+                                    <label class="form-label">Offer Title:</label>
+                                    <input type="text" value="<%=bData.offerTitle%>" name="offerTitle" class="form-control" >
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Heading 1</label>
+                                    <input type="text" value="<%=bData.heading1%>" name="heading1" class="form-control">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Heading 2</label>
+                                    <input type="text" value="<%=bData.heading2%>" name="heading1" class="form-control">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Bottom Line</label>
+                                    <input type="text" value="<%=bData.bottomline%>" name="bottomline" class="form-control">
+                                </div>
+                               
+                            <div class="col-md-9">
+                                
+                                <div>
+                                    <button class="btn btn-md rounded font-sm hover-up" type="submit">Update Banner </button>
+                                </div>
+                            </div> <!-- col.// -->
+                        </div> <!-- .row end// -->
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section> <!-- content-main end// -->
+    <img class="animated slider-1-1" src="/bannerUploads/<%=bData.bannerImages[0].filename%> " alt="product image">
+    <script>
+        $(document).ready(function() {
+  // Listen for the form submission
+  $('form').submit(function(event) {
+    // Prevent the default form submission
+    event.preventDefault();
+
+    // Get the form data
+    var formData = $(this).serialize();
+
+    // Send the AJAX request
+    $.ajax({
+      url: $(this).attr('action'),
+      type: $(this).attr('method'),
+      data: formData,
+      success: function(response) {
+        // Handle the success response
+    
+        swal("Success!", "Coupon Info Updated ", "success").then(()=>{
+            window.location.replace("/admin/couponlist");
+        });
+        
+
+      },
+      error: function(xhr, status, error) {
+        // Handle the error response
+        console.log(xhr.responseText);
+      }
+    });
+  });
+});
+
+    </script>
+    <footer class="main-footer font-xs">
+       
+    </footer>
+    </main>
+    <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/vendors/select2.min.js"></script>
+    <script src="assets/js/vendors/perfect-scrollbar.js"></script>
+    <script src="assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <!-- Main Script -->
+    <script src="assets/js/main.js" type="text/javascript"></script>
+    </body>
+
+
+    <!-- Mirrored from wp.alithemes.com/html/evara/evara-backend/page-form-product-2.html by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Aug 2021 15:33:32 GMT -->
+
+    </html>

@@ -723,7 +723,7 @@ bannerList: async(req,res)=>{
   if(req.session.loggedIn)
   {
     const bannerList  = await bannerdb.find({});
-    console.log(bannerList);
+    //console.log(bannerList);
     res.render('admin/bannerList',{bannerList});
 
   }
@@ -732,6 +732,45 @@ bannerList: async(req,res)=>{
     res.redirect("/admin/adminlogin");
   }
 
+},
+bannerDelete:async(req,res)=>
+{
+  if(req.session.loggedIn)
+  {
+    const id=req.query.id;
+    console.log("id",id);
+    const response = {}
+    bannerdb.findByIdAndDelete(id, (err, doc) => {
+       if (err) {
+         console.log(err);
+       } else {
+        console.log("doc",doc);
+        response.ok=true;
+        res.json(response);
+       }
+     });
+
+  }
+  else{
+    res.redirect("/admin/adminlogin");
+  }
+},
+bannerEdit:async(req,res)=>{
+  if(req.session.loggedIn)
+  {
+
+    const id = req.query.id;
+    console.log("control in edit banner");
+   
+   const bData = await  bannerdb.findOne({ _id:id});
+   console.log(bData);
+   res.render('admin/bannerEditForm',{bData:bData})
+
+  }
+   else{
+    res.redirect("/admin/adminlogin");
+   }
+    
 },
 
 couponGenerateForm: (req,res)=>{

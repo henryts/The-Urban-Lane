@@ -44,41 +44,82 @@
                         </header> <!-- card-header end// -->
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-hover table-sm">
+                                <table class="table table-hover table-sm" style="font-size: 14px;">
                                     <thead>
                                         <tr>
-                                            <th>No.</th>
-                                            <th>Offer Title</th>
-                                            <th>Heading-1</th>
-                                            <th>Heading-2</th>
-                                            <th>Bottom Line</th>                                         
-                                             </tr>
+                                            <th style="padding: 0.5rem;">No.</th>
+                                            <th style="padding: 0.5rem;">Offer Title</th>
+                                            <th style="padding: 0.5rem;">Heading-1</th>
+                                            <th style="padding: 0.5rem;">Heading-2</th>
+                                            <th style="padding: 0.5rem;">Bottom Line</th>                                         
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                       <% let k=1 %>
-                                        <%   for(let i=0;i<bannerList.length;i++) { %>
-                                         <td><%=k%></td>                        
-                                          <% k++ %>
-                                          <td><%=bannerList[i].offerTitle%></td> 
-                                          <td><%=bannerList[i].heading1%></td> 
-                                          <td><b><%=bannerList[i].heading2%>%</b></td>
-                                          <td><%=bannerList[i].bottomline%></td>
-
-                                         <div class="dropdown">
+                                        <% let k=1 %>
+                                        <% for(let i=0;i<bannerList.length;i++) { %>
+                                        <tr>
+                                            <td style="padding: 0.5rem;"><%=k%></td>                        
+                                            <% k++ %>
+                                            <td style="padding: 0.5rem;"><%=bannerList[i].offerTitle%></td> 
+                                            <td style="padding: 0.5rem;"><%=bannerList[i].heading1%></td> 
+                                            <td style="padding: 0.5rem;"><b><%=bannerList[i].heading2%>%</b></td>
+                                            <td style="padding: 0.5rem;"><%=bannerList[i].bottomline%></td>
+                                            <td>
+                                                <div class="dropdown">
                                                     <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
                                                     <div class="dropdown-menu">
-                                                        
-                                                        <a class="dropdown-item" href="/admin/editCoupon?id=<%=bannerList[i]._id%>">Edit info</a>
-                                                        <a class="dropdown-item text-danger delete-coupon" href="#" data-coupon-id="<%=bannerList[i]._id%>">Delete</a>
+                                                        <a class="dropdown-item" href="/admin/bannerEdit?id=<%=bannerList[i]._id%>">Edit info</a>
+                                                        <a  class="dropdown-item text-danger delete-banner" href="?id=<%=bannerList[i]._id%>" data-banner-id="<%=bannerList[i]._id%>">Delete</a>
                                                     </div>
-                                                </div> <!-- dropdown //end -->
+                                                </div>
                                             </td>
                                         </tr>
                                         <%}%>                                     
                                     </tbody>
                                 </table>
-                            </div> <!-- table-responsive //end -->
-                        </div> <!-- card-body end// -->
+                            </div>
+                            </div>
+                            <script>
+                                // Listen for click events on the delete coupon links
+                $('.delete-banner').on('click', function(e) {
+                  e.preventDefault(); // Prevent the default link behavior
+                
+                  var bannerId = $(this).data('banner-id'); // Get the coupon ID from the data attribute
+                
+                  // Show a confirmation dialog using SweetAlert
+                  swal.fire({
+                  title: 'Are you sure?',
+                  text: 'This action cannot be undone.',
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonText: 'Yes, delete it!',
+                  cancelButtonText: 'No, cancel!',
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33'
+                }).then( (result)=> {
+                    // User confirmed deletion, send AJAX request to server
+                    if (result.value) {
+                    $.ajax({
+                      url: '/admin/bannerDelete',
+                      type: 'GET',
+                      data: { id: bannerId },
+                      success: function(response) {
+                        // Deletion successful, redirect to new page
+                        window.location.replace('/admin/bannerList');
+                      },
+                      error: function(xhr, status, error) {
+                        // Handle errors here
+                        swal('Oops...', 'Something went wrong!', 'error');
+                      }
+                    });
+                  }else {
+                    // User clicked cancel, do nothing
+                    swal('Cancelled', 'Your deletion request has been cancelled', 'info');
+                  } 
+                });
+                });
+                
+                            </script>
                     </div> <!-- card end// -->
                 </div>
                 <!-- <div class="col-md-3">

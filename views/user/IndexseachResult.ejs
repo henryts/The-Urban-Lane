@@ -159,11 +159,8 @@
             </div>
         </div>
     </div>
-    
-   
     <main class="main">       
         <section class="home-slider position-relative pt-50">
-            <% if(!f) {%>
             <div class="hero-slider-1 dot-style-1 dot-style-1-position-1">
                 <% for (var i = 0; i < bData.length; i++) { %>
                     <div class="single-hero-slider single-animation-wrap">
@@ -250,18 +247,10 @@
                     </ul>
                     <a href="#" class="view-more d-none d-md-flex">View More<i class="fi-rs-angle-double-small-right"></i></a>
                 </div>
-                <% } %>
                 <!--End nav-tabs-->
                 <div class="tab-content wow fadeIn animated" id="myTabContent">
                     <div class="tab-pane fade show active" id="tab-one" role="tabpanel" aria-labelledby="tab-one">
                         <div class="row product-grid-4">
-                            <% if (!pData.length) { %>
-                                <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; box-shadow: 2px 2px 2px #ccc; padding: 20px; text-align: center;margin-bottom: 300px;">
-                                    <h2 style="font-size: 24px; margin-bottom: 10px;margin-top: 50px;">Sorry, we couldn't find any results.</h2>
-                                    <p style="font-size: 16px;margin-bottom: 200px;">Please try again with a different search term.</p>
-                                  </div>
-                                  
-                            <% } %>
                             <% pData.forEach((pData, index) => { %>
                             <div class="col-lg-3 col-md-4 col-12 col-sm-6">
                                 <div class="product-cart-wrap mb-30">

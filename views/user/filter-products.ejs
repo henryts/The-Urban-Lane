@@ -418,18 +418,55 @@
     var maxValue = slider.slider("values", 1);
     amount.val("$" + minValue + " - $" + maxValue);
    
-    
+    console.log("from js:", minValue);
     // AJAX call to send filter values
     $.ajax({
       url: '/priceFilterAjaxCall',
       type: 'POST',
       data: {minPrice: minValue, maxPrice: maxValue},
       success: function(products) {
-      //  productz=JSON.parse(products);
-        fetch('/priceFilterGet?databaseObject=' + encodeURIComponent(products));
-    //    .then(function(response) {
-    // return response.json();
-     
+        //console.log(products);
+        
+      pData=JSON.parse(JSON.stringify(products));
+      console.log( pData);
+      var productsHtml = '';
+                    pData.forEach(function (product) {
+                        productsHtml += '<div class="col-lg-4 col-md-4 col-12 col-sm-6">';
+                        productsHtml += '<div class="product-cart-wrap mb-30">';
+                        productsHtml += '<div class="product-img-action-wrap">';
+                        productsHtml += '<div class="product-img product-img-zoom">';
+                        productsHtml += '<a href="shop-product-right.html">';
+                        productsHtml += '<img class="default-img" src="/uploads/' + product.productImages[0].filename + '" alt="">';
+                        productsHtml += '<img class="hover-img" src="/uploads/' + product.productImages[1].filename + '" alt="">';
+                        productsHtml += '</a>';
+                        productsHtml += '</div>';
+                        productsHtml += '<div class="product-action-1">';
+                        productsHtml += '<a aria-label="Quick view" class="action-btn hover-up" data-bs-toggle="modal" data-bs-target="#quickViewModal"><i class="fi-rs-search"></i></a>';
+                        productsHtml += '<a aria-label="Add To Wishlist" class="action-btn hover-up" href="/addtoWishlist/' + product._id + ' "><i class="fi-rs-heart"></i></a>';
+                        productsHtml += '<a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a>';
+                        productsHtml += '</div>';
+                        productsHtml += '<div class="product-badges product-badges-position product-badges-mrg">';
+                        // productsHtml += '<span class="hot">Hot</span>';
+                        productsHtml += '</div>';
+                        productsHtml += '</div>';
+                        productsHtml += '<div class="product-content-wrap">';
+                        productsHtml += '<div class="product-category">';
+                        productsHtml += '</div>';
+                        productsHtml += '<h2><a href="/productDetails/' + product._id + '">' + product.productName + '</a></h2>';
+                        productsHtml += '<div class="product-price">';
+                        productsHtml += '<span>$' + product.productCost + '</span>';
+                        // productsHtml += '<span class="old-price">$245.8</span>';
+                        productsHtml += '</div>';
+                        productsHtml += '<div class="product-action-1 show">';
+                        productsHtml += '<a aria-label="Add To Cart" class="action-btn hover-up" href="shop-cart.html"><i class="fi-rs-shopping-bag-add"></i></a>';
+                        productsHtml += '</div>';
+                        productsHtml += '</div>';
+                        productsHtml += '</div>';
+                        productsHtml += '</div>';
+                    });
+
+                    $('#product-list').html(productsHtml);
+                
     
     
       },

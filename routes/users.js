@@ -16,6 +16,8 @@ router.get('/', UserController.IndexPage); //user index render   -LANDING PAGE
 
 router.post('/login', UserController.loginUser); // login post
 
+router.post('/searchResult', UserController.indexSearchResult); // login post
+
 router.get('/otpPage', UserController.otpPage); // otp page render
 
 

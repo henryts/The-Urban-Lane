@@ -152,18 +152,44 @@ loginUser: async (req, res) => {
 
   //********Index PAGE RENDER-----redirect-login**********
   IndexPage: async (req, res) => {
+    let searchFlag=0;
     const pData = await newProduct.find({});   
     const bannerData = await  bannerdb.find({});
     let bLength = bannerData.length;
     // console.log(bannerData );
     if (req.session.loggedIn) {
       uid = req.session.userid;
-      res.render("user/index", { uid, pData, bData:bannerData });
+      res.render("user/index", { uid, pData, bData:bannerData,f:searchFlag });
     } else {
       uid=null;
-      res.render("user/index", {uid, pData });
+      res.render("user/index", {uid, pData,bData:bannerData,f:searchFlag});
     }
   },
+  indexSearchResult:async(req,res)=>
+  {
+    let searchFlag=1;
+  //  const pData = await newProduct.find({});   
+    const bannerData = await  bannerdb.find({});
+    let bLength = bannerData.length;
+    if (req.session.loggedIn) {
+  const searchText = req.body.searchInput;
+  console.log("search Input:", searchText);
+  const searchQuery = {
+    productName: { $regex: searchText, $options: 'i' },
+  };
+  
+  const pData = await newProduct.find(searchQuery);
+  console.log(pData.length);
+
+  uid = req.session.userid;
+  res.render("user/index", { uid, pData, bData:bannerData,f:searchFlag});
+  //console.log(products);
+  
+    }
+   else {
+    res.redirect('/login');
+  }
+},
   //********USER SIGNUP PAGE RENDER**********
   signUpPage: (req, res) => {
     res.render("user/user-signup");
@@ -1334,7 +1360,7 @@ passwordReset: async (req, res) => {
    //console.log("toaal coupon",cData.minTotalPrice);
 
    if (cData.expirationDate <currentDate) {
-    response.expiry=true;
+    response.expiry=true; 
     console.log("expiry true");    
     res.json(response);
   }else if(userData.coupon.includes(couponCode))

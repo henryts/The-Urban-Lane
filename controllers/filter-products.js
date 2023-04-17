@@ -96,7 +96,8 @@ module.exports = {
    {
     if (req.session.loggedIn) {
       const uid=req.session.userid._id;
-      const pData = req.query.productz;
+      const productData = req.query.productz;
+      pData =JSON.stringify(productData);
       console.log((product));
       res.render("user/filter-products",{uid,pData});
 
