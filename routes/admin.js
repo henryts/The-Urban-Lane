@@ -7,7 +7,7 @@ const bcrypt = require("bcrypt");
 var multer = require('multer');
 var path = require('path');
 
-var storage = multer.diskStorage({
+let storage = multer.diskStorage({
     destination: "public/uploads",
   filename: (req,file,cb,err) =>{
     if(err){
@@ -16,7 +16,7 @@ var storage = multer.diskStorage({
     cb(null,Date.now()+path.extname(file.originalname))
   }
 })
-var bannerStorage = multer.diskStorage({
+let bannerStorage = multer.diskStorage({
   destination: "public/bannerUploads",
 filename: (req,file,cb,err) =>{
   if(err){
@@ -75,6 +75,8 @@ router.post('/bannerFormPost',uploadBanner,adminController.bannerFormPost);
 router.get('/bannerList',uploadBanner,adminController.bannerList);
 router.get('/bannerDelete',adminController.bannerDelete);
 router.get('/bannerEdit', adminController.bannerEdit);
+router.post('/bannerUpdatePost/:id', adminController.bannerEditPost);
+
 
 
 

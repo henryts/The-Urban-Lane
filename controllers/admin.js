@@ -10,6 +10,7 @@ const orderModel =  require("../models/orders");
 const userOrders = orderModel.userOrders;
 const Catagory = mongooseModels.catagory;
 const newProduct = mongooseModels.products;
+const sharp = require('sharp');
 
 const admins = mongooseModels.adminCred;
 const users = usersDetails.User;
@@ -437,6 +438,19 @@ console.log("Total orders in current month:", totalOrders);
       productCatogory: req.body.catName,
       productImages: req.files,
     });
+    for(let i=0;i<req.files.length;i++)
+    {
+    sharp(req.files[0].path)
+    .resize(400, 400, { fit: 'cover' })
+    .toFile(`public/bannerUploads/${req.files[0].filename}`, (err, info) => {
+      if (err) {
+        // Handle the error
+      } else {
+        // The image has been resized and saved
+        console.log("image resized");
+      }
+    });
+  }
     newpdt.save().then(() => {
       res.redirect("/admin/addProduct");
     });
@@ -760,7 +774,7 @@ bannerEdit:async(req,res)=>{
   {
 
     const id = req.query.id;
-    console.log("control in edit banner");
+   
    
    const bData = await  bannerdb.findOne({ _id:id});
    console.log(bData);
@@ -771,6 +785,42 @@ bannerEdit:async(req,res)=>{
     res.redirect("/admin/adminlogin");
    }
     
+},
+bannerEditPost:async(req,res)=>{
+  if(req.session.loggedIn)
+  {
+    console.log("control in edit post");
+    const offerTitle = req.body.offerTitle;
+    const heading1 = req.body.heading1;
+    const heading2 = req.body.heading2;
+    const bottomline = req.body.bottomline;
+    //const bannerImage=req.files;
+    const id = req.params.id;
+    let response= {};
+    const updateBanner = {
+      offerTitle: req.body.couponName,
+      heading1: req.body.heading1,
+      heading2: req.body.heading2,
+      bottomline: req.body.bottomline,
+      
+  };
+  
+  try {
+      const result = await bannerdb.updateOne({ _id: id }, { $set: updateBanner });
+      response.success = true;
+      response.message = "Banner updated successfully";
+      res.status(200).json(response);
+  } catch (error) {
+      response.success = false;
+      response.message = "Error updating Banner";
+      res.status(500).json(response);
+  }
+  
+  }
+ else {
+      res.redirect("/admin/adminlogin");
+    } 
+
 },
 
 couponGenerateForm: (req,res)=>{
@@ -832,10 +882,10 @@ editCoupon:async(req,res)=>
 { if(req.session.loggedIn)
   {
     const id = req.query.id;
-    console.log("control in edit coupon");
+    //console.log("control in edit coupon");
    
    const cData = await coupondbs.findOne({ _id:id});
-   console.log(cData);
+  //console.log(cData);
    res.render('admin/couponEditForm',{cData:cData});
   }
   else {

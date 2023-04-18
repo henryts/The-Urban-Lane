@@ -1,18 +1,17 @@
 <%- include('../partials/adminHeader') %>
 
-    <section class="content-main">
-        
-        <div class="row">
-            <div class="col-8">
-                <div class="content-header">
-                    <h2 class="content-title">Edit Banner: </h2>
-                </div>
+<section class="content-main">
+    <div class="row">
+        <div class="col-8">
+            <div class="content-header">
+                <h2 class="content-title">Edit Banner:</h2>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-6">
-                <div class="card mb-4">
-                    <form action="/admin/bannerUpdatePost/<%=bData._id%>" method="post"  >
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <form action="/admin/bannerUpdatePost/<%=bData._id%>" method="post">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-3">
@@ -22,7 +21,7 @@
                             <div class="col-md-12">
                                 <div class="mb-4">
                                     <label class="form-label">Offer Title:</label>
-                                    <input type="text" value="<%=bData.offerTitle%>" name="offerTitle" class="form-control" >
+                                    <input type="text" value="<%=bData.offerTitle%>" name="offerTitle" class="form-control">
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Heading 1</label>
@@ -30,28 +29,34 @@
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Heading 2</label>
-                                    <input type="text" value="<%=bData.heading2%>" name="heading1" class="form-control">
+                                    <input type="text" value="<%=bData.heading2%>" name="heading2" class="form-control">
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Bottom Line</label>
                                     <input type="text" value="<%=bData.bottomline%>" name="bottomline" class="form-control">
                                 </div>
-                               
-                            <div class="col-md-9">
-                                
-                                <div>
-                                    <button class="btn btn-md rounded font-sm hover-up" type="submit">Update Banner </button>
+                                <!-- <div class="mb-4">
+                                   <label class="form-label">Images</label>
+                                    <input class="form-control" type="file" name="bannerfile" multiple>
+                                </div> -->
+                                <div class="col-md-9">
+                                    <div>
+                                        <button class="btn btn-md rounded font-sm hover-up" type="submit">Update Banner</button>
+                                    </div>
                                 </div>
                             </div> <!-- col.// -->
                         </div> <!-- .row end// -->
                     </div>
                 </form>
-                </div>
             </div>
         </div>
+        <div class="col-lg-6">
+            <img class="animated slider-1-1" src="/bannerUploads/<%=bData.bannerImages[0].filename%>" alt="product image" style="max-width: 400px;">
         </div>
-    </section> <!-- content-main end// -->
-    <img class="animated slider-1-1" src="/bannerUploads/<%=bData.bannerImages[0].filename%> " alt="product image">
+    </div>
+</section> <!-- content-main end// -->
+
+   
     <script>
         $(document).ready(function() {
   // Listen for the form submission
@@ -70,7 +75,7 @@
       success: function(response) {
         // Handle the success response
     
-        swal("Success!", "Coupon Info Updated ", "success").then(()=>{
+        swal("Success!", "Banner Info Updated ", "success").then(()=>{
             window.location.replace("/admin/couponlist");
         });
         
