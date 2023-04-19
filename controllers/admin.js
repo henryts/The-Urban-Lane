@@ -459,7 +459,7 @@ console.log("Total orders in current month:", totalOrders);
   deleteProduct: async (req, res) => {
     //DELETE -products
 
-    let deleteUser = await newProduct.findOneAndRemove({ _id: req.params.id });
+    let deleteUser = await newProduct.findOneAndRemove({ _id: req.query.id });
 
     res.redirect("/admin/productList");
   },
@@ -486,15 +486,16 @@ console.log("Total orders in current month:", totalOrders);
   },
   editProductPage: async (req, res) => {
     // Product edit page listing
-    const id = req.params.id;
-    console.log(req.params.id);
-    pdctObj = await newProduct.find({ _id: id });
+    const id = req.query.id;
+   console.log("control",id);
+   const pdctObj = await newProduct.find({ _id: id });
+    console.log("product Details",pdctObj);
     var catData = await Catagory.find({});
     //give condition for cat data <--correction
 
     // console.log(pdctObj);
-    if (session.loggedIn) {
-      res.render("admin/edit-product/:id", { pdctObj, catData });
+    if (req.session.loggedIn) {
+      res.render("admin/edit-product", { pdctObj, catData });
     } else {
       res.redirect("/admin/adminlogin");
     }

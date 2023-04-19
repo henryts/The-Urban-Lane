@@ -358,7 +358,7 @@ getCart: async (req, res) => {
 
         } 
 
-        if(!cartempty[0].product.length)
+        if(!cartempty[0]?.product.length)
         { 
           uid.cartCount=0;
           console.log("empty");
@@ -374,7 +374,7 @@ getCart: async (req, res) => {
           console.log("empty");
           res.render("user/shop-cart", { products: null, uid });
         } else  {
-          const lengthh = cart[0].products.length;
+          const lengthh = cart[0]?.products.length;
           if (lengthh) {
             const options = { new: true }; // Return the updated document
             users.findOneAndUpdate(

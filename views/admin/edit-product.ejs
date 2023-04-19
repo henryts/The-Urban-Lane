@@ -5,7 +5,7 @@
         <div class="row">
             <div class="col-6">
                 <div class="content-header">
-                    <h2 class="content-title">Add New Product</h2>
+                    <h2 class="content-title">Edit Product</h2>
                 </div>
             </div>
         </div>
@@ -22,24 +22,25 @@
                             <div class="col-md-9">
                                 <div class="mb-4">
                                     <label class="form-label">Product title</label>
-                                    <input type="text" placeholder="Product Title" name="pTitle" value="<%=  pdctObj.productName %>" class="form-control">
+                                    <input type="text" placeholder="Product Title" name="pTitle" value="<%=pdctObj[0].productName %>" class="form-control">
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Description</label>
-                                    <textarea placeholder="Description" name="pDescription" class="form-control"
+                                    <textarea placeholder="Description" value="<%=pdctObj[0].productName %>" name="pDescription" class="form-control"
                                         rows="4"></textarea>
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Brand name</label>
                                     <select class="form-select" name="productBrand">
-                                         <option name="Adidas"> Adidas </option>
-                                        <option name="Nike"> Nike </option>
-                                        <option name="Puma"> Puma </option>
-                                        <option name="Louis Vuitton"> Louis Vuitton </option>
-                                        <option name="Urbano">Urbano Fashion </option>
-                                        <option name="Zalando"> Zalando </option>
-                                        <option name="Levi’s"> Levi’s </option>
-                                        <option name="Under Armour">Under Armour </option>
+                                        <select class="form-select" name="productBrand">
+                                            <option value="Adidas" <%= pdctObj[0].brandName === 'Adidas' ? 'selected' : '' %>> Adidas </option>
+                                            <option value="Nike" <%= pdctObj[0].productBrand === 'Nike' ? 'selected' : '' %>> Nike </option>
+                                            <option value="Puma" <%= pdctObj[0].productBrand === 'Puma' ? 'selected' : '' %>> Puma </option>
+                                            <option value="Louis Vuitton" <%= pdctObj[0].productBrand === 'Louis Vuitton' ? 'selected' : '' %>>Louis Vuitton</option>
+                                            <option value="Urbano" <%= pdctObj[0].productBrand === 'Urbano' ? 'selected' : '' %>>Urbano </option>
+                                            <option value="Under Armour" <%= pdctObj[0].productBrand === 'Under Armour' ? 'selected' : '' %>>Under Armour </option>
+                                          
+                                        </select>
                                         
                                         
                                     </select>
@@ -54,7 +55,7 @@
                             <div class="col-md-9">
                                 <div class="mb-4">
                                     <label class="form-label">Cost in USD</label>
-                                    <input type="text" name="productCost" placeholder="$00.0" class="form-control">
+                                    <input type="text" name="productCost" placeholder="$00.0" value="$<%=pdctObj[0].productCost%>" class="form-control">
                                 </div>
                             </div> <!-- col.// -->
                         </div> <!-- row.// -->

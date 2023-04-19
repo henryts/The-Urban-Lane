@@ -57,11 +57,11 @@ router.post('/addProductPost',upload, adminController.addProductPost); //add pro
 
 router.get('/productList',adminController.productListView); //product listing display
 
-router.get('/deleteProduct/:id',adminController.deleteProduct); //delete list
+router.get('/deleteProduct',adminController.deleteProduct); //delete list
 
 router.post('/editProductPost/:id',adminController.editProductPost); // Product edit page post
 
-router.get('/editProductPage/:id',adminController.editProductPage); // Product edit page display
+router.get('/editProductPage',adminController.editProductPage); // Product edit page display
 
 router.get('/logout',adminController.adminLogout); // admin logout
 

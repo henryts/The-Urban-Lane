@@ -175,47 +175,7 @@
                     </ul>
                 </nav>
             </div>
-            <script>
-                // Listen for click events on the delete coupon links
-$('.delete-coupon').on('click', function(e) {
-  e.preventDefault(); // Prevent the default link behavior
-
-  var couponId = $(this).data('coupon-id'); // Get the coupon ID from the data attribute
-
-  // Show a confirmation dialog using SweetAlert
-  swal.fire({
-  title: 'Are you sure?',
-  text: 'This action cannot be undone.',
-  icon: 'warning',
-  showCancelButton: true,
-  confirmButtonText: 'Yes, delete it!',
-  cancelButtonText: 'No, cancel!',
-  confirmButtonColor: '#3085d6',
-  cancelButtonColor: '#d33'
-}).then( (result)=> {
-    // User confirmed deletion, send AJAX request to server
-    if (result.value) {
-    $.ajax({
-      url: '/admin/deleteCoupon',
-      type: 'POST',
-      data: { id: couponId },
-      success: function(response) {
-        // Deletion successful, redirect to new page
-        window.location.replace('/admin/couponlist');
-      },
-      error: function(xhr, status, error) {
-        // Handle errors here
-        swal('Oops...', 'Something went wrong!', 'error');
-      }
-    });
-  }else {
-    // User clicked cancel, do nothing
-    swal('Cancelled', 'Your deletion request has been cancelled', 'info');
-  } 
-});
-});
-
-            </script>
+          
         </section> <!-- content-main end// -->
         <footer class="main-footer font-xs">
             <div class="row pb-30 pt-15">

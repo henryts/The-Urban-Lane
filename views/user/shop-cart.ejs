@@ -23,8 +23,8 @@
                                   <% for (let i = 0; i<products.length; i++) { %>
                                     <tbody>
                                       <tr>
-                                        <% if (products[i].productImages[0].filename !== 'undefined') { %>
-                                        <td class="image product-thumbnail"><img src="/uploads/<%=products[i].productImages[0].filename%>" alt="#"></td> 
+                                        <% if (products[i]?.productImages[1].filename !== 'undefined') { %>
+                                        <td class="image product-thumbnail"><img src="/uploads/<%=products[i]?.productImages[1].filename%>" alt="#"></td> 
                                         <% } %>
                                         <td class="product-des product-name">
                                           <h5 class="product-name"><a href="shop-product-right.html"> <%=products[i].productName %> </a></h5>
