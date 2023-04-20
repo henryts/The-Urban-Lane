@@ -421,11 +421,11 @@ getCart: async (req, res) => {
  
   let response={} ;
   let total=0;
-  console.log("qty=",qty);
+  //console.log("qty=",qty);
   response.subtotal=parseInt(pCost) *qty ;
-  console.log(" response.subtotal=",response.subtotal);
+ // console.log(" response.subtotal=",response.subtotal);
  // let liveQty=parseInt(count) +parseInt(qty);
-  console.log("liveQty=",qty);
+ // console.log("liveQty=",qty);
    if (count == -1 && qty == 1) {
     
      qty=1;
@@ -442,7 +442,7 @@ getCart: async (req, res) => {
         }
       )
       .then((response) => {
-        console.log("qty updated in db ");
+       // console.log("qty updated in db ");
       });
   
   let l=0;
@@ -450,14 +450,14 @@ getCart: async (req, res) => {
  
    l=cart[0].products.length;
     total=0;
-   console.log("subtotal in db=",cart[0].products[0].subtotal);
+   //console.log("subtotal in db=",cart[0].products[0].subtotal);
   for(let i=0;i<l;i++)
   {
        total=total+cart[0].products[i].subtotal;
        
   }
        response.total=total;
-       console.log(" response.total=",response.total);
+       //console.log(" response.total=",response.total);
        res.json(response);
   
   // }  
@@ -471,11 +471,11 @@ getCart: async (req, res) => {
       if (req.session.loggedIn) {  //delete from cart
      const id=req.params.id
      const uEmail=req.session.userid.email
-      console.log("in delete method");
+    //  console.log("in delete method");
       const cartDocument = await cartcollections.findOne({ userEmail:uEmail});
      // console.log(cartDocument.product);
        const updatedCart = await cartcollections.updateOne({ _id:cartDocument._id},{ $pull: { product: { pid: id } } })
-       console.log(updatedCart);
+      // console.log(updatedCart);
        res.redirect('/showCart');
      
     }
@@ -570,7 +570,7 @@ getCart: async (req, res) => {
         }
       }
      catch (error) {
-      console.log(error);
+      //console.log(error);
       //next();
     }  }  ,
     addtoWishlist:async(req,res)=>{
@@ -578,7 +578,7 @@ getCart: async (req, res) => {
       {
     const uEmail = req.session.userid.email;
     const pid = req.params.id; 
-     console.log(pid);
+     //console.log(pid);
     const products = [{
       pid: pid
     }];
@@ -595,7 +595,7 @@ getCart: async (req, res) => {
   {
    res.redirect('/wishlist');
   // res.send("already exist");
-  console.log("already exist");
+  //console.log("already exist");
   }
   else{
  let ab=  await wishlistdb.updateOne({ userEmail: uEmail }, { $push: { product: products } }, { upsert: true }).then(console.log("wishlist db done"));
@@ -702,12 +702,14 @@ else{
         });
          if(typeof wishlistObj[0]=='undefined')
          {
+         // console.log("length in udfnd",wishlistObj[0]?.length);
           uid.wishlistCount=0;
-          res.render("user/wishlist",{wList:0,uid});
+          res.render("user/wishlist",{wList:0,uid,length:0});
          }
          else{
         uid.wishlistCount= wishlistObj[0].products.length;
-        res.render("user/wishlist",{wList:wishlistObj[0].products,uid}); 
+       // console.log(wishlistObj[0]);
+        res.render("user/wishlist",{wList:wishlistObj[0]?.products,uid,length:wishlistObj[0].length}); 
          }
        // console.log(wishlistObj[0]);
        
@@ -818,9 +820,9 @@ else{
       
         const id=req.params.id
         const uEmail=req.session.userid.email
-         console.log("in remove method");
+        // console.log("in remove method");
          const wlDocument = await wishlistdb.findOne({userEmail:uEmail});
-         console.log(wlDocument);
+         //console.log(wlDocument);
    
          const updatedwl = await wishlistdb.updateOne({ _id: wlDocument._id},{ $pull: { product: { pid: id } } })
    

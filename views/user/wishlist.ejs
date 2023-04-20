@@ -4,6 +4,14 @@
             <div class="row">
                 <div class="col-12">
                     <div class="table-responsive">
+           
+                        <% if (length==0){ %>
+                            <div style="background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; box-shadow: 2px 2px 2px #ccc; padding: 20px; text-align: center;margin-bottom: 300px;">
+                                <h2 style="font-size: 24px; margin-bottom: 10px;margin-top: 50px;">Your Wish List Empty</h2>
+                                <p style="font-size: 16px;margin-bottom: 200px;">Happy shopping!</p>
+                              </div>
+                        <% } else{ %>
+                        
                         <table class="table shopping-summery text-center">
                             <thead>
                                 <tr class="main-heading">
@@ -19,24 +27,27 @@
                              
                                 <tr>
                                     <% for(let i=0;i<wList.length;i++)  { %> 
-                                     <td class="image product-thumbnail"><img src="/uploads/<%=wList[i].productImages[1].filename%>" alt="#"></td> 
+                                     <td class="image product-thumbnail"><img src="/uploads/<%=wList[i]?.productImages[0].filename%>" alt="#"></td> 
                                     <td class="product-des product-name">
                                         <h5 class="product-name"><a href="shop-product-right.html"><%=wList[i].productName%></a></h5>
                                         <p class="font-xs">Maboriosam in a tonto nesciung eget<br> distingy magndapibus.
                                         </p>
                                     </td>
-                                    <td class="price" data-title="Price"><span><%=wList[i].productCost%></span></td>
+                                    <td class="price" data-title="Price"><span>$<%=wList[i].productCost%></span></td>
                                     <td class="text-center" data-title="Stock">
                                         <span class="color3 font-weight-bold">In Stock</span>
                                     </td>
                                     <td class="text-right" data-title="Cart">
-                                        <button class="btn btn-sm"><i class="fi-rs-shopping-bag mr-5"></i>Add to cart</button>
+                                        <form action="/productDetails/<%=wList[i].productsId%>" method="get">
+                                        <button class="btn btn-sm"><i class="fi-rs-shopping-bag mr-5"></i>View Details</button>
+                                    </form>
                                     </td>
                                     <td class="action" data-title="Remove"><a href="/removefromWishlist/<%=wList[i].productsId%>"><i class="fi-rs-trash"></i></a></td>
                                 </tr>
                                  <% } %> 
                             </tbody>
                         </table>
+                        <% } %>
                     </div>
                 </div>
             </div>

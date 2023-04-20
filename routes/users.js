@@ -88,6 +88,12 @@ router.post('/passwordReset', UserController.passwordReset);
 router.get('/byfilter', UserController2.shopbycatagory);
 router.post('/priceFilterAjaxCall', UserController2.priceFilter);
 router.post('/priceFilterGet', UserController2.priceFilterGet);
+//router.post('/priceFilterGet', UserController2.priceFilterGet);
+
+router.get('/catMen', UserController2.filterMen);
+router.post('/priceFilterMenAjaxCall', UserController2.priceFilterMenAjaxCall);
+
+
 
 
 router.get('/cat1', UserController2.catagory1); 
