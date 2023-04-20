@@ -139,6 +139,90 @@ module.exports = {
 
    }
 },
+filterWomen:async(req,res)=>{
+
+  if (req.session.loggedIn) {
+    let uid =req.session.userid;
+    let linkId = req.query.sort;
+    let pData;
+    console.log("control in women catogory");  
+   // console.log(linkId);
+    console.log('Link ID received from client:', linkId);
+    let sort=req.query.sort||null;
+   // console.log(sort);
+    if(sort=='hl')
+    {
+      pData = await newProduct.find({ productCatogory:'women'}).sort({ productCost: -1 });
+
+    }
+    else if(sort=='lh')
+    {
+      pData = await newProduct.find({ productCatogory:'women'}).sort({ productCost: 1 });;
+
+    }
+    else{
+     pData = await newProduct.find({ productCatogory:'women'}); 
+    }
+    res.render("user/filterWomen",{uid,pData});
+
+ }
+},
+filterBoy:async(req,res)=>{
+
+  if (req.session.loggedIn) {
+    let uid =req.session.userid;
+    let linkId = req.query.sort;
+    let pData;
+    console.log("control in men catogory");  
+   // console.log(linkId);
+    console.log('Link ID received from client:', linkId);
+    let sort=req.query.sort||null;
+   // console.log(sort);
+    if(sort=='hl')
+    {
+      pData = await newProduct.find({ productCatogory:'boy'}).sort({ productCost: -1 });
+
+    }
+    else if(sort=='lh')
+    {
+      pData = await newProduct.find({ productCatogory:'boy'}).sort({ productCost: 1 });;
+
+    }
+    else{
+     pData = await newProduct.find({ productCatogory:'boy'}); 
+    }
+    res.render("user/filterBoy",{uid,pData});
+
+ }
+},
+filterGirl:async(req,res)=>{
+
+  if (req.session.loggedIn) {
+    let uid =req.session.userid;
+    let linkId = req.query.sort;
+    let pData;
+    console.log("control in men catogory");  
+   // console.log(linkId);
+    console.log('Link ID received from client:', linkId);
+    let sort=req.query.sort||null;
+   // console.log(sort);
+    if(sort=='hl')
+    {
+      pData = await newProduct.find({ productCatogory:'girl'}).sort({ productCost: -1 });
+
+    }
+    else if(sort=='lh')
+    {
+      pData = await newProduct.find({ productCatogory:'girl'}).sort({ productCost: 1 });;
+
+    }
+    else{
+     pData = await newProduct.find({ productCatogory:'girl'}); 
+    }
+    res.render("user/filterGirl",{uid,pData});
+
+ }
+},
 priceFilterMenAjaxCall:async(req,res)=>{
   if (req.session.loggedIn) {
    // console.log("control in price filter method");

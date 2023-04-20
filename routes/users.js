@@ -91,6 +91,9 @@ router.post('/priceFilterGet', UserController2.priceFilterGet);
 //router.post('/priceFilterGet', UserController2.priceFilterGet);
 
 router.get('/catMen', UserController2.filterMen);
+router.get('/catWomen', UserController2.filterWomen);
+router.get('/catGirl', UserController2.filterGirl);
+router.get('/catBoy', UserController2.filterBoy);
 router.post('/priceFilterMenAjaxCall', UserController2.priceFilterMenAjaxCall);
 
 
