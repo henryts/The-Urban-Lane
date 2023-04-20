@@ -1431,6 +1431,14 @@ passwordReset: async (req, res) => {
 
 }
 
+  },
+  invoiceGenerate:async (req,res)=>{
+    if(req.session.loggedIn)
+    {
+
+    res.render("user/invoice");
+    }
+
   } 
 
 }

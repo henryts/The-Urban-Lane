@@ -181,8 +181,11 @@
                             <span class="fw-bold me-4">Order Status: </span>
                             <span style="color:green;" id="statusmsg"><%=order.status%></span>
                            
-                            <button class="button button-add-to-cart" id="button-add-to-cart" style="background-color: grey;margin-left: 200px; font-size: 14px;
-                            padding: 5px 10px;" onclick="showCancelOrderWarning()">Cancel Order</button>
+                            <div style="display: flex; margin-top: 10px;">
+                              <button class="button button-add-to-cart" id="button-add-to-cart" style="background-color: grey; font-size: 14px; padding: 5px 10px; margin-right: 10px;" onclick="showCancelOrderWarning()">Cancel Order</button>
+                              <a href="/invoice" class="button button-add-to-cart" id="button-add-to-cart" style="background-color: grey; font-size: 14px; padding: 5px 10px;">Generate Invoice</a>
+                              <a href="/" class="button button-add-to-cart" id="button-add-to-cart" style="background-color: grey; font-size: 14px; padding: 5px 10px;">Back to Home</a>
+                            </div>
 
                             
                             <!-- <button class="btn  btn-primary text-center" style="margin-left: 20px;" onclick="cancelOrder('<%=order._id%>');Swal.fire({
@@ -198,6 +201,10 @@
                           <%} else  {%>
                             <span class="fw-bold me-4">Order Status: </span>
                             <span style="color: red;"><%=order.status%></span>
+                            <div style="display: flex; margin-top: 10px;">
+                              
+                              <a href="/" class="button button-add-to-cart" id="button-add-to-cart" style="background-color: grey; font-size: 14px; padding: 5px 10px;">Back to Home</a>
+                            </div>
                           <%} %>
                         
                         </td>

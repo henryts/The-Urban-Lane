@@ -103,6 +103,8 @@ router.get('/cat1', UserController2.catagory1);
 
 
 router.post('/cancel-order', UserController.cancelOrder); 
+router.get('/invoice', UserController.invoiceGenerate);
+
 
 
 
