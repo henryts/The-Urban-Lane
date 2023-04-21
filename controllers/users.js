@@ -23,8 +23,6 @@ const newProduct = mongooseModels.products;
 const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const { render } = require("ejs");
-
-
 const oneDay = 1000 * 60 * 60 * 24;
 let piDisp ;
 let otpgen=null;

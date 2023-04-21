@@ -208,6 +208,7 @@ const pipeline = [
 ];
 
 const result = await userOrders.aggregate(pipeline);
+console.log("result",result);
 
 const catCount =result.reduce((acc, curr) => {
   // Convert the _id to lowercase and use it as the key
@@ -216,6 +217,18 @@ const catCount =result.reduce((acc, curr) => {
   acc[key] = curr.count;
   return acc;
 }, {});
+if (!catCount.men) {
+  catCount.men = 0;
+}
+if (!catCount.women) {
+  catCount.women = 0;
+}
+if (!catCount.boy) {
+  catCount.boy = 0;
+}
+if (!catCount.girl) {
+  catCount.girl = 0;
+}
 console.log("catCount:",catCount);
 const now = new Date();
 const startOfMonth2 = new Date(now.getFullYear(), now.getMonth(), 1);
