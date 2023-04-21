@@ -1347,7 +1347,7 @@ passwordReset: async (req, res) => {
    response.totallow=false;
    response.discountedTotal=0;
    const currentDate = new Date();
-   console.log("toaal db",orderData.orderList[0].totalPrice);
+   //console.log("toaal db",orderData.orderList[0].totalPrice);
    //console.log("toaal coupon",cData.minTotalPrice);
 
    if (cData.expirationDate <currentDate) {
@@ -1395,9 +1395,13 @@ passwordReset: async (req, res) => {
    }
   
    const rslt = await userOrders.updateOne(
-    { "orderList._id": mongoId  },
-    { $set: { "orderList.$.totalPrice": total },
-             }
+    { "orderList._id": mongoId },
+    {
+      $set: {
+        "orderList.$.totalPrice": total,
+        "orderList.$.couponDiscount": discountApplied
+      }
+    }
   );
   const neworderData =  await userOrders.findOne(
     { userId: uid, "orderList._id": mongoId }, { "orderList.$": 1 });

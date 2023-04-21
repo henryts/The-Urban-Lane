@@ -35,7 +35,8 @@ const orderSchema= new mongoose.Schema({
                    cancellationRequest:{ type:Boolean, default:false} ,
                    cancelReason:{ type:String, default:null} ,
                    returnRequest:{ type:Boolean, default:false},
-                   orderHashId:String                                    
+                   orderHashId:String,
+                   couponDiscount: { type: Number, default:0}                                  
 
      } ]
               

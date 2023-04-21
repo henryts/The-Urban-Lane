@@ -216,7 +216,7 @@ const catCount =result.reduce((acc, curr) => {
   acc[key] = curr.count;
   return acc;
 }, {});
-//console.log("catCount:",catCount);
+console.log("catCount:",catCount);
 const now = new Date();
 const startOfMonth2 = new Date(now.getFullYear(), now.getMonth(), 1);
 const endOfMonth2 = new Date(now.getFullYear(), now.getMonth() + 1, 0);

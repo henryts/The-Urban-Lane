@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <style>
         body{margin-top:20px;
-background:#87CEFA;
+background:#080808;
 }
 
 .card-footer-btn {
@@ -172,6 +172,7 @@ tbody, td, tfoot, th, thead, tr {
                     </tr>
                   </thead>
                   <tbody>
+                    <% let sub=0 %>
                     <% for(let i=0;i<order.items.length;i++) {%>
                     <tr>
                       <td class="px-0"><%=order.items[i].productName%></td>
@@ -179,6 +180,7 @@ tbody, td, tfoot, th, thead, tr {
                       <td class="text-end px-0">$<%=order.items[i].price%></td>
                       <td class="text-end px-0">$<%=order.items[i].productTotal%></td>
                     </tr>
+                    <% sub += parseFloat(order.items[i].productTotal); %>
                     <% } %>
 
                   </tbody>
@@ -187,11 +189,11 @@ tbody, td, tfoot, th, thead, tr {
                 <div class="mt-5">
                   <div class="d-flex justify-content-end">
                     <p class="text-muted me-3">Subtotal:</p>
-                    <span>$390.00</span>
+                    <span>$<%=sub  %></span>
                   </div>
                   <div class="d-flex justify-content-end">
                     <p class="text-muted me-3">Discount:</p>
-                    <span>-$40.00</span>
+                    <span>-$<%=order.couponDiscount%></span>
                   </div>
                   <div class="d-flex justify-content-end mt-3">
                     <h5 class="me-3">Total:</h5>
