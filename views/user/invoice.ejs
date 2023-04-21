@@ -110,21 +110,25 @@ tbody, td, tfoot, th, thead, tr {
             <div class="card">
               <div class="card-body p-5">
                 <h2>
-                  Hey Anna,
+                  Hey <%=user.username%>,
                 </h2>
                 <p class="fs-sm">
-                  This is the receipt for a payment of <strong>$312.00</strong> (USD) you made to Spacial Themes.
+                  This is the receipt for a payment of <strong>$<%=order.totalPrice%></strong> (USD) you made to The Urban Lane.
                 </p>
     
                 <div class="border-top border-gray-200 pt-4 mt-4">
                   <div class="row">
                     <div class="col-md-6">
-                      <div class="text-muted mb-2">Payment No.</div>
-                      <strong>#88305</strong>
+                      <div class="text-muted mb-2">OrderId.</div>
+                      <strong>#<%=order.orderHashId%></strong>
                     </div>
+                    <% const timestamp = new Date(order.creationTime);
+                    const options = { month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+                    const formattedDate = timestamp.toLocaleDateString('en-US', options); %>
+
                     <div class="col-md-6 text-md-end">
                       <div class="text-muted mb-2">Payment Date</div>
-                      <strong>Feb/09/20</strong>
+                      <strong><%=formattedDate%></strong>
                     </div>
                   </div>
                 </div>
@@ -162,18 +166,21 @@ tbody, td, tfoot, th, thead, tr {
                   <thead>
                     <tr>
                       <th scope="col" class="fs-sm text-dark text-uppercase-bold-sm px-0">Description</th>
-                      <th scope="col" class="fs-sm text-dark text-uppercase-bold-sm text-end px-0">Amount</th>
+                      <th scope="col" class="fs-sm text-dark text-uppercase-bold-sm text-end px-0">Qty</th>
+                      <th scope="col" class="fs-sm text-dark text-uppercase-bold-sm text-end px-0">Cost</th>
+                      <th scope="col" class="fs-sm text-dark text-uppercase-bold-sm text-end px-0">Product Total</th>
                     </tr>
                   </thead>
                   <tbody>
+                    <% for(let i=0;i<order.items.length;i++) {%>
                     <tr>
-                      <td class="px-0">Theme customization</td>
-                      <td class="text-end px-0">$60.00</td>
+                      <td class="px-0"><%=order.items[i].productName%></td>
+                      <td class="text-end px-0">$<%=order.items[i].quantity%></td>
+                      <td class="text-end px-0">$<%=order.items[i].price%></td>
+                      <td class="text-end px-0">$<%=order.items[i].productTotal%></td>
                     </tr>
-                    <tr>
-                      <td class="px-0">Website design</td>
-                      <td class="text-end px-0">$80.00</td>
-                    </tr>
+                    <% } %>
+
                   </tbody>
                 </table>
     
@@ -188,7 +195,7 @@ tbody, td, tfoot, th, thead, tr {
                   </div>
                   <div class="d-flex justify-content-end mt-3">
                     <h5 class="me-3">Total:</h5>
-                    <h5 class="text-success">$399.99 USD</h5>
+                    <h5 class="text-success">$<%=order.totalPrice  %> USD</h5>
                   </div>
                 </div>
               </div>

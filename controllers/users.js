@@ -1160,18 +1160,7 @@ confirmOrder:async(req,res)=>
         { "orderList.$": 1 }
       );
         console.log("newOrder after updation ", newOrder);
-      // try {
-      //   const updatedOrder = await userOrders.findByIdAndUpdate(orderId, {
-      //     $set: {
-      //       paymentStatus: true,
-      //       paymentMethod:'COD'
-      //     }
-      //   });
-      //   //return updatedOrder;
-      // } catch (err) {
-      //   console.error(err);
-      //   throw err;
-      // }
+     
       
    res.render('user/orderConfirm',{order:newOrder.orderList[0],uid,orderdet:newOrder}); 
  } 
@@ -1434,9 +1423,18 @@ passwordReset: async (req, res) => {
   },
   invoiceGenerate:async (req,res)=>{
     if(req.session.loggedIn)
-    {
-
-    res.render("user/invoice");
+    { 
+      const uid = req.session.userid._id;
+      const orderId= req.session.latestOrderId;
+      const mongoId =req.session.userid._id;
+     // console.log("orderID",orderId);
+     console.log("control in invoice method");
+     const newOrder = await userOrders.findOne(
+      { userId: mongoId, "orderList._id": orderId },
+      { "orderList.$": 1 });
+      const userDet = await users.findOne({ _id: uid});
+     console.log(userDet);
+     res.render("user/invoice",{order:newOrder.orderList[0],user:userDet});
     }
 
   } 
