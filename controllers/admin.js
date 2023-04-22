@@ -47,7 +47,7 @@ orderStat= await userOrders.aggregate([
     $sort: { _id: 1 } // Sort by year and month
   }
 ]);
-const formattedMonthlyOrderCount = orderStat.reduce((acc, curr) => {
+const formattedMonthlyOrderCount = orderStat?.reduce((acc, curr) => {
   const monthYear = (curr._id === '2023-01' ? 'January' : curr._id);
   const count = curr.count;
   return { ...acc, [monthYear]: count };
