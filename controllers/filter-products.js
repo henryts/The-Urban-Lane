@@ -8,7 +8,7 @@ const userOrders = orderModel.userOrders;
 const express = require("express");
 const mongoose = require('mongoose');
 const paypal = require('paypal-rest-sdk');
-const cartService = require("./cartinfo");
+const cartService = require("./cartInfo");
 
 const mongooseModels = require("../models/admin-schema");
 const newProduct = mongooseModels.products;

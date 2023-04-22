@@ -16,7 +16,7 @@ const paypal = require('paypal-rest-sdk');
 const Razorpay = require('razorpay');
 const shortid = require('shortid');
 const crypto = require('crypto');
-const cartService = require("./cartinfo");
+const cartService = require("./cartInfo");
 
 const mongooseModels = require("../models/admin-schema");
 const newProduct = mongooseModels.products;
