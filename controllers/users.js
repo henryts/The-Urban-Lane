@@ -343,7 +343,7 @@ getCart: async (req, res) => {
 
   showCart: async(req,res)=>{    // cart display
       if (req.session.loggedIn) {
-        const uEmail = req.session.userid.email;
+        const uEmail = req.session.userid?.email;
         const uid =req.session.userid;
         
         let cartempty =await cartcollections.find({userEmail:uid.email});
@@ -403,6 +403,9 @@ getCart: async (req, res) => {
      // handle error
      console.error("Error while retrieving cart:", err);
    }  
+    }
+    else{
+      res.redirect('/login');
     }
   },
          

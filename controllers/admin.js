@@ -316,7 +316,7 @@ console.log("Total orders in current month:", totalOrders);
       {
         sno=(page-1)*11
       }
-      const uData = await users.find({}).skip((page-1)*perPage).limit(perPage);;
+      const uData = await users.find({}).skip((page-1)*perPage).limit(perPage);
       
       console.log("length=",uData.length);
     var num = 1;
@@ -481,10 +481,21 @@ console.log("Total orders in current month:", totalOrders);
     req,
     res //Product List ender
   ) => {
-    let pData = await newProduct.find({});
-    console.log("control in method");
+    const page= req.query.page || 1;
+    const perPage =10;
+    if(page==1)
+    {
+      sno=1;
+    }
+   else if(page>=2)
+    {
+      sno=(page-1)*11
+    }
+    let pData = await newProduct.find({}).skip((page-1)*perPage).limit(perPage);;
+    //console.log("control in method");
     if (req.session.loggedIn) {
-      res.render("admin/list-products", { pData });
+      res.render("admin/list-products", { pData,pages:Math.ceil(pData.length/perPage),
+      sno });
     } else {
       res.redirect("/admin/adminlogin");
     }
@@ -518,7 +529,7 @@ console.log("Total orders in current month:", totalOrders);
     res.redirect("/admin/adminlogin");
   },
   orderListDisplay:async(req,res)=>{
-  if(req.session.loggedIn)
+  if(req.session.loggedIn)  
   {
     try {
       const page= req.query.page || 1;
