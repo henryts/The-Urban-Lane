@@ -67,7 +67,19 @@ console.log("orderStat",orderStat);
 const monthsToDisplay = ['2023-01', '2023-02', '2023-03', '2023-04', '2023-05', '2023-06','2023-07', '2023-08', '2023-09', '2023-10', '2023-11','2023-12'];
 if(formattedMonthlyOrderCount==null)
 {
-  var monthlyOrderCount = null;
+  var monthlyOrderCount = [];
+  monthlyOrderCount['2023-01']=0;
+  monthlyOrderCount['2023-02']=0;
+  monthlyOrderCount['2023-03']=0;
+  monthlyOrderCount['2023-04']=0;
+  monthlyOrderCount['2023-05']=0;
+  monthlyOrderCount['2023-06']=0;
+  monthlyOrderCount['2023-07']=0;
+  monthlyOrderCount['2023-08']=0;
+  monthlyOrderCount['2023-09']=0;
+  monthlyOrderCount['2023-10']=0;
+  monthlyOrderCount['2023-11']=0;
+  monthlyOrderCount['2023-12']=0;
 }
 else{
 var monthlyOrderCount = monthsToDisplay.reduce((acc, month) => {
