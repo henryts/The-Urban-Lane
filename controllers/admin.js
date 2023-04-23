@@ -271,7 +271,7 @@ const result1 = await userOrders.aggregate([
 const totalProducts = await newProduct.aggregate([
   { $group: { _id: null, total: { $sum: 1 } } }
 ]);
-//console.log("total products",totalProducts);
+console.log("total products",totalProducts);
 const totalOrders = result1.length > 0 ? result1[0].count : 0;
 console.log("totalOrders",totalOrders);
 
@@ -289,7 +289,8 @@ console.log("Total orders in current month:", totalOrders);
         codCount,
         razorPayCount,
         payPalCount,
-        totalProducts
+        totalProducts,
+        monthlyOrderCount:monthlyOrderCount
       });
 
     }
