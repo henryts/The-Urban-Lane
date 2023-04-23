@@ -289,6 +289,7 @@ console.log("Total orders in current month:", totalOrders);
         codCount,
         razorPayCount,
         payPalCount,
+        totalProducts
       });
 
     }
