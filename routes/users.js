@@ -97,11 +97,7 @@ router.get('/catBoy', UserController2.filterBoy);
 router.post('/priceFilterMenAjaxCall', UserController2.priceFilterMenAjaxCall);
 
 
-
-
 router.get('/cat1', UserController2.catagory1); 
-
-
 router.post('/cancel-order', UserController.cancelOrder); 
 router.get('/invoice', UserController.invoiceGenerate);
 

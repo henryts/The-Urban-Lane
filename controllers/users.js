@@ -203,7 +203,7 @@ loginUser: async (req, res) => {
       block: 0,
     });
     newUser.save(function (err, newUser) {
-      if (err) res.send("db error");
+      if (err) res.send(err);
       else  res.render("user/otp-login");
 
     }); 
