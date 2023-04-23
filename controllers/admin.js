@@ -282,7 +282,7 @@ console.log("Total orders in current month:", totalOrders);
       res.render("admin/admin-index", {
         orderStat: null,
         totalRevenue: 0,
-        totalOrders: totalOrdersOfMonth[0].totalOrders,
+        totalOrders: totalOrdersOfMonth[0]?.totalOrders,
         revenueOfMonth: 0,
         catCount:catCount,
         codCount,
