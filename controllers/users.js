@@ -209,16 +209,17 @@ loginUser: async (req, res) => {
     }); 
   },
 
-  reqOtp: async (req, res) => {           //otp request post method twilio /\/  /\/
+  reqOtp: async (req, res) => {    
+    console.log("control in request otp");       //otp request post method twilio /\/  /\/
 
-     const accountSid = "ACb8ac9111ac07e1d91a356ed1793fb2c8";
-     const authToken = "ac8e81cb6816dbb8880138ff4f8815aa";
+     const accountSid = "AC4f6004a129544d9c1196501cf9fa6c94";
+     const authToken = "e496b67ddb504f8a30ce22c83f38f2df";
      const client = require("twilio")(accountSid, authToken);
      otpgen = Math.floor(1000 + Math.random() * 9000);
      client.messages
       .create({
         body: `Your OTP is ${otpgen}`,
-        from: "+17652348786",
+        from: "+16506753437",
         to: "+916282383283",
       })
       .then((message) => console.log(message.sid));
