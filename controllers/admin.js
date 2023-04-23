@@ -273,6 +273,7 @@ const totalProducts = await newProduct.aggregate([
 ]);
 //console.log("total products",totalProducts);
 const totalOrders = result1.length > 0 ? result1[0].count : 0;
+console.log("totalOrders",totalOrders);
 
 console.log("Total orders in current month:", totalOrders);
    
@@ -282,7 +283,7 @@ console.log("Total orders in current month:", totalOrders);
       res.render("admin/admin-index", {
         orderStat: null,
         totalRevenue: 0,
-        totalOrders: totalOrdersOfMonth[0]?.totalOrders,
+        totalOrders: totalOrders,
         revenueOfMonth: 0,
         catCount:catCount,
         codCount,
