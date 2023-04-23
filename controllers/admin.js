@@ -47,18 +47,24 @@ orderStat= await userOrders.aggregate([
     $sort: { _id: 1 } // Sort by year and month
   }
 ]);
+ if(orderStat.length==0)
+ {
+  orderStat=null;
+ }
+ else{
 
 const formattedMonthlyOrderCount = orderStat?.reduce((acc, curr) => {
   const monthYear = (curr._id === '2023-01' ? 'January' : curr._id);
   const count = curr.count;
   return { ...acc, [monthYear]: count };
 });
+ }
 console.log("orderStat",orderStat);  
 //console.log("formattedMonthlyOrderCount",formattedMonthlyOrderCount);  
 //console.log("janary count in fotmatedmonth",formattedMonthlyOrderCount);
 const monthsToDisplay = ['2023-01', '2023-02', '2023-03', '2023-04', '2023-05', '2023-06','2023-07', '2023-08', '2023-09', '2023-10', '2023-11','2023-12'];
 
-const monthlyOrderCount = monthsToDisplay.reduce((acc, month) => {
+const monthlyOrderCount = monthsToDisplay?.reduce((acc, month) => {
   const count = formattedMonthlyOrderCount[month] || 0;
   acc[month] = count;
   return acc;
