@@ -315,7 +315,7 @@ console.log("Total orders in current month:", totalOrders);
         razorPayCount,
         payPalCount,
         totalProducts,
-        monthlyOrderCount:monthlyOrderCount
+        monthlyOrderCount:monthMap
       });
 
     }
