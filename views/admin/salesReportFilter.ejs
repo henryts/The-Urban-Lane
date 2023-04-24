@@ -95,44 +95,43 @@
   </table>
          -->
          <script>
-    function demoFromHTML() {
-        var pdf = new jsPDF('p', 'pt', 'letter');
+function demoFromHTML() {
+    var pdf = new jsPDF('p', 'pt', 'letter');
         
-        source = $('#content')[0];
+    source = $('#content')[0];
 
+    specialElementHandlers = {
+        // element with id of "bypass" - jQuery style selector
+        '#bypassme': function (element, renderer) {
+            // true = "handled elsewhere, bypass text extraction"
+            return true
+        }
+    };
+    margins = {
+        top: 30,
+        bottom: 30,
+        left: 10,
+        right:10,
+        width: 900,
+        autoPaging:true
+    };
+    // all coords and widths are in jsPDF instance's declared units
+    // 'inches' in this case
+    pdf.fromHTML(
+        source, // HTML string or DOM elem ref.
+        margins.left, // x coord
+        margins.top, { // y coord
+            'width': margins.width, // max width of content on PDF
+            'elementHandlers': specialElementHandlers
+        },
 
-        specialElementHandlers = {
-            // element with id of "bypass" - jQuery style selector
-            '#bypassme': function (element, renderer) {
-                // true = "handled elsewhere, bypass text extraction"
-                return true
-            }
-        };
-        margins = {
-            top: 30,
-            bottom: 30,
-            left: 10,
-            right:10,
-            width: 200,
-            autoPaging:true
-        };
-        // all coords and widths are in jsPDF instance's declared units
-        // 'inches' in this case
-        pdf.fromHTML(
-            source, // HTML string or DOM elem ref.
-            margins.left, // x coord
-            margins.top, { // y coord
-                'width': margins.width, // max width of content on PDF
-                'elementHandlers': specialElementHandlers
-            },
-
-            function (dispose) {
-                // dispose: object with X, Y of the last line add to the PDF 
-                //          this allow the insertion of new lines after html
-                pdf.save('Test.pdf');
-            }, margins
-        );
-    }
+        function (dispose) {
+            // dispose: object with X, Y of the last line add to the PDF 
+            //          this allow the insertion of new lines after html
+            pdf.save('SalesReport.pdf');
+        }, margins
+    );
+}
 </script>
 </div>
 </body>
