@@ -164,8 +164,9 @@ endOfMonth.setHours(23, 59, 59, 999);
 const totalRevenueOfMonth = await userOrders.aggregate([
   {
     $match: {
+      "orderList.status": "Delivered",
       "orderList.creationTime": { $gte: startOfMonth1, $lte: endOfMonth },
-      "orderList.status": "Delivered"
+     
     },
   },
   {
