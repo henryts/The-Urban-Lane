@@ -75,35 +75,7 @@ function formatOrderStat(orderStat) {
   return monthMap;
 }
 const monthMap = formatOrderStat(orderStat);
-console.log("monthMap",monthMap);
-const monthsToDisplay = ['2023-01', '2023-02', '2023-03', '2023-04', '2023-05', '2023-06','2023-07', '2023-08', '2023-09', '2023-10', '2023-11','2023-12'];
-if(formattedMonthlyOrderCount==null)
-{
-  var monthlyOrderCount = [];
-  monthlyOrderCount['2023-01']=0;
-  monthlyOrderCount['2023-02']=0;
-  monthlyOrderCount['2023-03']=0;
-  monthlyOrderCount['2023-04']=0;
-  monthlyOrderCount['2023-05']=0;
-  monthlyOrderCount['2023-06']=0;
-  monthlyOrderCount['2023-07']=0;
-  monthlyOrderCount['2023-08']=0;
-  monthlyOrderCount['2023-09']=0;
-  monthlyOrderCount['2023-10']=0;
-  monthlyOrderCount['2023-11']=0;
-  monthlyOrderCount['2023-12']=0;
-}
-else{
-var monthlyOrderCount = monthsToDisplay.reduce((acc, month) => {
-  const count = formattedMonthlyOrderCount[month] || 0;
-  acc[month] = count;
-  return acc;
-}, {});
-}
-//monthlyOrderCount['2023-01']=formattedMonthlyOrderCount['count'];
-
-console.log("monthlyOrderCount:",monthlyOrderCount);
-//console.log("january count",monthlyOrderCount['2023-01']);
+//console.log("monthMap",monthMap);
 
 //find the payment method count
 const results = await userOrders.aggregate([
@@ -177,6 +149,7 @@ const currentDate = new Date();
         }
       }
     ]);
+    console.log("totalRevenueOfYear",totalRevenueOfYear);
     
     // find the total number of orders of the current month
    const  startOfMonth1 = new Date();
@@ -192,6 +165,7 @@ const totalRevenueOfMonth = await userOrders.aggregate([
   {
     $match: {
       "orderList.creationTime": { $gte: startOfMonth1, $lte: endOfMonth },
+      "orderList.status": "Delivered"
     },
   },
   {
