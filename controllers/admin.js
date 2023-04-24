@@ -64,13 +64,17 @@ var formattedMonthlyOrderCount = orderStat?.reduce((acc, curr) => {
 console.log("orderStat",orderStat);  
 console.log("formattedMonthlyOrderCount",formattedMonthlyOrderCount);  
 //console.log("janary count in fotmatedmonth",formattedMonthlyOrderCount);
-const monthMap = [...Array(12)].reduce((acc, _, index) => {
-  const month = index < 9 ? `0${index + 1}` : `${index + 1}`;
-  const year = formattedMonthlyOrderCount._id.split('-')[0];
-  const key = `${year}-${month}`;
-  const value = formattedMonthlyOrderCount._id === key ? formattedMonthlyOrderCount.count : 0;
-  return { ...acc, [key]: value };
-}, {});
+function formatOrderStat(orderStat) {
+  const monthMap = {};
+  for (let i = 1; i <= 12; i++) {
+    const month = i < 10 ? `0${i}` : `${i}`;
+    const key = `2023-${month}`;
+    const match = orderStat.find(stat => stat._id === key);
+    monthMap[key] = match ? match.count : 0;
+  }
+  return monthMap;
+}
+const monthMap = formatOrderStat(orderStat);
 console.log("monthMap",monthMap);
 const monthsToDisplay = ['2023-01', '2023-02', '2023-03', '2023-04', '2023-05', '2023-06','2023-07', '2023-08', '2023-09', '2023-10', '2023-11','2023-12'];
 if(formattedMonthlyOrderCount==null)
@@ -323,7 +327,7 @@ console.log("Total orders in current month:", totalOrders);
   totalRevenue: totalRevenueOfYear[0]?.totalRevenue,
   totalOrders: totalOrders,
   revenueOfMonth:totalRevenueOfMonth[0]?.totalPrice,
-  monthlyOrderCount:monthlyOrderCount,
+  monthlyOrderCount:monthMap,
   codCount,
   razorPayCount,
   payPalCount,
