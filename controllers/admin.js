@@ -63,7 +63,15 @@ var formattedMonthlyOrderCount = orderStat?.reduce((acc, curr) => {
  }
 console.log("orderStat",orderStat);  
 console.log("formattedMonthlyOrderCount",formattedMonthlyOrderCount);  
-console.log("janary count in fotmatedmonth",formattedMonthlyOrderCount);
+//console.log("janary count in fotmatedmonth",formattedMonthlyOrderCount);
+const monthMap = [...Array(12)].reduce((acc, _, index) => {
+  const month = index < 9 ? `0${index + 1}` : `${index + 1}`;
+  const year = formattedMonthlyOrderCount._id.split('-')[0];
+  const key = `${year}-${month}`;
+  const value = formattedMonthlyOrderCount._id === key ? formattedMonthlyOrderCount.count : 0;
+  return { ...acc, [key]: value };
+}, {});
+console.log("monthMap",monthMap);
 const monthsToDisplay = ['2023-01', '2023-02', '2023-03', '2023-04', '2023-05', '2023-06','2023-07', '2023-08', '2023-09', '2023-10', '2023-11','2023-12'];
 if(formattedMonthlyOrderCount==null)
 {
