@@ -87,6 +87,7 @@ var monthlyOrderCount = monthsToDisplay.reduce((acc, month) => {
   acc[month] = count;
   return acc;
 }, {});
+}
 //monthlyOrderCount['2023-01']=formattedMonthlyOrderCount['count'];
 
 console.log("monthlyOrderCount:",monthlyOrderCount);
