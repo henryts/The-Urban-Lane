@@ -411,7 +411,8 @@ getCart: async (req, res) => {
   },
          
   updateQuanity:async (req,res)=> {  //control in from ajax call
-  
+  if(req.session.loggedIn)
+  {
    console.log("count in update",req.body.count);
    console.log("quantity in update",req.body.quantity);
    console.log("productcost in update",req.body.pCost);
@@ -464,11 +465,12 @@ getCart: async (req, res) => {
   
   // }  
   }
+}
+else{
+  res.redirect('/login');
+}
 } ,
   
-
-
-
     deleteFromCart:async(req,res)=>{ 
       if (req.session.loggedIn) {  //delete from cart
      const id=req.params.id

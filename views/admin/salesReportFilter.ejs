@@ -32,41 +32,36 @@
 
 <div id="content">
 
-  <table style="width:100%;max-width:900px;margin:auto;border-collapse:collapse;border:1px solid #ddd;" class="table table-striped" >
+  <table style="width:100%; max-width:900px; margin:auto; border-collapse:collapse; border:1px solid #ddd;" class="table table-striped">
     <thead>
-      <tr style="background-color:#f2f2f2;color:#444;">
-        <th style="padding:12px;text-align:left;width: 50px;">OrderId</th>
-        <th style="padding:12px;text-align:left;width: 50px;">Customer Email</th>
-        <th style="padding:12px;text-align:left;width: 50px;">Order Total</th>
-        <th style="padding:12px;text-align:left;width: 50px;">Order Status</th>
-        <th style="padding:12px;text-align:left;width: 50px;">Payment Method</th>
-        <th style="padding:12px;text-align:left;width: 50px;">Order Date</th>
-        <!-- <th style="padding:12px;text-align:left;">Delivered Date</th> -->
+      <tr style="background-color:#f2f2f2; color:#444;">
+        <th style="padding:12px; text-align:left; width:100px;">Order ID</th>
+        <th style="padding:12px; text-align:left; width:200px;">Customer Email</th>
+        <th style="padding:12px; text-align:left; width:100px;">Order Total</th>
+        <th style="padding:12px; text-align:left; width:100px;">Order Status</th>
+        <th style="padding:12px; text-align:left; width:150px;">Payment Method</th>
+        <th style="padding:12px; text-align:left; width:150px;">Order Date</th>
       </tr>
-      <%  
-    for(let i=0;i<orders.orders.length;i++)
-    {
-    %>
-    <tr style="background-color:#f2f2f2;color:#444;">
-      <td style="padding:12px;text-align:left;">#<%=orders.orders[i].orderHashId %>   </td>
-      <td style="padding:12px;text-align:left;"><%=orders.orders[i].userEmail %> </td>
-        <td style="padding:12px;text-align:left;">$ <%=orders.orders[i].totalPrice %> </td>
-          <td style="padding:12px;text-align:left;"><%=orders.orders[i].orderStatus %> </td>
-            <td style="padding:12px;text-align:left;"><%=orders.orders[i].paymentMethod %> </td>
-            <% const timestamp = new Date(orders.orders[i].creationTime);
-                    const options = { month: 'long', day: 'numeric', year: 'numeric'};
-                    const formattedDate = timestamp.toLocaleDateString('en-US', options); %>
-              <td style="padding:12px;text-align:left;"><%=formattedDate %> </td>
-                
-    </tr>
-    <%} %>
-    
-    <!-- <tbody id="order_data"> -->
+    </thead>
+    <tbody>
+      <% for(let i=0; i<orders.orders.length; i++) { %>
+        <tr style="background-color:#f2f2f2; color:#444;">
+          <td style="padding:12px; text-align:left;">#<%= orders.orders[i].orderHashId %></td>
+          <td style="padding:12px; text-align:left; word-wrap:break-word;"><%= orders.orders[i].userEmail %></td>
+          <td style="padding:12px; text-align:left;">$ <%= orders.orders[i].totalPrice %></td>
+          <td style="padding:12px; text-align:left;"><%= orders.orders[i].orderStatus %></td>
+          <td style="padding:12px; text-align:left;"><%= orders.orders[i].paymentMethod %></td>
+          <% const timestamp = new Date(orders.orders[i].creationTime);
+                 const options = { month: 'long', day: 'numeric', year: 'numeric'};
+                 const formattedDate = timestamp.toLocaleDateString('en-US', options); %>
+          <td style="padding:12px; text-align:left;"><%= formattedDate %></td>
+        </tr>
+      <% } %>
+      <tr style="background-color:#f2f2f2; color:#444;">
+        <td colspan="2" style="padding:12px; text-align:right;"><strong>Total Earnings:</strong></td>
+        <td colspan="4" style="padding:12px; text-align:left;">$<%= orders.totalRevenue %></td>
+      </tr>
     </tbody>
-    <tfoot>
-      <tr style="background-color:#f2f2f2;color:#444;">
-        <td colspan="7" style="padding:12px;text-align:right;">Total Earnings:&nbsp;<span style="font-weight:bold;"><strong id="total_earnings">$<%=orders.totalRevenue%></strong></span></td>
-      </tr>
   </table>
   <%}%>
 </div>
